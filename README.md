@@ -16,6 +16,7 @@
 
 <br/>
 
+![Website Preview](images/preview-website.gif)
 </div>
 
 <br/>
