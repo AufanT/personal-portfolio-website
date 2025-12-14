@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Aufan Taufiqurrahman</title>
+    <link rel="shortcut icon" href="images/favicon.svg" type="image/svg+xml">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top pt-3 pb-3">
+        <div class="container px-5">
+            <a class="navbar-brand fw-bold fs-4" href="index.html" style="color: var(--color-accent);">
+                <i class="bi bi-code-slash me-2"></i>Aufan
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto text-center">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="portofolio.html">Portofolio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="kontak.html">Contact</a></li>
+                </ul>
+            </div>
+
+             <div class="music-widget">
+                <button id="musicBtn" class="btn-music">
+                    <i class="bi bi-volume-mute-fill" id="musicIcon"></i>
+                </button>
+                <div class="volume-container">
+                    <input type="range" id="volSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.2">
+                </div>
+                <audio id="bgAudio"></audio>
+            </div>
+        </div>
+    </nav>
+
+    <section class="d-flex align-items-center justify-content-center pt-5 mt-5 pb-3">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold text-white reveal">My Projects</h1>
+            <p class="lead reveal" style="color: var(--color-accent);">Kumpulan karya terbaik yang pernah saya buat</p>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="row justify-content-center mb-5">
+                <div class="col-md-8 text-center reveal">
+                    <ul class="nav nav-pills justify-content-center" id="portfolio-flters">
+                        <li class="nav-item mx-2">
+                            <button class="nav-link active filter-btn" data-filter="all">All Projects</button>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <button class="nav-link filter-btn" data-filter="web">Web Dev</button>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <button class="nav-link filter-btn" data-filter="backend">Backend</button>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <button class="nav-link filter-btn" data-filter="frontend">Frontend</button>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <button class="nav-link filter-btn" data-filter="software">Software</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-md-4 portfolio-item web reveal">
+                    <div class="card portfolio-card h-100">
+                        <div class="portfolio-img-wrapper">
+                            <img src="images/1.png" class="card-img-top" alt="Web Profile Yayasan">
+                        </div>
+                        <div class="card-body p-4">
+                            <span class="badge rounded-pill mb-2 badge-neon">Web Development</span>
+                            <h5 class="card-title text-white fw-bold">Web Profile Yayasan</h5>
+                            <p class="card-text text-secondary small">Website profil informatif untuk yayasan sosial, menampilkan program dan transparansi kegiatan.</p>
+                            
+                            <a href="#" class="stretched-link" data-bs-toggle="modal" data-bs-target="#projectModal" 
+                                data-title="Web Profile Yayasan" 
+                                data-category="Web Development" 
+                                data-img="images/1.png" 
+                                data-desc="Website resmi untuk Yayasan Sosial yang dirancang untuk membangun kepercayaan publik. Fitur utama mencakup galeri kegiatan dinamis, laporan transparansi donasi, dan blog artikel. Dibangun dengan Bootstrap 5 dan backend ringan agar mudah dikelola oleh pengurus yayasan."
+                                data-demo="https://yayasan-keren.com" 
+                                data-source="https://github.com/AufanT/ymps-sumbar-web">
+                                
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 portfolio-item backend reveal">
+                    <div class="card portfolio-card h-100">
+                        <div class="portfolio-img-wrapper">
+                            <img src="images/3.png" class="card-img-top" alt="API E-Commerce">
+                        </div>
+                        <div class="card-body p-4">
+                            <span class="badge rounded-pill mb-2 badge-neon">Backend API</span>
+                            <h5 class="card-title text-white fw-bold">API E-Commerce EcoPick</h5>
+                            <p class="card-text text-secondary small">RESTful API robust untuk menangani transaksi, manajemen produk, dan inventory real-time.</p>
+                            
+                            <a href="#" class="stretched-link" data-bs-toggle="modal" data-bs-target="#projectModal" 
+                                data-title="API E-Commerce EcoPick" 
+                                data-category="Backend API" 
+                                data-img="images/3.png" 
+                                data-desc="Sistem Backend yang menangani logika bisnis aplikasi EcoPick. Dibangun menggunakan Node.js dan MongoDB. Mendukung fitur kompleks seperti keranjang belanja, kalkulasi ongkir otomatis, Payment Gateway (Midtrans), dan notifikasi pesanan real-time via WebSocket."
+                                data-demo="#" 
+                                data-source="https://github.com/AufanT/ymps-sumbar-web">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 portfolio-item backend reveal">
+                    <div class="card portfolio-card h-100">
+                        <div class="portfolio-img-wrapper">
+                            <img src="images/2.png" class="card-img-top" alt="API SSO">
+                        </div>
+                        <div class="card-body p-4">
+                            <span class="badge rounded-pill mb-2 badge-neon">Backend API</span>
+                            <h5 class="card-title text-white fw-bold">API Portal SSO Kampus</h5>
+                            <p class="card-text text-secondary small">Sistem Single Sign-On (SSO) terpusat untuk integrasi berbagai layanan akademik kampus.</p>
+                            
+                            <a href="#" class="stretched-link" data-bs-toggle="modal" data-bs-target="#projectModal" 
+                                data-title="API Portal SSO Kampus" 
+                                data-category="Backend API" 
+                                data-img="images/2.png" 
+                                data-desc="Solusi keamanan akses terpusat. Memungkinkan mahasiswa dan dosen login sekali untuk mengakses Portal Akademik, E-Learning, dan Perpustakaan. Menggunakan standar keamanan JWT (JSON Web Token) dan enkripsi data tingkat tinggi untuk melindungi privasi user."
+                                data-demo="#"
+                                data-source="https://github.com/AufanT/portal_sso_kampus">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 portfolio-item frontend reveal">
+                    <div class="card portfolio-card h-100">
+                        <div class="portfolio-img-wrapper">
+                            <img src="images/5.png" class="card-img-top" alt="Web Baca Komik">
+                        </div>
+                        <div class="card-body p-4">
+                            <span class="badge rounded-pill mb-2 badge-neon">Frontend</span>
+                            <h5 class="card-title text-white fw-bold">Kyotogarden - Website Baca Komik</h5>
+                            <p class="card-text text-secondary small">Platform baca komik digital dengan UI imersif dan fitur lazy-load gambar.</p>
+                            
+                            <a href="#" class="stretched-link" data-bs-toggle="modal" data-bs-target="#projectModal" 
+                                data-title="Website Baca Komik" 
+                                data-category="Frontend" 
+                                data-img="images/5.png" 
+                                data-desc="Frontend aplikasi baca komik yang fokus pada User Experience (UX). Fitur unggulan meliputi Lazy Loading (gambar dimuat saat discroll untuk hemat kuota), Dark Mode untuk kenyamanan mata, dan fitur Bookmark chapter terakhir yang dibaca menggunakan LocalStorage."
+                                data-demo="https://aufant.github.io/kyotogarden/" 
+                                data-source="https://github.com/AufanT/kyotogarden">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 portfolio-item software reveal">
+                    <div class="card portfolio-card h-100">
+                        <div class="portfolio-img-wrapper">
+                            <img src="images/onprogress.png" class="card-img-top" alt="Platform Game">
+                        </div>
+                        <div class="card-body p-4">
+                            <span class="badge rounded-pill mb-2 badge-neon">Software</span>
+                            <h5 class="card-title text-white fw-bold">Platform Distribusi Game</h5>
+                            <p class="card-text text-secondary small">Aplikasi desktop manajemen library game, unduhan, dan update otomatis.</p>
+                            
+                            <a href="#" class="stretched-link" data-bs-toggle="modal" data-bs-target="#projectModal" 
+                                data-title="Platform Distribusi Game" 
+                                data-category="Software" 
+                                data-img="images/onprogress.png" 
+                                data-desc="Aplikasi Desktop (Client) yang terinspirasi dari Steam. Memungkinkan user untuk membeli, mengunduh, dan mengelola instalasi game di PC mereka. Mendukung fitur pause/resume download, verifikasi file game, dan integrasi cloud save."
+                                data-demo="#" 
+                                data-source="https://github.com/AufanT/">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 portfolio-item web reveal">
+                    <div class="card portfolio-card h-100">
+                        <div class="portfolio-img-wrapper">
+                            <img src="images/onprogress.png" class="card-img-top" alt="Dashboard Admin">
+                        </div>
+                        <div class="card-body p-4">
+                            <span class="badge rounded-pill mb-2 badge-neon">Web Development</span>
+                            <h5 class="card-title text-white fw-bold">Dashboard Admin Terintegrasi</h5>
+                            <p class="card-text text-secondary small">Panel kendali visual untuk manajemen data bisnis tanpa perlu koding.</p>
+                            
+                            <a href="#" class="stretched-link" data-bs-toggle="modal" data-bs-target="#projectModal" 
+                                data-title="Dashboard Admin Terintegrasi" 
+                                data-category="Web Development" 
+                                data-img="images/onprogress.png" 
+                                data-desc="Dashboard admin kustom yang dirancang untuk kemudahan penggunaan (Usability). Menyajikan visualisasi data statistik (Chart.js), tabel manajemen data dengan fitur Export Excel/PDF, dan manajemen hak akses pengguna (Role Management)."
+                                data-demo="#" 
+                                data-source="https://github.com/AufanT/">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="pt-5 pb-3 text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3" style="color: var(--color-accent);">Aufan</h5>
+                    <p class="text-secondary">
+                        Seorang mahasiswa IT dan Backend Developer yang bersemangat membangun solusi digital yang efisien, aman, dan modern.
+                    </p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3 text-white">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="index.html" class="text-decoration-none footer-link">Home</a></li>
+                        <li class="mb-2"><a href="about.html" class="text-decoration-none footer-link">About Me</a></li>
+                        <li class="mb-2"><a href="portofolio.html" class="text-decoration-none footer-link">Portfolio</a></li>
+                        <li class="mb-2"><a href="kontak.html" class="text-decoration-none footer-link">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3 text-white">Connect</h5>
+                    <p class="text-secondary mb-3">Temukan saya di sosial media:</p>
+                    <div class="d-flex gap-3">
+                        <a href="https://github.com/AufanT" target="_blank" class="social-icon"><i class="bi bi-github"></i></a>
+                        <a href="https://www.instagram.com/aufant_/" target="_blank" class="social-icon"><i class="bi bi-instagram"></i></a>
+                        <a href="mailto:aufantaufiq08905@gmail.com" target="_blank" class="social-icon"><i class="bi bi-envelope-fill"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-secondary my-4" style="opacity: 0.1;">
+            <div class="row text-center">
+                <div class="col-12">
+                    <p class="small text-secondary mb-0">
+                        &copy; 2025 <strong>Aufan</strong>. All Rights Reserved.
+                        <br>
+                        Designed with Bootstrap 5
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal fade" id="projectModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content custom-modal">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <img src="" id="modalImage" class="img-fluid rounded-3 shadow-sm w-100" alt="Project Image">
+                        </div>
+                        <div class="col-md-6">
+                            <span class="badge badge-neon mb-3" id="modalCategory">Category</span>
+                            <h3 class="fw-bold text-white mb-3" id="modalTitle">Project Title</h3>
+                            <p class="text-secondary" id="modalDesc">
+                                Deskripsi lengkap project akan muncul di sini.
+                            </p>
+                            <hr class="border-secondary opacity-25 my-4">
+                            <h5 class="text-white h6 mb-3">Technologies Used:</h5>
+                            <div class="d-flex gap-2 mb-4">
+                                <span class="badge border border-secondary text-secondary">HTML</span>
+                                <span class="badge border border-secondary text-secondary">CSS</span>
+                                <span class="badge border border-secondary text-secondary">JS</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="#" id="btnLiveDemo" target="_blank" class="btn btn-primary btn-sm rounded-pill px-4">Live Demo</a>
+                                <a href="#" id="btnSourceCode" target="_blank" class="btn btn-outline-light btn-sm rounded-pill px-4">Source Code</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/music.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>

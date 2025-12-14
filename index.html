@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Aufan Taufiqurrahman</title>
+    <link rel="shortcut icon" href="images/favicon.svg" type="image/svg+xml">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top pt-3 pb-3">
+        <div class="container px-5">
+            <a class="navbar-brand fw-bold fs-4" href="index.html" style="color: var(--color-accent);">
+                <i class="bi bi-code-slash me-2"></i>Aufan
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto text-center">
+                    <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="portofolio.html">Portofolio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="kontak.html">Contact</a></li>
+                </ul>
+            </div>
+
+             <div class="music-widget">
+                <button id="musicBtn" class="btn-music">
+                    <i class="bi bi-volume-mute-fill" id="musicIcon"></i>
+                </button>
+                <div class="volume-container">
+                    <input type="range" id="volSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.2">
+                </div>
+                <audio id="bgAudio"></audio>
+            </div>
+        </div>
+    </nav>
+
+    <section id="hero" class="d-flex align-items-center min-vh-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 reveal">
+                    <h1 class="display-2 fw-bold mb-2" style="color: var(--color-accent);">Aufan Taufiqurrahman</h1>
+                    <h2 class="text-white mb-4">
+                        I'm <span class="text-highlight" id="typing-text"></span><span class="typing-cursor">|</span>
+                    </h2>
+                    <div class="d-flex flex-wrap gap-3 mt-4 mb-4">
+                        <a href="portofolio.html" class="btn btn-primary btn-lg px-4 rounded-pill btn-cta">
+                            <i class="bi bi-briefcase-fill me-2"></i> Lihat Projek
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-lg px-4 rounded-pill btn-cta">
+                            <i class="bi bi-file-earmark-person me-2"></i> Download CV
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="d-flex align-items-center py-5" style="background-color: var(--bg-glass);">
+        <div class="container">
+            <div class="row mb-5 text-center">
+                <div class="col-12 reveal">
+                    <h2 class="fw-bold text-white display-5 ">My Services</h2>
+                    <p class="text-secondary ">Apa yang bisa saya kerjakan untuk Anda</p>
+                </div>
+            </div>
+            <div class="row g-4 ">
+                <div class="col-md-4 reveal">
+                    <div class="card service-card h-100 text-center p-4">
+                        <div class="card-body">
+                            <div class="icon-box mb-3">
+                                <i class="bi bi-code-slash display-4"></i>
+                            </div>
+                            <h3 class="card-title text-white h4 mb-3">Web Development</h3>
+                            <p class="card-text text-secondary">
+                                Membangun website responsif dan cepat menggunakan HTML, CSS, Bootstrap, dan JavaScript modern.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 reveal">
+                    <div class="card service-card h-100 text-center p-4">
+                        <div class="card-body">
+                            <div class="icon-box mb-3">
+                                <i class="bi bi-database-fill display-4"></i>
+                            </div>
+                            <h3 class="card-title text-white h4 mb-3">Backend System</h3>
+                            <p class="card-text text-secondary">
+                                Merancang database dan logika server yang aman dan efisien untuk aplikasi skala besar.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 reveal">
+                    <div class="card service-card h-100 text-center p-4">
+                        <div class="card-body">
+                            <div class="icon-box mb-3">
+                                <i class="bi bi-laptop display-4"></i>
+                            </div>
+                            <h3 class="card-title text-white h4 mb-3">Frontend Dev</h3>
+                            <p class="card-text text-secondary">
+                                Mengimplementasikan desain visual menjadi kode antarmuka yang interaktif, responsif, dan mulus di berbagai perangkat.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="d-flex align-items-center py-5">
+        <div class="container">
+            <div class="row text-center reveal">
+                <div class="col">
+                    <h2 class="fw-bold text-white display-5">Testimonials</h2>
+                    <p class="text-secondary">Apa kata mereka tentang kinerja saya</p>
+                </div>
+            </div>
+            <div class="row justify-content-center reveal">
+                <div class="col-lg-8">
+                    <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
+                            <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="2"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="d-flex flex-column justify-content-center align-items-center h-100">
+                                    <div class="row justify-content-center w-100">
+                                        <div class="col-md-8 col-lg-7 text-center"> <i class="bi bi-quote display-1 text-highlight mb-3"></i>
+                                            <figure>
+                                                <blockquote class="blockquote">
+                                                    <p class="h4 text-light fst-italic mb-4">"Kinerja backend yang sangat solid. API yang dibuat sangat cepat dan dokumentasinya rapi. Sangat merekomendasikan Aufan untuk proyek skala besar."</p>
+                                                </blockquote>
+                                                <figcaption class="blockquote-footer mt-2 text-secondary">
+                                                    Budi Santoso <cite title="Source Title" class="text-white fw-bold">- CEO Startup Indo</cite>
+                                                </figcaption>
+                                            </figure>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="d-flex flex-column justify-content-center align-items-center h-100">
+                                    <div class="row justify-content-center w-100">
+                                        <div class="col-md-8 col-lg-7 text-center">
+                                            <i class="bi bi-quote display-1 text-highlight mb-3"></i>
+                                            <figure>
+                                                <blockquote class="blockquote">
+                                                    <p class="h4 text-light fst-italic mb-4">"Website portofolio yang saya pesan selesai lebih cepat dari deadline. Desainnya modern dan kode strukturnya mudah dipahami."</p>
+                                                </blockquote>
+                                                <figcaption class="blockquote-footer mt-2 text-secondary">
+                                                    Sarah Amalia <cite title="Source Title" class="text-white fw-bold">- Product Manager</cite>
+                                                </figcaption>
+                                            </figure>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="d-flex flex-column justify-content-center align-items-center h-100">
+                                    <div class="row justify-content-center w-100">
+                                        <div class="col-md-8 col-lg-7 text-center">
+                                            <i class="bi bi-quote display-1 text-highlight mb-3"></i>
+                                            <figure>
+                                                <blockquote class="blockquote">
+                                                    <p class="h4 text-light fst-italic mb-4">"Sangat puas dengan hasil integrasi databasenya. Tidak ada bug dan query berjalan sangat efisien. Good job!"</p>
+                                                </blockquote>
+                                                <figcaption class="blockquote-footer mt-2 text-secondary">
+                                                    Ahmad Dhani <cite title="Source Title" class="text-white fw-bold">- Senior Tech Lead</cite>
+                                                </figcaption>
+                                            </figure>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="pt-5 pb-3 text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3" style="color: var(--color-accent);">Aufan</h5>
+                    <p class="text-secondary">
+                        Seorang mahasiswa IT dan Backend Developer yang bersemangat membangun solusi digital yang efisien, aman, dan modern.
+                    </p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3 text-white">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="index.html" class="text-decoration-none footer-link">Home</a></li>
+                        <li class="mb-2"><a href="about.html" class="text-decoration-none footer-link">About Me</a></li>
+                        <li class="mb-2"><a href="portofolio.html" class="text-decoration-none footer-link">Portfolio</a></li>
+                        <li class="mb-2"><a href="kontak.html" class="text-decoration-none footer-link">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3 text-white">Connect</h5>
+                    <p class="text-secondary mb-3">Temukan saya di sosial media:</p>
+                    <div class="d-flex gap-3">
+                        <a href="https://github.com/AufanT" target="_blank" class="social-icon"><i class="bi bi-github"></i></a>
+                        <a href="https://www.instagram.com/aufant_/" target="_blank" class="social-icon"><i class="bi bi-instagram"></i></a>
+                        <a href="mailto:aufantaufiq08905@gmail.com" target="_blank" class="social-icon"><i class="bi bi-envelope-fill"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-secondary my-4" style="opacity: 0.1;">
+            <div class="row text-center">
+                <div class="col-12">
+                    <p class="small text-secondary mb-0">
+                        &copy; 2025 <strong>Aufan</strong>. All Rights Reserved.
+                        <br>
+                        Designed with Bootstrap 5
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/music.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>
