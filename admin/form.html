@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit/Tambah Blog - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .step-item { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body class="bg-dark text-white">
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><a href="dashboard.html" class="text-white text-decoration-none"><i class="bi bi-arrow-left me-2"></i></a> Form Blog</h2>
+            <button type="submit" form="blogForm" class="btn btn-primary px-5 rounded-pill fw-bold">Simpan Blog</button>
+        </div>
+
+        <form id="blogForm">
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="card bg-dark border-secondary p-4 mb-4">
+                        <h5 class="mb-3">Informasi Utama</h5>
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary">Judul Artikel</label>
+                            <input type="text" id="title" class="form-control custom-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary">Deskripsi Singkat</label>
+                            <textarea id="description" class="form-control custom-input" rows="2"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label small text-secondary">Subjek / Matkul</label>
+                                <input type="text" id="subject" class="form-control custom-input" value="Praktikum">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label small text-secondary">Link GitHub</label>
+                                <input type="url" id="github_url" class="form-control custom-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-dark border-secondary p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Langkah-langkah Praktikum</h5>
+                            <button type="button" id="addStep" class="btn btn-sm btn-outline-success"><i class="bi bi-plus-circle me-1"></i> Tambah Langkah</button>
+                        </div>
+                        <div id="steps-container">
+                            <!-- Dynamic steps will go here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card bg-dark border-secondary p-4 mb-4">
+                        <h5 class="mb-3">Media & Status</h5>
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary">Cover Image URL</label>
+                            <input type="text" id="cover_url" class="form-control custom-input" placeholder="https://...">
+                            <p class="small text-secondary mt-1">Gunakan link gambar atau upload di Supabase Storage.</p>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="is_published">
+                            <label class="form-check-label" for="is_published">Publikasikan artikel</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script>
+        const stepsContainer = document.getElementById('steps-container');
+        const addStepBtn = document.getElementById('addStep');
+        const blogForm = document.getElementById('blogForm');
+        const params = new URLSearchParams(window.location.search);
+        const blogId = params.get('id');
+
+        // Function to create step HTML
+        function createStepHtml(title = '', text = '', imageUrl = '') {
+            const div = document.createElement('div');
+            div.className = 'step-item';
+            div.innerHTML = `
+                <div class="d-flex justify-content-between mb-2">
+                    <label class="small fw-bold">Detail Langkah</label>
+                    <button type="button" class="btn-close btn-close-white remove-step"></button>
+                </div>
+                <input type="text" class="form-control custom-input mb-2 step-title" placeholder="Judul Langkah" value="${title}" required>
+                <textarea class="form-control custom-input mb-2 step-text" placeholder="Deskripsi/Konten langkah" rows="3" required>${text}</textarea>
+                <input type="text" class="form-control custom-input step-image" placeholder="URL Gambar Langkah (opsional)" value="${imageUrl}">
+            `;
+            div.querySelector('.remove-step').addEventListener('click', () => div.remove());
+            stepsContainer.appendChild(div);
+        }
+
+        addStepBtn.addEventListener('click', () => createStepHtml());
+
+        // Load existing data if edit mode
+        async function loadExistingData() {
+            if (!blogId) {
+                createStepHtml(); // Default one step
+                return;
+            }
+
+            const { data, error } = await supabase.from('blogs').select('*').eq('id', blogId).single();
+            if (error) return alert(error.message);
+
+            document.getElementById('title').value = data.title;
+            document.getElementById('description').value = data.description;
+            document.getElementById('subject').value = data.subject;
+            document.getElementById('github_url').value = data.github_url;
+            document.getElementById('cover_url').value = data.cover_url;
+            document.getElementById('is_published').checked = data.is_published;
+
+            if (data.content && Array.isArray(data.content)) {
+                data.content.forEach(step => createStepHtml(step.title, step.text, step.image_url));
+            }
+        }
+
+        blogForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const steps = Array.from(document.querySelectorAll('.step-item')).map(item => ({
+                title: item.querySelector('.step-title').value,
+                text: item.querySelector('.step-text').value,
+                image_url: item.querySelector('.step-image').value
+            }));
+
+            const payload = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                subject: document.getElementById('subject').value,
+                github_url: document.getElementById('github_url').value,
+                cover_url: document.getElementById('cover_url').value,
+                is_published: document.getElementById('is_published').checked,
+                content: steps
+            };
+
+            let result;
+            if (blogId) {
+                result = await supabase.from('blogs').update(payload).eq('id', blogId);
+            } else {
+                result = await supabase.from('blogs').insert([payload]);
+            }
+
+            if (result.error) alert(result.error.message);
+            else window.location.href = 'dashboard.html';
+        });
+
+        // Simple auth check
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) window.location.href = 'index.html';
+        }
+
+        checkAuth().then(loadExistingData);
+    </script>
+</body>
+</html>
