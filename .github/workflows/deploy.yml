@@ -3,7 +3,7 @@ name: Deploy Website to Hostinger
 on:
   push:
     branches:
-      - main # Robot akan jalan setiap ada push ke branch main
+      - main
 
 jobs:
   web-deploy:
@@ -19,4 +19,4 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ./ # Karena akun FTP sudah dibatasi ke folder subdomain, isi saja dengan ./
+          server-dir: ./ 
