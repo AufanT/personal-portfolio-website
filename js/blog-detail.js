@@ -23,6 +23,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (error) throw error;
 
+        // ===== DEBUG: Lihat raw data dari Supabase =====
+        console.log('=== RAW BLOG DATA ===', blog);
+        console.log('=== CONTENT FIELD ===', blog.content);
+        console.log('=== CONTENT TYPE ===', typeof blog.content);
+        console.log('=== IS ARRAY ===', Array.isArray(blog.content));
+        // ===============================================
+
         // Set Metadata
         document.title = `${blog.title} - Aufan Taufiqurrahman`;
         titleEl.innerText = blog.title;
