@@ -1,4 +1,4 @@
-name: Deploy Website to Hostinger
+name: Deploy to Subdomain
 
 on:
   push:
@@ -6,17 +6,17 @@ on:
       - main
 
 jobs:
-  web-deploy:
-    name: Deploy
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: 🚚 Get latest code
         uses: actions/checkout@v4
 
       - name: 📂 Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ./ 
+          server-dir: ./public_html/aufan/
+          dangerous-clean-slate: true
