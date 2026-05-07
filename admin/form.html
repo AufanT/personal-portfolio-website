@@ -72,7 +72,7 @@
         </form>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
     <script src="../js/supabase-config.js"></script>
     <script>
         const stepsContainer = document.getElementById('steps-container');
@@ -110,15 +110,17 @@
             const { data, error } = await supabaseClient.from('blogs').select('*').eq('id', blogId).single();
             if (error) return alert(error.message);
 
-            document.getElementById('title').value = data.title;
-            document.getElementById('description').value = data.description;
-            document.getElementById('subject').value = data.subject;
-            document.getElementById('github_url').value = data.github_url;
-            document.getElementById('cover_url').value = data.cover_url;
-            document.getElementById('is_published').checked = data.is_published;
+            document.getElementById('title').value = data.title || '';
+            document.getElementById('description').value = data.description || '';
+            document.getElementById('subject').value = data.subject || 'Praktikum';
+            document.getElementById('github_url').value = data.github_url || '';
+            document.getElementById('cover_url').value = data.cover_url || '';
+            document.getElementById('is_published').checked = data.is_published || false;
 
-            if (data.content && Array.isArray(data.content)) {
-                data.content.forEach(step => createStepHtml(step.title, step.text, step.image_url));
+            if (data.content && Array.isArray(data.content) && data.content.length > 0) {
+                data.content.forEach(step => createStepHtml(step.title || '', step.text || '', step.image_url || ''));
+            } else {
+                createStepHtml(); // Default kosong jika belum ada langkah
             }
         }
 
@@ -132,11 +134,11 @@
             }));
 
             const payload = {
-                title: document.getElementById('title').value,
-                description: document.getElementById('description').value,
-                subject: document.getElementById('subject').value,
-                github_url: document.getElementById('github_url').value,
-                cover_url: document.getElementById('cover_url').value,
+                title: document.getElementById('title').value.trim(),
+                description: document.getElementById('description').value.trim() || null,
+                subject: document.getElementById('subject').value.trim() || 'Praktikum',
+                github_url: document.getElementById('github_url').value.trim() || null,
+                cover_url: document.getElementById('cover_url').value.trim() || null,
                 is_published: document.getElementById('is_published').checked,
                 content: steps
             };

@@ -53,19 +53,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             contentEl.innerHTML += `<p class="lead text-light mb-5">${blog.description}</p>`;
         }
 
-        if (blog.content && Array.isArray(blog.content)) {
+        if (blog.content && Array.isArray(blog.content) && blog.content.length > 0) {
             blog.content.forEach((step, index) => {
                 const stepHtml = `
-                    <div class="step-card reveal">
-                        <h3 class="h4 text-white mb-3">Langkah ${index + 1}: ${step.title}</h3>
-                        <div class="text-secondary">${step.text}</div>
-                        ${step.image_url ? `<img src="${step.image_url}" class="step-img mt-3" alt="Langkah ${index + 1}">` : ''}
+                    <div class="step-card">
+                        <h3 class="h4 text-white mb-3">
+                            <span class="badge me-2" style="background-color: var(--color-accent); color: #000;">${index + 1}</span>
+                            ${step.title || '(Tanpa Judul)'}
+                        </h3>
+                        <div class="text-secondary" style="white-space: pre-wrap; line-height: 1.8;">${step.text || ''}</div>
+                        ${step.image_url ? `<img src="${step.image_url}" class="step-img mt-3" alt="Langkah ${index + 1}" onerror="this.style.display='none'">` : ''}
                     </div>
                 `;
                 contentEl.innerHTML += stepHtml;
-            } );
+            });
         } else {
-            contentEl.innerHTML += `<p class="text-secondary">Konten artikel tidak tersedia.</p>`;
+            contentEl.innerHTML += `<p class="text-secondary">Konten langkah-langkah belum ditambahkan.</p>`;
         }
 
         // Re-initialize reveal
