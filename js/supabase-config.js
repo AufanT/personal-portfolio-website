@@ -5,5 +5,5 @@
 const SUPABASE_URL = 'https://dppqqundggnieolusvtx.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcHFxdW5kZ2duaWVvbHVzdnR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxMzQ2MzgsImV4cCI6MjA5MzcxMDYzOH0.PXrtRmylaa-saGmxl7LxORCohwNXc6kReiJCBsizBVw';
 
-// Inisialisasi client Supabase (Load via CDN di HTML)
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Inisialisasi client Supabase
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
