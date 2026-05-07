@@ -47,13 +47,13 @@
     <script>
         // Check Auth
         async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) window.location.href = 'index.html';
             return session;
         }
 
         async function loadBlogs() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('blogs')
                 .select('*')
                 .order('created_at', { ascending: false });
@@ -81,14 +81,14 @@
 
         async function deleteBlog(id) {
             if (confirm('Yakin ingin menghapus blog ini?')) {
-                const { error } = await supabase.from('blogs').delete().eq('id', id);
+                const { error } = await supabaseClient.from('blogs').delete().eq('id', id);
                 if (error) alert(error.message);
                 else loadBlogs();
             }
         }
 
         document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             window.location.href = 'index.html';
         });
 

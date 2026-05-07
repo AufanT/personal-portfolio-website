@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         // Fetch published blogs from Supabase
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
             .from('blogs')
             .select('*')
             .eq('is_published', true)

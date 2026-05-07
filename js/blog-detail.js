@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const headerEl = document.getElementById('blog-header');
 
     try {
-        const { data: blog, error } = await supabase
+        const { data: blog, error } = await supabaseClient
             .from('blogs')
             .select('*')
             .eq('id', blogId)

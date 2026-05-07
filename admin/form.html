@@ -107,7 +107,7 @@
                 return;
             }
 
-            const { data, error } = await supabase.from('blogs').select('*').eq('id', blogId).single();
+            const { data, error } = await supabaseClient.from('blogs').select('*').eq('id', blogId).single();
             if (error) return alert(error.message);
 
             document.getElementById('title').value = data.title;
@@ -143,9 +143,9 @@
 
             let result;
             if (blogId) {
-                result = await supabase.from('blogs').update(payload).eq('id', blogId);
+                result = await supabaseClient.from('blogs').update(payload).eq('id', blogId);
             } else {
-                result = await supabase.from('blogs').insert([payload]);
+                result = await supabaseClient.from('blogs').insert([payload]);
             }
 
             if (result.error) alert(result.error.message);
@@ -154,7 +154,7 @@
 
         // Simple auth check
         async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) window.location.href = 'index.html';
         }
 
