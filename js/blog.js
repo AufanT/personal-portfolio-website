@@ -1,21 +1,24 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const blogContainer = document.getElementById('blog-container');
-    const loadingSpinner = document.getElementById('blog-loading');
 
     try {
-        // Fetch published blogs from Supabase
+        console.log('Fetching blogs...');
         const { data, error } = await supabaseClient
             .from('blogs')
             .select('*')
             .eq('is_published', true)
             .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+            console.error('Supabase Error:', error);
+            throw error;
+        }
 
-        // Clear loading spinner
+        console.log('Data received:', data);
+
         blogContainer.innerHTML = '';
 
-        if (data.length === 0) {
+        if (!data || data.length === 0) {
             blogContainer.innerHTML = `
                 <div class="col-12 text-center py-5">
                     <p class="text-secondary">Belum ada artikel yang dipublikasikan.</p>
@@ -32,14 +35,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             const blogCard = `
-                <div class="col-md-4 reveal">
-                    <div class="card blog-card">
+                <div class="col-md-4">
+                    <div class="card blog-card h-100 shadow-sm">
                         <div class="blog-img-wrapper">
-                            <img src="${blog.cover_url || 'images/onprogress.png'}" alt="${blog.title}">
+                            <img src="${blog.cover_url || 'images/onprogress.png'}" alt="${blog.title}" onerror="this.src='images/onprogress.png'">
                         </div>
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="badge rounded-pill badge-neon">${blog.subject}</span>
+                                <span class="badge rounded-pill bg-success" style="background-color: var(--color-accent) !important;">${blog.subject || 'Praktikum'}</span>
                                 <small class="text-secondary">${date}</small>
                             </div>
                             <h5 class="card-title text-white fw-bold">${blog.title}</h5>
@@ -52,14 +55,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             blogContainer.innerHTML += blogCard;
         });
 
-        // Re-initialize reveal animations if they exist in script.js
-        if (window.initReveal) window.initReveal();
-
     } catch (error) {
-        console.error('Error fetching blogs:', error);
+        console.error('Final Catch Error:', error);
         blogContainer.innerHTML = `
             <div class="col-12 text-center py-5">
-                <p class="text-danger">Gagal memuat data blog. Pastikan konfigurasi Supabase sudah benar.</p>
+                <p class="text-danger">Gagal memuat data. Error: ${error.message || 'Unknown error'}</p>
             </div>
         `;
     }
