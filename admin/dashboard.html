@@ -85,16 +85,18 @@
         </div>
     </div>
 
-    <script src="../js/supabase.js?v=2"></script>
-    <script src="../js/supabase-config.js?v=2"></script>
+    <script src="../js/supabase.js?v=3"></script>
+    <script src="../js/supabase-config.js?v=3"></script>
     <script>
         const authLoading = document.getElementById('authLoading');
         const mainContent = document.getElementById('mainContent');
         const userEmailEl = document.getElementById('userEmail');
 
-        // ===== Auth State Listener (lebih reliable dari getSession) =====
-        supabaseClient.auth.onAuthStateChange(async (event, session) => {
-            if (event === 'SIGNED_OUT' || !session) {
+        // ===== Init Dashboard =====
+        async function initDashboard() {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            
+            if (error || !session) {
                 window.location.href = 'index.html';
                 return;
             }
@@ -107,9 +109,13 @@
                 userEmailEl.classList.remove('d-none');
             }
 
-            // Load blogs hanya sekali saat pertama init
-            if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
-                await loadBlogs();
+            await loadBlogs();
+        }
+
+        // ===== Auth State Listener (untuk auto-logout jika session expired) =====
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT' || !session) {
+                window.location.href = 'index.html';
             }
         });
 
@@ -167,6 +173,9 @@
             await supabaseClient.auth.signOut();
             window.location.href = 'index.html';
         });
+
+        // Jalankan saat load
+        initDashboard();
     </script>
 </body>
 </html>
