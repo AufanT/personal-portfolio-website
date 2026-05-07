@@ -53,15 +53,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             `;
         }
 
-        // Render Content (JSON steps)
+        // Render Content — handle both JSONB array and JSON string
         contentEl.innerHTML = '';
-        
+
         if (blog.description) {
             contentEl.innerHTML += `<p class="lead text-light mb-5">${blog.description}</p>`;
         }
 
-        if (blog.content && Array.isArray(blog.content) && blog.content.length > 0) {
-            blog.content.forEach((step, index) => {
+        // Parse content defensively
+        let steps = blog.content;
+        if (typeof steps === 'string') {
+            try { steps = JSON.parse(steps); } catch(e) { steps = null; }
+        }
+
+        console.log('Parsed steps:', steps);
+
+        if (steps && Array.isArray(steps) && steps.length > 0) {
+            steps.forEach((step, index) => {
                 const stepHtml = `
                     <div class="step-card">
                         <h3 class="h4 text-white mb-3">
@@ -75,7 +83,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 contentEl.innerHTML += stepHtml;
             });
         } else {
-            contentEl.innerHTML += `<p class="text-secondary">Konten langkah-langkah belum ditambahkan.</p>`;
+            // Debug: tampilkan raw content di halaman agar mudah dilihat
+            contentEl.innerHTML += `
+                <div class="alert alert-warning">
+                    <strong>Info Debug:</strong> Langkah-langkah belum tersimpan di database.<br>
+                    Raw content: <code>${JSON.stringify(blog.content)}</code><br>
+                    <small>Silakan edit ulang artikel ini di dashboard admin dan simpan kembali.</small>
+                </div>
+            `;
         }
 
         // Re-initialize reveal
