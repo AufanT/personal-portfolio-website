@@ -576,6 +576,88 @@
         const blogId = params.get('id');
         let stepCount = 0;
 
+        function createSubtitleHtml(subtitleData = {}) {
+            const { title = '', text = '', images = [] } = subtitleData;
+            const subtitleId = Math.random().toString(36).substr(2, 9);
+            
+            return `
+                <div class="step-section" style="background: rgba(255,255,255,0.08); border-left: 3px solid var(--color-accent);">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 style="margin: 0;"><i class="bi bi-dash me-1"></i>Sub Judul</h6>
+                        <button type="button" class="btn-remove-step remove-subtitle" style="padding: 4px 8px; font-size: 0.7rem;">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    <input type="text" class="form-control custom-input mb-2 subtitle-title"
+                        placeholder="Judul sub-langkah..." value="${title}">
+                    <textarea class="form-control custom-input mb-2 subtitle-text" rows="2"
+                        placeholder="Penjelasan sub-langkah...">${text}</textarea>
+                    
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small style="color: var(--color-accent); font-weight: 600;">Gambar Sub Judul</small>
+                            <button type="button" class="btn-upload btn-add-subtitle-img" style="padding: 4px 8px; font-size: 0.8rem;">
+                                <i class="bi bi-plus-circle me-1"></i> Tambah Gambar
+                            </button>
+                        </div>
+                        <div class="subtitle-images-container" data-subtitle-id="${subtitleId}">
+                            ${images.map((img, idx) => `
+                                <div class="subtitle-img-item mb-2" style="display: flex; gap: 8px; align-items: flex-start;">
+                                    <input type="text" class="form-control custom-input subtitle-image-url" value="${img}" readonly style="flex: 1; font-size: 0.85rem;">
+                                    <button type="button" class="btn-remove-step remove-subtitle-img" style="padding: 6px 10px;">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                                <img src="${img}" class="img-preview" style="display:block; margin-bottom: 10px;" alt="preview">
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function attachSubtitleEvents(stepDiv, subtitleDiv) {
+            subtitleDiv.querySelector('.remove-subtitle').addEventListener('click', () => {
+                subtitleDiv.remove();
+            });
+
+            subtitleDiv.querySelector('.btn-add-subtitle-img').addEventListener('click', () => {
+                const subtitleId = subtitleDiv.querySelector('.subtitle-images-container').dataset.subtitleId;
+                openCloudinaryWidget((url) => {
+                    const container = subtitleDiv.querySelector('.subtitle-images-container');
+                    const newImgHtml = `
+                        <div class="subtitle-img-item mb-2" style="display: flex; gap: 8px; align-items: flex-start;">
+                            <input type="text" class="form-control custom-input subtitle-image-url" value="${url}" readonly style="flex: 1; font-size: 0.85rem;">
+                            <button type="button" class="btn-remove-step remove-subtitle-img" style="padding: 6px 10px;">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                        <img src="${url}" class="img-preview" style="display:block; margin-bottom: 10px;" alt="preview">
+                    `;
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = newImgHtml;
+                    container.appendChild(tempDiv.firstElementChild);
+                    container.appendChild(tempDiv.lastElementChild);
+                    
+                    tempDiv.querySelector('.remove-subtitle-img').addEventListener('click', (e) => {
+                        e.target.closest('.subtitle-img-item').remove();
+                        container.querySelector('.img-preview')?.remove();
+                    });
+                }, null);
+            });
+
+            // Attach remove image events
+            subtitleDiv.querySelectorAll('.remove-subtitle-img').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.target.closest('.subtitle-img-item').remove();
+                    const imgPreview = e.target.closest('.subtitle-img-item').nextElementSibling;
+                    if (imgPreview?.classList.contains('img-preview')) {
+                        imgPreview.remove();
+                    }
+                });
+            });
+        }
+
         function createStepHtml(stepData = {}) {
             stepCount++;
             const currentStepCount = stepCount;
@@ -583,9 +665,7 @@
                 title = '',
                 text = '',
                 image_url = '',
-                subtitle = '',
-                subtitle_text = '',
-                subtitle_image_url = ''
+                subtitles = []
             } = stepData;
 
             const div = document.createElement('div');
@@ -628,31 +708,12 @@
                 </div>
 
                 <div style="border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 20px; margin-top: 20px;">
-                    <div class="step-section">
-                        <h6><i class="bi bi-dash me-1"></i>Sub Judul (Opsional)</h6>
-                        <input type="text" class="form-control custom-input step-subtitle"
-                            placeholder="Judul sub-langkah..." value="${subtitle}">
-                    </div>
-
-                    <div class="step-section">
-                        <h6>Penjelasan Sub Judul</h6>
-                        <textarea class="form-control custom-input step-subtitle-text" rows="3"
-                            placeholder="Jelaskan poin sub-langkah ini...">${subtitle_text}</textarea>
-                    </div>
-
-                    <div class="step-section">
-                        <h6>Gambar Sub Judul (Opsional)</h6>
-                        <div class="upload-input-group">
-                            <input type="text" class="form-control custom-input step-subtitle-image"
-                                placeholder="URL gambar..." value="${subtitle_image_url}" readonly>
-                            <button type="button" class="btn-upload upload-step-subtitle-img">
-                                <i class="bi bi-cloud-upload"></i> Upload
-                            </button>
-                        </div>
-                        <span class="uploading-spinner step-subtitle-spinner">
-                            <i class="bi bi-arrow-repeat spin"></i> Mengupload...
-                        </span>
-                        ${subtitle_image_url ? `<img src="${subtitle_image_url}" class="step-subtitle-img-preview img-preview" style="display:block;" alt="preview">` : '<img class="step-subtitle-img-preview img-preview" alt="preview">'}
+                    <div class="subtitles-container"></div>
+                    
+                    <div class="add-step-btn-container" style="margin-top: 15px;">
+                        <button type="button" class="btn-add-step add-subtitle-btn" style="width: auto;">
+                            <i class="bi bi-plus-circle me-2"></i> Tambah Sub Judul
+                        </button>
                     </div>
                 </div>
 
@@ -663,11 +724,13 @@
                 </div>
             `;
 
+            // Remove step
             div.querySelector('.remove-step').addEventListener('click', () => {
                 div.remove();
                 updateStepNumbers();
             });
 
+            // Upload main image
             div.querySelector('.upload-step-img').addEventListener('click', () => {
                 const imgInput = div.querySelector('.step-image');
                 const imgPreview = div.querySelector('.step-img-preview');
@@ -679,17 +742,24 @@
                 }, spinner);
             });
 
-            div.querySelector('.upload-step-subtitle-img').addEventListener('click', () => {
-                const imgInput = div.querySelector('.step-subtitle-image');
-                const imgPreview = div.querySelector('.step-subtitle-img-preview');
-                const spinner = div.querySelector('.step-subtitle-spinner');
-                openCloudinaryWidget((url) => {
-                    imgInput.value = url;
-                    imgPreview.src = url;
-                    imgPreview.style.display = 'block';
-                }, spinner);
+            // Add subtitle
+            const subtitlesContainer = div.querySelector('.subtitles-container');
+            div.querySelector('.add-subtitle-btn').addEventListener('click', () => {
+                const subtitleDiv = document.createElement('div');
+                subtitleDiv.innerHTML = createSubtitleHtml();
+                subtitlesContainer.appendChild(subtitleDiv.firstElementChild);
+                attachSubtitleEvents(div, subtitlesContainer.lastElementChild);
             });
 
+            // Add existing subtitles
+            subtitles.forEach(subtitleData => {
+                const subtitleDiv = document.createElement('div');
+                subtitleDiv.innerHTML = createSubtitleHtml(subtitleData);
+                subtitlesContainer.appendChild(subtitleDiv.firstElementChild);
+                attachSubtitleEvents(div, subtitlesContainer.lastElementChild);
+            });
+
+            // Add next step
             div.querySelector('.add-next-step').addEventListener('click', () => {
                 const nextIndex = Array.from(stepsContainer.children).indexOf(div);
                 const newDiv = createStepHtml();
@@ -741,9 +811,7 @@
                         title: step.title || '',
                         text: step.text || '',
                         image_url: step.image_url || '',
-                        subtitle: step.subtitle || '',
-                        subtitle_text: step.subtitle_text || '',
-                        subtitle_image_url: step.subtitle_image_url || ''
+                        subtitles: step.subtitles || []
                     });
                     stepsContainer.appendChild(newStep);
                 });
@@ -756,14 +824,20 @@
         blogForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const steps = Array.from(document.querySelectorAll('.step-item')).map(item => ({
-                title: item.querySelector('.step-title').value.trim(),
-                text: item.querySelector('.step-text').value.trim(),
-                image_url: item.querySelector('.step-image').value.trim() || null,
-                subtitle: item.querySelector('.step-subtitle').value.trim() || null,
-                subtitle_text: item.querySelector('.step-subtitle-text').value.trim() || null,
-                subtitle_image_url: item.querySelector('.step-subtitle-image').value.trim() || null
-            }));
+            const steps = Array.from(document.querySelectorAll('.step-item')).map(item => {
+                const subtitles = Array.from(item.querySelectorAll('.step-section[style*="border-left"]')).map(subDiv => ({
+                    title: subDiv.querySelector('.subtitle-title').value.trim(),
+                    text: subDiv.querySelector('.subtitle-text').value.trim(),
+                    images: Array.from(subDiv.querySelectorAll('.subtitle-image-url')).map(input => input.value.trim())
+                })).filter(s => s.title || s.text || s.images.length > 0);
+
+                return {
+                    title: item.querySelector('.step-title').value.trim(),
+                    text: item.querySelector('.step-text').value.trim(),
+                    image_url: item.querySelector('.step-image').value.trim() || null,
+                    subtitles: subtitles
+                };
+            });
 
             const payload = {
                 title: document.getElementById('title').value.trim(),

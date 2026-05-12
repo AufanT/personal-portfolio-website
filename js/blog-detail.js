@@ -85,13 +85,21 @@ document.addEventListener("DOMContentLoaded", async () => {
                         </div>
                         ${step.image_url ? `<img src="${step.image_url}" class="step-img mt-3 mt-md-3" alt="Langkah ${index + 1}" onerror="this.style.display='none'">` : ""}
                         
-                        ${step.subtitle ? `
+                        ${step.subtitles && Array.isArray(step.subtitles) && step.subtitles.length > 0 ? `
                             <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 15px; padding-top: 15px;">
-                                <h4 class="h6 text-white mb-2" style="color: var(--color-accent);">
-                                    <i class="bi bi-dash me-1"></i>${step.subtitle}
-                                </h4>
-                                ${step.subtitle_text ? `<p class="text-secondary mb-0" style="white-space: pre-wrap; line-height: 1.8; font-size: 0.95rem;">${step.subtitle_text}</p>` : ""}
-                                ${step.subtitle_image_url ? `<img src="${step.subtitle_image_url}" class="step-img mt-2 mt-md-2" alt="Sub ${index + 1}" onerror="this.style.display='none'">` : ""}
+                                ${step.subtitles.map((subtitle, subIdx) => `
+                                    <div style="margin-bottom: 15px;">
+                                        <h4 class="h6 text-white mb-2" style="color: var(--color-accent);">
+                                            <i class="bi bi-dash me-1"></i>${subtitle.title || `Sub Judul ${subIdx + 1}`}
+                                        </h4>
+                                        ${subtitle.text ? `<p class="text-secondary mb-2" style="white-space: pre-wrap; line-height: 1.8; font-size: 0.95rem;">${subtitle.text}</p>` : ""}
+                                        ${subtitle.images && Array.isArray(subtitle.images) && subtitle.images.length > 0 ? `
+                                            <div style="margin-top: 10px;">
+                                                ${subtitle.images.map(img => `<img src="${img}" class="step-img mt-2" alt="Gambar" style="display: block;" onerror="this.style.display='none'">`).join("")}
+                                            </div>
+                                        ` : ""}
+                                    </div>
+                                `).join("")}
                             </div>
                         ` : ""}
                     </div>
