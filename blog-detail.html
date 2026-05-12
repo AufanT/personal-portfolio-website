@@ -18,26 +18,70 @@
             background-size: cover;
             background-position: center;
         }
+
         .content-section {
             background: var(--bg-glass);
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
+
         .step-card {
-            border-left: 4px solid var(--color-accent);
             background: rgba(255, 255, 255, 0.02);
-            border-radius: 0 12px 12px 0;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
         }
+
+        .step-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
         .step-img {
             max-width: 100%;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         pre {
             background: #000;
             color: var(--color-accent);
             border-radius: 8px;
             overflow-x: auto;
+        }
+
+        .h5-md {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 576px) {
+            #blog-title {
+                font-size: 2rem !important;
+            }
+
+            .blog-header {
+                padding-top: 100px;
+                padding-bottom: 30px;
+            }
+
+            .step-card h3 {
+                font-size: 1rem !important;
+            }
+
+            .badge {
+                font-size: 0.75rem !important;
+            }
+
+            .h5-md {
+                font-size: 0.95rem !important;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .h5-md {
+                font-size: 1.25rem;
+            }
         }
     </style>
 </head>
@@ -48,7 +92,8 @@
             <a class="navbar-brand fw-bold fs-4" href="index.html" style="color: var(--color-accent);">
                 <i class="bi bi-code-slash me-2"></i>Aufan
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -72,20 +117,21 @@
         </div>
     </nav>
 
-    <header id="blog-header" class="blog-header text-center pt-md-5 pt-4 pb-md-5 pb-4">
-        <div class="container px-3 px-md-5">
-            <span id="blog-badge" class="badge rounded-pill badge-neon mb-3">Loading...</span>
-            <h1 id="blog-title" class="display-3 fw-bold text-white mb-2 mb-md-3">Memuat Judul...</h1>
-            <p id="blog-date" class="text-secondary fs-6 fs-md-5"></p>
-            <div id="blog-links" class="mt-3 mt-md-4"></div>
+    <header id="blog-header" class="blog-header text-center" style="padding-top: 120px; padding-bottom: 40px;">
+        <div class="container-fluid px-4 px-md-5">
+            <span id="blog-badge" class="badge rounded-pill badge-neon mb-2 mb-md-3">Loading...</span>
+            <h1 id="blog-title" class="display-4 fw-bold text-white mb-2 mb-md-3" style="word-wrap: break-word;">Memuat
+                Judul...</h1>
+            <p id="blog-date" class="text-secondary"></p>
+            <div id="blog-links" class="mt-2 mt-md-3"></div>
         </div>
     </header>
 
-    <section class="py-4 py-md-5">
-        <div class="container px-3 px-md-5">
+    <section class="py-3 py-md-5">
+        <div class="container-fluid px-3 px-sm-4 px-md-5">
             <div class="row justify-content-center">
-                <div class="col-12 col-md-10 col-lg-8">
-                    <div id="blog-content" class="content-section p-3 p-md-5">
+                <div class="col-12 col-sm-11 col-md-10 col-lg-8">
+                    <div id="blog-content" class="content-section p-4 p-sm-4 p-md-5">
                         <div class="text-center py-5">
                             <div class="spinner-border text-success" role="status"></div>
                         </div>
