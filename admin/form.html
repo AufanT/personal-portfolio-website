@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,16 +22,16 @@
         }
 
         .section-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 20px;
         }
 
         .step-item {
-            background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(17,207,61,0.05));
-            border: 1.5px solid rgba(17,207,61,0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(17, 207, 61, 0.05));
+            border: 1.5px solid rgba(17, 207, 61, 0.2);
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 25px;
@@ -38,8 +39,8 @@
         }
 
         .step-item:hover {
-            border-color: rgba(17,207,61,0.4);
-            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(17,207,61,0.08));
+            border-color: rgba(17, 207, 61, 0.4);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(17, 207, 61, 0.08));
         }
 
         .step-number {
@@ -65,11 +66,11 @@
             margin-bottom: 20px;
             margin-top: 5px;
             padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .step-section {
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 20px;
@@ -90,7 +91,7 @@
             object-fit: cover;
             border-radius: 10px;
             margin-top: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             display: none;
         }
 
@@ -110,7 +111,7 @@
         .btn-upload:hover {
             background: var(--color-accent);
             color: var(--color-bg-main);
-            box-shadow: 0 0 12px rgba(17,207,61,0.3);
+            box-shadow: 0 0 12px rgba(17, 207, 61, 0.3);
         }
 
         .btn-remove-step {
@@ -146,17 +147,17 @@
         }
 
         .custom-input {
-            background: rgba(0,0,0,0.4) !important;
-            border: 1px solid rgba(255,255,255,0.1) !important;
+            background: rgba(0, 0, 0, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
             color: white !important;
             font-size: 0.95rem;
             transition: all 0.2s;
         }
 
         .custom-input:focus {
-            background: rgba(0,0,0,0.6) !important;
+            background: rgba(0, 0, 0, 0.6) !important;
             border-color: var(--color-accent) !important;
-            box-shadow: 0 0 8px rgba(17,207,61,0.2) !important;
+            box-shadow: 0 0 8px rgba(17, 207, 61, 0.2) !important;
             color: white !important;
         }
 
@@ -167,7 +168,7 @@
         }
 
         .btn-add-step {
-            background: rgba(17,207,61,0.2);
+            background: rgba(17, 207, 61, 0.2);
             border: 1.5px solid var(--color-accent);
             color: var(--color-accent);
             border-radius: 10px;
@@ -182,7 +183,7 @@
             background: var(--color-accent);
             color: var(--color-bg-main);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(17,207,61,0.3);
+            box-shadow: 0 4px 12px rgba(17, 207, 61, 0.3);
         }
 
         .upload-input-group {
@@ -229,8 +230,13 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .spin {
@@ -245,6 +251,7 @@
         }
     </style>
 </head>
+
 <body class="bg-dark text-white">
     <!-- Sticky Save Button -->
     <button type="submit" form="blogForm" class="btn btn-primary rounded-pill fw-bold sticky-save">
@@ -275,22 +282,26 @@
 
                         <div class="mb-3">
                             <label class="form-label">Judul Artikel</label>
-                            <input type="text" id="title" class="form-control custom-input" placeholder="Judul laporan praktikum..." required>
+                            <input type="text" id="title" class="form-control custom-input"
+                                placeholder="Judul laporan praktikum..." required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Deskripsi Singkat</label>
-                            <textarea id="description" class="form-control custom-input" rows="3" placeholder="Ringkasan singkat tentang praktikum ini..."></textarea>
+                            <textarea id="description" class="form-control custom-input" rows="3"
+                                placeholder="Ringkasan singkat tentang praktikum ini..."></textarea>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Subjek / Matkul</label>
-                                <input type="text" id="subject" class="form-control custom-input" value="Praktikum" placeholder="Nama mata kuliah...">
+                                <input type="text" id="subject" class="form-control custom-input" value="Praktikum"
+                                    placeholder="Nama mata kuliah...">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Link GitHub (Opsional)</label>
-                                <input type="url" id="github_url" class="form-control custom-input" placeholder="https://github.com/...">
+                                <input type="url" id="github_url" class="form-control custom-input"
+                                    placeholder="https://github.com/...">
                             </div>
                         </div>
                     </div>
@@ -327,7 +338,8 @@
                         <div class="mb-4">
                             <label class="form-label">Cover Image</label>
                             <div class="upload-input-group">
-                                <input type="text" id="cover_url" class="form-control custom-input" placeholder="URL gambar akan muncul..." readonly>
+                                <input type="text" id="cover_url" class="form-control custom-input"
+                                    placeholder="URL gambar akan muncul..." readonly>
                                 <button type="button" id="uploadCoverBtn" class="btn-upload">
                                     <i class="bi bi-cloud-upload"></i> Upload
                                 </button>
@@ -339,7 +351,8 @@
                         </div>
 
                         <!-- Publication Status -->
-                        <div class="form-check form-switch p-3" style="background: rgba(255,255,255,0.03); border-radius: 10px;">
+                        <div class="form-check form-switch p-3"
+                            style="background: rgba(255,255,255,0.03); border-radius: 10px;">
                             <input class="form-check-input" type="checkbox" id="is_published">
                             <label class="form-check-label" for="is_published">
                                 <i class="bi bi-globe me-2"></i> Publikasikan Artikel
@@ -405,8 +418,8 @@
 
         // ===== Cover Image Upload =====
         const coverUrlInput = document.getElementById('cover_url');
-        const coverPreview  = document.getElementById('cover-preview');
-        const coverSpinner  = document.getElementById('coverSpinner');
+        const coverPreview = document.getElementById('cover-preview');
+        const coverSpinner = document.getElementById('coverSpinner');
 
         document.getElementById('uploadCoverBtn').addEventListener('click', () => {
             openCloudinaryWidget((url) => {
@@ -427,10 +440,10 @@
 
         // ===== Steps (Langkah-langkah) =====
         const stepsContainer = document.getElementById('steps-container');
-        const addStepBtn     = document.getElementById('addStep');
-        const blogForm       = document.getElementById('blogForm');
-        const params         = new URLSearchParams(window.location.search);
-        const blogId         = params.get('id');
+        const addStepBtn = document.getElementById('addStep');
+        const blogForm = document.getElementById('blogForm');
+        const params = new URLSearchParams(window.location.search);
+        const blogId = params.get('id');
 
         function createStepHtml(title = '', text = '', imageUrl = '') {
             const div = document.createElement('div');
@@ -466,9 +479,9 @@
 
             // Tombol upload gambar step
             div.querySelector('.upload-step-img').addEventListener('click', () => {
-                const imgInput   = div.querySelector('.step-image');
+                const imgInput = div.querySelector('.step-image');
                 const imgPreview = div.querySelector('.step-img-preview');
-                const spinner    = div.querySelector('.step-spinner');
+                const spinner = div.querySelector('.step-spinner');
 
                 openCloudinaryWidget((url) => {
                     imgInput.value = url;
@@ -493,14 +506,14 @@
                 .from('blogs').select('*').eq('id', blogId).single();
             if (error) return alert(error.message);
 
-            document.getElementById('title').value       = data.title || '';
+            document.getElementById('title').value = data.title || '';
             document.getElementById('description').value = data.description || '';
-            document.getElementById('subject').value     = data.subject || 'Praktikum';
-            document.getElementById('github_url').value  = data.github_url || '';
+            document.getElementById('subject').value = data.subject || 'Praktikum';
+            document.getElementById('github_url').value = data.github_url || '';
             document.getElementById('is_published').checked = data.is_published || false;
 
-    <!-- Cloudinary Upload Widget -->
-    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+            <!-- Cloudinary Upload Widget -->
+            <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
     <script src="../js/supabase.js?v=3"></script>
     <script src="../js/supabase-config.js?v=3"></script>
     <script>
@@ -509,44 +522,44 @@
 
         function openCloudinaryWidget(callback, spinnerEl) {
             const widget = cloudinary.createUploadWidget({
-                cloudName: CLOUDINARY_CLOUD_NAME,
-                uploadPreset: CLOUDINARY_UPLOAD_PRESET,
-                sources: ['local', 'url', 'camera'],
-                multiple: false,
-                maxFileSize: 5000000,
-                clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-                styles: {
-                    palette: {
-                        window: '#1a1a2e',
-                        windowBorder: '#11cf3d',
-                        tabIcon: '#11cf3d',
-                        menuIcons: '#ccc',
-                        textDark: '#ffffff',
-                        textLight: '#f0f0f0',
-                        link: '#11cf3d',
-                        action: '#11cf3d',
-                        inactiveTabIcon: '#aaa',
-                        error: '#ff6b6b',
-                        inProgress: '#11cf3d',
-                        complete: '#11cf3d',
-                        sourceBg: '#0d0d1a'
+            cloudName: CLOUDINARY_CLOUD_NAME,
+        uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+        sources: ['local', 'url', 'camera'],
+        multiple: false,
+        maxFileSize: 5000000,
+        clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+        styles: {
+            palette: {
+            window: '#1a1a2e',
+        windowBorder: '#11cf3d',
+        tabIcon: '#11cf3d',
+        menuIcons: '#ccc',
+        textDark: '#ffffff',
+        textLight: '#f0f0f0',
+        link: '#11cf3d',
+        action: '#11cf3d',
+        inactiveTabIcon: '#aaa',
+        error: '#ff6b6b',
+        inProgress: '#11cf3d',
+        complete: '#11cf3d',
+        sourceBg: '#0d0d1a'
                     }
                 }
             }, (error, result) => {
                 if (error) {
-                    console.error('Upload error:', error);
-                    if (spinnerEl) spinnerEl.style.display = 'none';
-                    return;
+            console.error('Upload error:', error);
+        if (spinnerEl) spinnerEl.style.display = 'none';
+        return;
                 }
-                if (result.event === 'upload-added' && spinnerEl) {
-                    spinnerEl.style.display = 'inline';
+        if (result.event === 'upload-added' && spinnerEl) {
+            spinnerEl.style.display = 'inline';
                 }
-                if (result.event === 'success') {
+        if (result.event === 'success') {
                     if (spinnerEl) spinnerEl.style.display = 'none';
-                    callback(result.info.secure_url);
+        callback(result.info.secure_url);
                 }
             });
-            widget.open();
+        widget.open();
         }
 
         const coverUrlInput = document.getElementById('cover_url');
@@ -563,9 +576,9 @@
 
         function showCoverPreview(url) {
             if (url) {
-                coverUrlInput.value = url;
-                coverPreview.src = url;
-                coverPreview.style.display = 'block';
+            coverUrlInput.value = url;
+        coverPreview.src = url;
+        coverPreview.style.display = 'block';
             }
         }
 
@@ -576,32 +589,32 @@
         const blogId = params.get('id');
         let stepCount = 0;
 
-        function createSubtitleHtml(subtitleData = {}) {
-            const { title = '', text = '', images = [] } = subtitleData;
-            const subtitleId = Math.random().toString(36).substr(2, 9);
-            
-            return `
-                <div class="step-section" style="background: rgba(255,255,255,0.08); border-left: 3px solid var(--color-accent);">
+        function createSubtitleHtml(subtitleData = { }) {
+            const {title = '', text = '', images = []} = subtitleData;
+        const subtitleId = Math.random().toString(36).substr(2, 9);
+
+        return `
+        <div class="step-section" style="background: rgba(255,255,255,0.08); border-left: 3px solid var(--color-accent);">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 style="margin: 0;"><i class="bi bi-dash me-1"></i>Sub Judul</h6>
+                <button type="button" class="btn-remove-step remove-subtitle" style="padding: 4px 8px; font-size: 0.7rem;">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+            <input type="text" class="form-control custom-input mb-2 subtitle-title"
+                placeholder="Judul sub-langkah..." value="${title}">
+                <textarea class="form-control custom-input mb-2 subtitle-text" rows="2"
+                    placeholder="Penjelasan sub-langkah...">${text}</textarea>
+
+                <div class="mb-2">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 style="margin: 0;"><i class="bi bi-dash me-1"></i>Sub Judul</h6>
-                        <button type="button" class="btn-remove-step remove-subtitle" style="padding: 4px 8px; font-size: 0.7rem;">
-                            <i class="bi bi-trash"></i>
+                        <small style="color: var(--color-accent); font-weight: 600;">Gambar Sub Judul</small>
+                        <button type="button" class="btn-upload btn-add-subtitle-img" style="padding: 4px 8px; font-size: 0.8rem;">
+                            <i class="bi bi-plus-circle me-1"></i> Tambah Gambar
                         </button>
                     </div>
-                    <input type="text" class="form-control custom-input mb-2 subtitle-title"
-                        placeholder="Judul sub-langkah..." value="${title}">
-                    <textarea class="form-control custom-input mb-2 subtitle-text" rows="2"
-                        placeholder="Penjelasan sub-langkah...">${text}</textarea>
-                    
-                    <div class="mb-2">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <small style="color: var(--color-accent); font-weight: 600;">Gambar Sub Judul</small>
-                            <button type="button" class="btn-upload btn-add-subtitle-img" style="padding: 4px 8px; font-size: 0.8rem;">
-                                <i class="bi bi-plus-circle me-1"></i> Tambah Gambar
-                            </button>
-                        </div>
-                        <div class="subtitle-images-container" data-subtitle-id="${subtitleId}">
-                            ${images.map((img, idx) => `
+                    <div class="subtitle-images-container" data-subtitle-id="${subtitleId}">
+                        ${images.map((img, idx) => `
                                 <div class="subtitle-img-item mb-2" style="display: flex; gap: 8px; align-items: flex-start;">
                                     <input type="text" class="form-control custom-input subtitle-image-url" value="${img}" readonly style="flex: 1; font-size: 0.85rem;">
                                     <button type="button" class="btn-remove-step remove-subtitle-img" style="padding: 6px 10px;">
@@ -610,10 +623,10 @@
                                 </div>
                                 <img src="${img}" class="img-preview" style="display:block; margin-bottom: 10px;" alt="preview">
                             `).join('')}
-                        </div>
                     </div>
                 </div>
-            `;
+        </div>
+        `;
         }
 
         function attachSubtitleEvents(stepDiv, subtitleDiv) {
@@ -625,23 +638,23 @@
                 const subtitleId = subtitleDiv.querySelector('.subtitle-images-container').dataset.subtitleId;
                 openCloudinaryWidget((url) => {
                     const container = subtitleDiv.querySelector('.subtitle-images-container');
-                    const newImgHtml = `
-                        <div class="subtitle-img-item mb-2" style="display: flex; gap: 8px; align-items: flex-start;">
-                            <input type="text" class="form-control custom-input subtitle-image-url" value="${url}" readonly style="flex: 1; font-size: 0.85rem;">
-                            <button type="button" class="btn-remove-step remove-subtitle-img" style="padding: 6px 10px;">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                        <img src="${url}" class="img-preview" style="display:block; margin-bottom: 10px;" alt="preview">
-                    `;
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = newImgHtml;
-                    container.appendChild(tempDiv.firstElementChild);
-                    container.appendChild(tempDiv.lastElementChild);
+        const newImgHtml = `
+        <div class="subtitle-img-item mb-2" style="display: flex; gap: 8px; align-items: flex-start;">
+            <input type="text" class="form-control custom-input subtitle-image-url" value="${url}" readonly style="flex: 1; font-size: 0.85rem;">
+                <button type="button" class="btn-remove-step remove-subtitle-img" style="padding: 6px 10px;">
+                    <i class="bi bi-trash"></i>
+                </button>
+        </div>
+        <img src="${url}" class="img-preview" style="display:block; margin-bottom: 10px;" alt="preview">
+            `;
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = newImgHtml;
+            container.appendChild(tempDiv.firstElementChild);
+            container.appendChild(tempDiv.lastElementChild);
                     
                     tempDiv.querySelector('.remove-subtitle-img').addEventListener('click', (e) => {
-                        e.target.closest('.subtitle-img-item').remove();
-                        container.querySelector('.img-preview')?.remove();
+                e.target.closest('.subtitle-img-item').remove();
+            container.querySelector('.img-preview')?.remove();
                     });
                 }, null);
             });
@@ -658,8 +671,8 @@
             });
         }
 
-        function createStepHtml(stepData = {}) {
-            stepCount++;
+            function createStepHtml(stepData = { }) {
+                stepCount++;
             const currentStepCount = stepCount;
             const {
                 title = '',
@@ -671,74 +684,74 @@
             const div = document.createElement('div');
             div.className = 'step-item';
             div.innerHTML = `
-                <div class="step-number">${currentStepCount}</div>
+            <div class="step-number">${currentStepCount}</div>
 
-                <div class="step-header">
-                    <span class="text-secondary small">Langkah ${currentStepCount}</span>
-                    <button type="button" class="btn-remove-step remove-step">
-                        <i class="bi bi-trash me-1"></i> Hapus
-                    </button>
-                </div>
+            <div class="step-header">
+                <span class="text-secondary small">Langkah ${currentStepCount}</span>
+                <button type="button" class="btn-remove-step remove-step">
+                    <i class="bi bi-trash me-1"></i> Hapus
+                </button>
+            </div>
 
-                <div class="step-section">
-                    <h6>Judul Utama</h6>
-                    <input type="text" class="form-control custom-input mb-2 step-title"
-                        placeholder="Judul besar langkah ini..." value="${title}" required>
-                </div>
+            <div class="step-section">
+                <h6>Judul Utama</h6>
+                <input type="text" class="form-control custom-input mb-2 step-title"
+                    placeholder="Judul besar langkah ini..." value="${title}" required>
+            </div>
 
-                <div class="step-section">
-                    <h6>Penjelasan</h6>
-                    <textarea class="form-control custom-input step-text" rows="4"
-                        placeholder="Jelaskan langkah ini secara detail..." required>${text}</textarea>
-                </div>
+            <div class="step-section">
+                <h6>Penjelasan</h6>
+                <textarea class="form-control custom-input step-text" rows="4"
+                    placeholder="Jelaskan langkah ini secara detail..." required>${text}</textarea>
+            </div>
 
-                <div class="step-section">
-                    <h6>Gambar Utama (Opsional)</h6>
-                    <div class="upload-input-group">
-                        <input type="text" class="form-control custom-input step-image"
-                            placeholder="URL gambar..." value="${image_url}" readonly>
+            <div class="step-section">
+                <h6>Gambar Utama (Opsional)</h6>
+                <div class="upload-input-group">
+                    <input type="text" class="form-control custom-input step-image"
+                        placeholder="URL gambar..." value="${image_url}" readonly>
                         <button type="button" class="btn-upload upload-step-img">
                             <i class="bi bi-cloud-upload"></i> Upload
                         </button>
-                    </div>
-                    <span class="uploading-spinner step-spinner">
-                        <i class="bi bi-arrow-repeat spin"></i> Mengupload...
-                    </span>
-                    ${image_url ? `<img src="${image_url}" class="step-img-preview img-preview" style="display:block;" alt="preview">` : '<img class="step-img-preview img-preview" alt="preview">'}
                 </div>
+                <span class="uploading-spinner step-spinner">
+                    <i class="bi bi-arrow-repeat spin"></i> Mengupload...
+                </span>
+                ${image_url ? `<img src="${image_url}" class="step-img-preview img-preview" style="display:block;" alt="preview">` : '<img class="step-img-preview img-preview" alt="preview">'}
+            </div>
 
-                <div style="border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 20px; margin-top: 20px;">
-                    <div class="subtitles-container"></div>
-                    
-                    <div class="add-step-btn-container" style="margin-top: 15px;">
-                        <button type="button" class="btn-add-step add-subtitle-btn" style="width: auto;">
-                            <i class="bi bi-plus-circle me-2"></i> Tambah Sub Judul
-                        </button>
-                    </div>
-                </div>
+            <div style="border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 20px; margin-top: 20px;">
+                <div class="subtitles-container"></div>
 
-                <div class="add-step-btn-container mt-4">
-                    <button type="button" class="btn-add-step add-next-step" style="width: auto;">
-                        <i class="bi bi-plus-circle me-2"></i> Tambah Langkah Setelah Ini
+                <div class="add-step-btn-container" style="margin-top: 15px;">
+                    <button type="button" class="btn-add-step add-subtitle-btn" style="width: auto;">
+                        <i class="bi bi-plus-circle me-2"></i> Tambah Sub Judul
                     </button>
                 </div>
+            </div>
+
+            <div class="add-step-btn-container mt-4">
+                <button type="button" class="btn-add-step add-next-step" style="width: auto;">
+                    <i class="bi bi-plus-circle me-2"></i> Tambah Langkah Setelah Ini
+                </button>
+            </div>
             `;
 
             // Remove step
             div.querySelector('.remove-step').addEventListener('click', () => {
                 div.remove();
-                updateStepNumbers();
+            updateStepNumbers();
             });
 
             // Upload main image
             div.querySelector('.upload-step-img').addEventListener('click', () => {
                 const imgInput = div.querySelector('.step-image');
-                const imgPreview = div.querySelector('.step-img-preview');
-                const spinner = div.querySelector('.step-spinner');
+            const imgPreview = div.querySelector('.step-img-preview');
+            const spinner = div.querySelector('.step-spinner');
                 openCloudinaryWidget((url) => {
-                    imgInput.value = url;
-                    imgPreview.src = url;
-                    imgPreview.style.display = 'block';
+                imgInput.value = url;
+            imgPreview.src = url;
+            imgPreview.style.display = 'block';
                 }, spinner);
             });
 
@@ -746,37 +759,37 @@
             const subtitlesContainer = div.querySelector('.subtitles-container');
             div.querySelector('.add-subtitle-btn').addEventListener('click', () => {
                 const subtitleDiv = document.createElement('div');
-                subtitleDiv.innerHTML = createSubtitleHtml();
-                subtitlesContainer.appendChild(subtitleDiv.firstElementChild);
-                attachSubtitleEvents(div, subtitlesContainer.lastElementChild);
+            subtitleDiv.innerHTML = createSubtitleHtml();
+            subtitlesContainer.appendChild(subtitleDiv.firstElementChild);
+            attachSubtitleEvents(div, subtitlesContainer.lastElementChild);
             });
 
             // Add existing subtitles
             subtitles.forEach(subtitleData => {
                 const subtitleDiv = document.createElement('div');
-                subtitleDiv.innerHTML = createSubtitleHtml(subtitleData);
-                subtitlesContainer.appendChild(subtitleDiv.firstElementChild);
-                attachSubtitleEvents(div, subtitlesContainer.lastElementChild);
+            subtitleDiv.innerHTML = createSubtitleHtml(subtitleData);
+            subtitlesContainer.appendChild(subtitleDiv.firstElementChild);
+            attachSubtitleEvents(div, subtitlesContainer.lastElementChild);
             });
 
             // Add next step
             div.querySelector('.add-next-step').addEventListener('click', () => {
                 const nextIndex = Array.from(stepsContainer.children).indexOf(div);
-                const newDiv = createStepHtml();
+            const newDiv = createStepHtml();
                 if (nextIndex >= 0 && nextIndex < stepsContainer.children.length - 1) {
-                    stepsContainer.insertBefore(newDiv, stepsContainer.children[nextIndex + 1]);
+                stepsContainer.insertBefore(newDiv, stepsContainer.children[nextIndex + 1]);
                 }
-                updateStepNumbers();
+            updateStepNumbers();
             });
 
             return div;
         }
 
-        function updateStepNumbers() {
+            function updateStepNumbers() {
             const steps = document.querySelectorAll('.step-item');
             steps.forEach((step, index) => {
                 step.querySelector('.step-number').textContent = index + 1;
-                step.querySelector('.step-header span').textContent = `Langkah ${index + 1}`;
+            step.querySelector('.step-header span').textContent = `Langkah ${index + 1}`;
             });
         }
 
@@ -871,4 +884,5 @@
         checkAuth().then(loadExistingData);
     </script>
 </body>
+
 </html>

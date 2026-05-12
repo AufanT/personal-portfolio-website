@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const blogCard = `
                 <div class="col-md-4">
-                    <div class="card blog-card h-100 shadow-sm">
+                    <div class="card blog-card h-100 shadow-sm" onclick="window.location.href='blog-detail.html?id=${blog.id}'" style="text-decoration: none;">
                         <div class="blog-img-wrapper">
                             <img src="${blog.cover_url || 'images/onprogress.png'}" alt="${blog.title}" onerror="this.src='images/onprogress.png'">
                         </div>
@@ -46,8 +46,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <small class="text-secondary">${date}</small>
                             </div>
                             <h5 class="card-title text-white fw-bold">${blog.title}</h5>
-                            <p class="card-text text-secondary small">${blog.description || ''}</p>
-                            <a href="blog-detail.html?id=${blog.id}" class="btn btn-sm btn-outline-success rounded-pill mt-3">Baca Selengkapnya</a>
+                            <p class="card-text text-secondary small blog-card-description">${blog.description || ''}</p>
+                            <a href="blog-detail.html?id=${blog.id}" class="btn btn-sm btn-outline-success rounded-pill" onclick="event.stopPropagation();">Baca Selengkapnya</a>
                         </div>
                     </div>
                 </div>
