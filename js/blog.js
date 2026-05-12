@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const blogCard = `
                 <div class="col-md-4">
-                    <div class="card blog-card h-100 shadow-sm" data-blog-id="${blog.id}">
+                    <div class="card blog-card h-100 shadow-sm" data-blog-id="${blog.id}" style="cursor: pointer;">
                         <div class="blog-img-wrapper">
                             <img src="${blog.cover_url || 'images/onprogress.png'}" alt="${blog.title}" onerror="this.src='images/onprogress.png'">
                         </div>
@@ -55,13 +55,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             blogContainer.innerHTML += blogCard;
         });
 
-        // Add click event to all blog cards
-        document.querySelectorAll('.blog-card').forEach(card => {
-            card.addEventListener('click', function(e) {
-                if (e.target.closest('.btn')) return;
-                const blogId = this.dataset.blogId;
+        // Event delegation on container
+        blogContainer.addEventListener('click', function(e) {
+            const card = e.target.closest('.blog-card');
+            if (!card) return;
+            
+            // Don't navigate if clicking the button
+            if (e.target.closest('.btn')) return;
+            
+            const blogId = card.dataset.blogId;
+            if (blogId) {
                 window.location.href = `blog-detail.html?id=${blogId}`;
-            });
+            }
         });
 
     } catch (error) {
