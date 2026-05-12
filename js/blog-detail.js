@@ -71,13 +71,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (steps && Array.isArray(steps) && steps.length > 0) {
             steps.forEach((step, index) => {
                 const stepHtml = `
-                    <div class="step-card">
-                        <h3 class="h4 text-white mb-3">
+                    <div class="step-card p-3 p-md-4 mb-3 mb-md-4">
+                        <h3 class="h5 h4-md text-white mb-2 mb-md-3">
                             <span class="badge me-2" style="background-color: var(--color-accent); color: #000;">${index + 1}</span>
                             ${step.title || '(Tanpa Judul)'}
                         </h3>
-                        <div class="text-secondary" style="white-space: pre-wrap; line-height: 1.8;">${step.text || ''}</div>
-                        ${step.image_url ? `<img src="${step.image_url}" class="step-img mt-3" alt="Langkah ${index + 1}" onerror="this.style.display='none'">` : ''}
+                        <p class="text-secondary fs-6 fs-md-5" style="white-space: pre-wrap; line-height: 1.8;">${step.text || ''}</p>
+                        ${step.image_url ? `<img src="${step.image_url}" class="step-img mt-2 mt-md-3" alt="Langkah ${index + 1}" onerror="this.style.display='none'">` : ''}
                     </div>
                 `;
                 contentEl.innerHTML += stepHtml;

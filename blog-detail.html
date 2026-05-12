@@ -14,8 +14,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         .blog-header {
-            padding-top: 150px;
-            padding-bottom: 50px;
             background: linear-gradient(rgba(1, 15, 28, 0.9), rgba(1, 15, 28, 1));
             background-size: cover;
             background-position: center;
@@ -23,26 +21,21 @@
         .content-section {
             background: var(--bg-glass);
             border-radius: 20px;
-            padding: 40px;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .step-card {
             border-left: 4px solid var(--color-accent);
             background: rgba(255, 255, 255, 0.02);
-            padding: 20px;
-            margin-bottom: 30px;
             border-radius: 0 12px 12px 0;
         }
         .step-img {
             max-width: 100%;
             border-radius: 12px;
-            margin-top: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         pre {
             background: #000;
             color: var(--color-accent);
-            padding: 15px;
             border-radius: 8px;
             overflow-x: auto;
         }
@@ -79,20 +72,20 @@
         </div>
     </nav>
 
-    <header id="blog-header" class="blog-header text-center">
-        <div class="container">
+    <header id="blog-header" class="blog-header text-center pt-md-5 pt-4 pb-md-5 pb-4">
+        <div class="container px-3 px-md-5">
             <span id="blog-badge" class="badge rounded-pill badge-neon mb-3">Loading...</span>
-            <h1 id="blog-title" class="display-3 fw-bold text-white mb-3">Memuat Judul...</h1>
-            <p id="blog-date" class="text-secondary"></p>
-            <div id="blog-links" class="mt-4"></div>
+            <h1 id="blog-title" class="display-3 fw-bold text-white mb-2 mb-md-3">Memuat Judul...</h1>
+            <p id="blog-date" class="text-secondary fs-6 fs-md-5"></p>
+            <div id="blog-links" class="mt-3 mt-md-4"></div>
         </div>
     </header>
 
-    <section class="py-5">
-        <div class="container">
+    <section class="py-4 py-md-5">
+        <div class="container px-3 px-md-5">
             <div class="row justify-content-center">
-                <div class="col-lg-10">
-                    <div id="blog-content" class="content-section">
+                <div class="col-12 col-md-10 col-lg-8">
+                    <div id="blog-content" class="content-section p-3 p-md-5">
                         <div class="text-center py-5">
                             <div class="spinner-border text-success" role="status"></div>
                         </div>
