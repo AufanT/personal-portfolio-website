@@ -8,122 +8,342 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../css/styles.css">
     <style>
-        .step-item {
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
+        body {
+            padding-top: 80px;
         }
+
+        .sticky-save {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999;
+            box-shadow: 0 4px 15px rgba(17, 207, 61, 0.3);
+        }
+
+        .section-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .step-item {
+            background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(17,207,61,0.05));
+            border: 1.5px solid rgba(17,207,61,0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .step-item:hover {
+            border-color: rgba(17,207,61,0.4);
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(17,207,61,0.08));
+        }
+
+        .step-number {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--color-accent);
+            color: var(--color-bg-main);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-top: 5px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .step-section {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .step-section h6 {
+            color: var(--color-accent);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         .img-preview {
             width: 100%;
-            height: 120px;
+            max-height: 150px;
             object-fit: cover;
             border-radius: 10px;
-            margin-top: 8px;
+            margin-top: 10px;
             border: 1px solid rgba(255,255,255,0.1);
             display: none;
         }
-        .step-img-preview {
-            width: 100%;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-top: 6px;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: none;
-        }
+
         .btn-upload {
-            background: rgba(17, 207, 61, 0.1);
+            background: rgba(17, 207, 61, 0.15);
             border: 1px solid var(--color-accent);
             color: var(--color-accent);
             border-radius: 8px;
-            padding: 6px 12px;
+            padding: 8px 14px;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s;
             white-space: nowrap;
+            font-weight: 500;
         }
+
         .btn-upload:hover {
-            background: rgba(17, 207, 61, 0.25);
+            background: var(--color-accent);
+            color: var(--color-bg-main);
+            box-shadow: 0 0 12px rgba(17,207,61,0.3);
         }
+
+        .btn-remove-step {
+            background: rgba(255, 77, 77, 0.15);
+            border: 1px solid #ff4d4d;
+            color: #ff4d4d;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-remove-step:hover {
+            background: #ff4d4d;
+            color: white;
+        }
+
         .uploading-spinner {
             display: none;
             color: var(--color-accent);
             font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #b0b0b0;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 8px;
+        }
+
+        .custom-input {
+            background: rgba(0,0,0,0.4) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            color: white !important;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .custom-input:focus {
+            background: rgba(0,0,0,0.6) !important;
+            border-color: var(--color-accent) !important;
+            box-shadow: 0 0 8px rgba(17,207,61,0.2) !important;
+            color: white !important;
+        }
+
+        .add-step-btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .btn-add-step {
+            background: rgba(17,207,61,0.2);
+            border: 1.5px solid var(--color-accent);
+            color: var(--color-accent);
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .btn-add-step:hover {
+            background: var(--color-accent);
+            color: var(--color-bg-main);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(17,207,61,0.3);
+        }
+
+        .upload-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .upload-input-group input {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 60px;
+            }
+
+            .sticky-save {
+                top: 10px;
+                right: 10px;
+                width: 100px;
+            }
+
+            .sticky-save .btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+
+            .section-card {
+                padding: 15px;
+            }
+
+            .step-item {
+                padding: 15px;
+            }
+
+            .upload-input-group {
+                flex-direction: column;
+            }
+
+            .upload-input-group button {
+                width: 100%;
+            }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        .navbar-back {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
         }
     </style>
 </head>
 <body class="bg-dark text-white">
-    <div class="container py-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2><a href="dashboard.html" class="text-white text-decoration-none"><i class="bi bi-arrow-left me-2"></i></a> Form Blog</h2>
-            <button type="submit" form="blogForm" class="btn btn-primary px-5 rounded-pill fw-bold">Simpan Blog</button>
+    <!-- Sticky Save Button -->
+    <button type="submit" form="blogForm" class="btn btn-primary rounded-pill fw-bold sticky-save">
+        <i class="bi bi-save me-1"></i> Simpan
+    </button>
+
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="mb-4">
+            <h3 class="mb-0">
+                <a href="dashboard.html" class="text-white text-decoration-none navbar-back">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Form Blog Praktikum</span>
+                </a>
+            </h3>
         </div>
 
         <form id="blogForm">
             <div class="row g-4">
-                <!-- Kolom Kiri: Informasi Utama + Langkah -->
-                <div class="col-md-8">
-                    <div class="card bg-dark border-secondary p-4 mb-4">
-                        <h5 class="mb-3">Informasi Utama</h5>
+                <!-- Main Content -->
+                <div class="col-lg-8">
+                    <!-- Informasi Utama -->
+                    <div class="section-card">
+                        <h5 class="mb-4">
+                            <i class="bi bi-file-text me-2" style="color: var(--color-accent);"></i>
+                            Informasi Utama
+                        </h5>
+
                         <div class="mb-3">
-                            <label class="form-label small text-secondary">Judul Artikel</label>
-                            <input type="text" id="title" class="form-control custom-input" required>
+                            <label class="form-label">Judul Artikel</label>
+                            <input type="text" id="title" class="form-control custom-input" placeholder="Judul laporan praktikum..." required>
                         </div>
+
                         <div class="mb-3">
-                            <label class="form-label small text-secondary">Deskripsi Singkat</label>
-                            <textarea id="description" class="form-control custom-input" rows="2"></textarea>
+                            <label class="form-label">Deskripsi Singkat</label>
+                            <textarea id="description" class="form-control custom-input" rows="3" placeholder="Ringkasan singkat tentang praktikum ini..."></textarea>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label small text-secondary">Subjek / Matkul</label>
-                                <input type="text" id="subject" class="form-control custom-input" value="Praktikum">
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Subjek / Matkul</label>
+                                <input type="text" id="subject" class="form-control custom-input" value="Praktikum" placeholder="Nama mata kuliah...">
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label small text-secondary">Link GitHub</label>
-                                <input type="url" id="github_url" class="form-control custom-input">
+                            <div class="col-md-6">
+                                <label class="form-label">Link GitHub (Opsional)</label>
+                                <input type="url" id="github_url" class="form-control custom-input" placeholder="https://github.com/...">
                             </div>
                         </div>
                     </div>
 
-                    <div class="card bg-dark border-secondary p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0">Langkah-langkah Praktikum</h5>
-                            <button type="button" id="addStep" class="btn btn-sm btn-outline-success">
-                                <i class="bi bi-plus-circle me-1"></i> Tambah Langkah
-                            </button>
-                        </div>
+                    <!-- Langkah-langkah Praktikum -->
+                    <div class="section-card">
+                        <h5 class="mb-4">
+                            <i class="bi bi-list-check me-2" style="color: var(--color-accent);"></i>
+                            Langkah-langkah Praktikum
+                        </h5>
+
                         <div id="steps-container">
-                            <!-- Dynamic steps will go here -->
+                            <!-- Dynamic steps will be inserted here -->
+                        </div>
+
+                        <!-- Add Step Button -->
+                        <div class="add-step-btn-container">
+                            <button type="button" id="addStep" class="btn-add-step">
+                                <i class="bi bi-plus-circle me-2"></i> Tambah Langkah Baru
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Kolom Kanan: Media & Status -->
-                <div class="col-md-4">
-                    <div class="card bg-dark border-secondary p-4 mb-4">
-                        <h5 class="mb-3">Media & Status</h5>
+                <!-- Sidebar: Media & Status -->
+                <div class="col-lg-4">
+                    <div class="section-card sticky-top" style="top: 100px;">
+                        <h5 class="mb-4">
+                            <i class="bi bi-images me-2" style="color: var(--color-accent);"></i>
+                            Media & Status
+                        </h5>
 
-                        <!-- Cover Image Upload -->
-                        <div class="mb-3">
-                            <label class="form-label small text-secondary">Cover Image</label>
-                            <div class="d-flex gap-2 align-items-center">
-                                <input type="text" id="cover_url" class="form-control custom-input"
-                                    placeholder="URL akan muncul setelah upload..." readonly>
+                        <!-- Cover Image -->
+                        <div class="mb-4">
+                            <label class="form-label">Cover Image</label>
+                            <div class="upload-input-group">
+                                <input type="text" id="cover_url" class="form-control custom-input" placeholder="URL gambar akan muncul..." readonly>
                                 <button type="button" id="uploadCoverBtn" class="btn-upload">
-                                    <i class="bi bi-cloud-upload me-1"></i> Upload
+                                    <i class="bi bi-cloud-upload"></i> Upload
                                 </button>
                             </div>
                             <span class="uploading-spinner" id="coverSpinner">
-                                <i class="bi bi-arrow-repeat spin me-1"></i> Mengupload...
+                                <i class="bi bi-arrow-repeat spin"></i> Mengupload...
                             </span>
                             <img id="cover-preview" class="img-preview" alt="Cover Preview">
                         </div>
 
-                        <div class="form-check form-switch mb-3">
+                        <!-- Publication Status -->
+                        <div class="form-check form-switch p-3" style="background: rgba(255,255,255,0.03); border-radius: 10px;">
                             <input class="form-check-input" type="checkbox" id="is_published">
-                            <label class="form-check-label" for="is_published">Publikasikan artikel</label>
+                            <label class="form-check-label" for="is_published">
+                                <i class="bi bi-globe me-2"></i> Publikasikan Artikel
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -279,34 +499,280 @@
             document.getElementById('github_url').value  = data.github_url || '';
             document.getElementById('is_published').checked = data.is_published || false;
 
-            showCoverPreview(data.cover_url || '');
+    <!-- Cloudinary Upload Widget -->
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+    <script src="../js/supabase.js?v=3"></script>
+    <script src="../js/supabase-config.js?v=3"></script>
+    <script>
+        const CLOUDINARY_CLOUD_NAME = 'djzg0k2g9';
+        const CLOUDINARY_UPLOAD_PRESET = 'blog_uploads';
 
-            if (data.content && Array.isArray(data.content) && data.content.length > 0) {
-                data.content.forEach(step =>
-                    createStepHtml(step.title || '', step.text || '', step.image_url || ''));
-            } else {
-                createStepHtml();
+        function openCloudinaryWidget(callback, spinnerEl) {
+            const widget = cloudinary.createUploadWidget({
+                cloudName: CLOUDINARY_CLOUD_NAME,
+                uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+                sources: ['local', 'url', 'camera'],
+                multiple: false,
+                maxFileSize: 5000000,
+                clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+                styles: {
+                    palette: {
+                        window: '#1a1a2e',
+                        windowBorder: '#11cf3d',
+                        tabIcon: '#11cf3d',
+                        menuIcons: '#ccc',
+                        textDark: '#ffffff',
+                        textLight: '#f0f0f0',
+                        link: '#11cf3d',
+                        action: '#11cf3d',
+                        inactiveTabIcon: '#aaa',
+                        error: '#ff6b6b',
+                        inProgress: '#11cf3d',
+                        complete: '#11cf3d',
+                        sourceBg: '#0d0d1a'
+                    }
+                }
+            }, (error, result) => {
+                if (error) {
+                    console.error('Upload error:', error);
+                    if (spinnerEl) spinnerEl.style.display = 'none';
+                    return;
+                }
+                if (result.event === 'upload-added' && spinnerEl) {
+                    spinnerEl.style.display = 'inline';
+                }
+                if (result.event === 'success') {
+                    if (spinnerEl) spinnerEl.style.display = 'none';
+                    callback(result.info.secure_url);
+                }
+            });
+            widget.open();
+        }
+
+        const coverUrlInput = document.getElementById('cover_url');
+        const coverPreview = document.getElementById('cover-preview');
+        const coverSpinner = document.getElementById('coverSpinner');
+
+        document.getElementById('uploadCoverBtn').addEventListener('click', () => {
+            openCloudinaryWidget((url) => {
+                coverUrlInput.value = url;
+                coverPreview.src = url;
+                coverPreview.style.display = 'block';
+            }, coverSpinner);
+        });
+
+        function showCoverPreview(url) {
+            if (url) {
+                coverUrlInput.value = url;
+                coverPreview.src = url;
+                coverPreview.style.display = 'block';
             }
         }
 
-        // ===== Submit Form =====
+        const stepsContainer = document.getElementById('steps-container');
+        const addStepBtn = document.getElementById('addStep');
+        const blogForm = document.getElementById('blogForm');
+        const params = new URLSearchParams(window.location.search);
+        const blogId = params.get('id');
+        let stepCount = 0;
+
+        function createStepHtml(stepData = {}) {
+            stepCount++;
+            const currentStepCount = stepCount;
+            const {
+                title = '',
+                text = '',
+                image_url = '',
+                subtitle = '',
+                subtitle_text = '',
+                subtitle_image_url = ''
+            } = stepData;
+
+            const div = document.createElement('div');
+            div.className = 'step-item';
+            div.innerHTML = `
+                <div class="step-number">${currentStepCount}</div>
+
+                <div class="step-header">
+                    <span class="text-secondary small">Langkah ${currentStepCount}</span>
+                    <button type="button" class="btn-remove-step remove-step">
+                        <i class="bi bi-trash me-1"></i> Hapus
+                    </button>
+                </div>
+
+                <div class="step-section">
+                    <h6>Judul Utama</h6>
+                    <input type="text" class="form-control custom-input mb-2 step-title"
+                        placeholder="Judul besar langkah ini..." value="${title}" required>
+                </div>
+
+                <div class="step-section">
+                    <h6>Penjelasan</h6>
+                    <textarea class="form-control custom-input step-text" rows="4"
+                        placeholder="Jelaskan langkah ini secara detail..." required>${text}</textarea>
+                </div>
+
+                <div class="step-section">
+                    <h6>Gambar Utama (Opsional)</h6>
+                    <div class="upload-input-group">
+                        <input type="text" class="form-control custom-input step-image"
+                            placeholder="URL gambar..." value="${image_url}" readonly>
+                        <button type="button" class="btn-upload upload-step-img">
+                            <i class="bi bi-cloud-upload"></i> Upload
+                        </button>
+                    </div>
+                    <span class="uploading-spinner step-spinner">
+                        <i class="bi bi-arrow-repeat spin"></i> Mengupload...
+                    </span>
+                    ${image_url ? `<img src="${image_url}" class="step-img-preview img-preview" style="display:block;" alt="preview">` : '<img class="step-img-preview img-preview" alt="preview">'}
+                </div>
+
+                <div style="border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 20px; margin-top: 20px;">
+                    <div class="step-section">
+                        <h6><i class="bi bi-dash me-1"></i>Sub Judul (Opsional)</h6>
+                        <input type="text" class="form-control custom-input step-subtitle"
+                            placeholder="Judul sub-langkah..." value="${subtitle}">
+                    </div>
+
+                    <div class="step-section">
+                        <h6>Penjelasan Sub Judul</h6>
+                        <textarea class="form-control custom-input step-subtitle-text" rows="3"
+                            placeholder="Jelaskan poin sub-langkah ini...">${subtitle_text}</textarea>
+                    </div>
+
+                    <div class="step-section">
+                        <h6>Gambar Sub Judul (Opsional)</h6>
+                        <div class="upload-input-group">
+                            <input type="text" class="form-control custom-input step-subtitle-image"
+                                placeholder="URL gambar..." value="${subtitle_image_url}" readonly>
+                            <button type="button" class="btn-upload upload-step-subtitle-img">
+                                <i class="bi bi-cloud-upload"></i> Upload
+                            </button>
+                        </div>
+                        <span class="uploading-spinner step-subtitle-spinner">
+                            <i class="bi bi-arrow-repeat spin"></i> Mengupload...
+                        </span>
+                        ${subtitle_image_url ? `<img src="${subtitle_image_url}" class="step-subtitle-img-preview img-preview" style="display:block;" alt="preview">` : '<img class="step-subtitle-img-preview img-preview" alt="preview">'}
+                    </div>
+                </div>
+
+                <div class="add-step-btn-container mt-4">
+                    <button type="button" class="btn-add-step add-next-step" style="width: auto;">
+                        <i class="bi bi-plus-circle me-2"></i> Tambah Langkah Setelah Ini
+                    </button>
+                </div>
+            `;
+
+            div.querySelector('.remove-step').addEventListener('click', () => {
+                div.remove();
+                updateStepNumbers();
+            });
+
+            div.querySelector('.upload-step-img').addEventListener('click', () => {
+                const imgInput = div.querySelector('.step-image');
+                const imgPreview = div.querySelector('.step-img-preview');
+                const spinner = div.querySelector('.step-spinner');
+                openCloudinaryWidget((url) => {
+                    imgInput.value = url;
+                    imgPreview.src = url;
+                    imgPreview.style.display = 'block';
+                }, spinner);
+            });
+
+            div.querySelector('.upload-step-subtitle-img').addEventListener('click', () => {
+                const imgInput = div.querySelector('.step-subtitle-image');
+                const imgPreview = div.querySelector('.step-subtitle-img-preview');
+                const spinner = div.querySelector('.step-subtitle-spinner');
+                openCloudinaryWidget((url) => {
+                    imgInput.value = url;
+                    imgPreview.src = url;
+                    imgPreview.style.display = 'block';
+                }, spinner);
+            });
+
+            div.querySelector('.add-next-step').addEventListener('click', () => {
+                const nextIndex = Array.from(stepsContainer.children).indexOf(div);
+                const newDiv = createStepHtml();
+                if (nextIndex >= 0 && nextIndex < stepsContainer.children.length - 1) {
+                    stepsContainer.insertBefore(newDiv, stepsContainer.children[nextIndex + 1]);
+                }
+                updateStepNumbers();
+            });
+
+            return div;
+        }
+
+        function updateStepNumbers() {
+            const steps = document.querySelectorAll('.step-item');
+            steps.forEach((step, index) => {
+                step.querySelector('.step-number').textContent = index + 1;
+                step.querySelector('.step-header span').textContent = `Langkah ${index + 1}`;
+            });
+        }
+
+        addStepBtn.addEventListener('click', () => {
+            const newStep = createStepHtml();
+            stepsContainer.appendChild(newStep);
+            updateStepNumbers();
+        });
+
+        async function loadExistingData() {
+            if (!blogId) {
+                createStepHtml();
+                updateStepNumbers();
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('blogs').select('*').eq('id', blogId).single();
+            if (error) return alert(error.message);
+
+            document.getElementById('title').value = data.title || '';
+            document.getElementById('description').value = data.description || '';
+            document.getElementById('subject').value = data.subject || 'Praktikum';
+            document.getElementById('github_url').value = data.github_url || '';
+            document.getElementById('is_published').checked = data.is_published || false;
+
+            showCoverPreview(data.cover_url || '');
+
+            if (data.content && Array.isArray(data.content) && data.content.length > 0) {
+                data.content.forEach(step => {
+                    const newStep = createStepHtml({
+                        title: step.title || '',
+                        text: step.text || '',
+                        image_url: step.image_url || '',
+                        subtitle: step.subtitle || '',
+                        subtitle_text: step.subtitle_text || '',
+                        subtitle_image_url: step.subtitle_image_url || ''
+                    });
+                    stepsContainer.appendChild(newStep);
+                });
+            } else {
+                createStepHtml();
+            }
+            updateStepNumbers();
+        }
+
         blogForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const steps = Array.from(document.querySelectorAll('.step-item')).map(item => ({
-                title:     item.querySelector('.step-title').value,
-                text:      item.querySelector('.step-text').value,
-                image_url: item.querySelector('.step-image').value || null
+                title: item.querySelector('.step-title').value.trim(),
+                text: item.querySelector('.step-text').value.trim(),
+                image_url: item.querySelector('.step-image').value.trim() || null,
+                subtitle: item.querySelector('.step-subtitle').value.trim() || null,
+                subtitle_text: item.querySelector('.step-subtitle-text').value.trim() || null,
+                subtitle_image_url: item.querySelector('.step-subtitle-image').value.trim() || null
             }));
 
             const payload = {
-                title:        document.getElementById('title').value.trim(),
-                description:  document.getElementById('description').value.trim() || null,
-                subject:      document.getElementById('subject').value.trim() || 'Praktikum',
-                github_url:   document.getElementById('github_url').value.trim() || null,
-                cover_url:    coverUrlInput.value.trim() || null,
+                title: document.getElementById('title').value.trim(),
+                description: document.getElementById('description').value.trim() || null,
+                subject: document.getElementById('subject').value.trim() || 'Praktikum',
+                github_url: document.getElementById('github_url').value.trim() || null,
+                cover_url: coverUrlInput.value.trim() || null,
                 is_published: document.getElementById('is_published').checked,
-                content:      steps
+                content: steps
             };
 
             let result;
@@ -316,11 +782,13 @@
                 result = await supabaseClient.from('blogs').insert([payload]);
             }
 
-            if (result.error) alert(result.error.message);
-            else window.location.href = 'dashboard.html';
+            if (result.error) alert('Error: ' + result.error.message);
+            else {
+                alert('Blog berhasil disimpan!');
+                window.location.href = 'dashboard.html';
+            }
         });
 
-        // ===== Auth Check =====
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) window.location.href = 'index.html';
