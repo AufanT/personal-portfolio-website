@@ -28,6 +28,9 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
 
+      - name: 🗑️ Prune dev dependencies
+        run: npm prune --production
+
       - name: 🗑️ Remove dev files before deploy
         run: |
           rm -rf src/
@@ -53,3 +56,8 @@ jobs:
             **/.env*
             **/.eslintrc*
             **/eslint.config.*
+            **/node_modules/.bin/**
+            **/node_modules/**/test/**
+            **/node_modules/**/*.map
+            **/node_modules/**/*.ts
+            **/node_modules/**/*.md
