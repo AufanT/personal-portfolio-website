@@ -28,10 +28,16 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
 
-      - name: �️ Clean build artifacts
+      - name: 🗑️ Remove dev files before deploy
         run: |
-          rm -rf .next
-          rm -rf node_modules
+          rm -rf src/
+          rm -rf design/
+          rm -rf _backup_legacy/
+          rm -rf .github/
+          rm -rf .vscode/
+          rm -f check-db.js
+          find . -maxdepth 1 -name "*.md" -delete
+          rm -f AGENTS.md
 
       - name: 📂 Sync files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -44,21 +50,6 @@ jobs:
           timeout: 600000
           exclude: |
             **/.git*
-            **/node_modules/**
-            **/src/**
-            **/.github/**
-            **/.vscode/**
-            **/.next/**
-            **/*.config.js
-            **/*.config.mjs
-            **/*.config.ts
-            **/tsconfig.json
-            **/next-env.d.ts
-            **/*.md
-            **/AGENTS.md
             **/.env*
             **/.eslintrc*
             **/eslint.config.*
-            **/_backup_legacy/**
-            **/design/**
-            **/check-db.js
