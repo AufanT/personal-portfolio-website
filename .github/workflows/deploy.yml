@@ -36,14 +36,14 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ./aufan/
           dangerous-clean-slate: false
+          timeout: 600000
           exclude: |
             .git*
             node_modules/
             src/
             .github/
             .vscode/
-            .next/trace
-            .next/cache/
+            .next/
             next-env.d.ts
             tsconfig.json
             tailwind.config.js
@@ -54,3 +54,5 @@ jobs:
             .eslintrc*
             eslint.config.*
             _backup_legacy/
+            design/
+            check-db.js
