@@ -28,10 +28,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
 
-      - name: 🗑️ Prune dev dependencies
-        run: npm prune --production
-
-      - name: 🗑️ Remove dev files before deploy
+      - name: 🗑️ Clean unnecessary files
         run: |
           rm -rf src/
           rm -rf design/
@@ -42,8 +39,14 @@ jobs:
           rm -f check-db.js
           find . -maxdepth 1 -name "*.md" -delete
           rm -f AGENTS.md
+          rm -f tailwind.config.js
+          rm -f postcss.config.js
+          rm -f tsconfig.json
+          rm -f next-env.d.ts
+          rm -f eslint.config.*
+          rm -f .eslintrc*
 
-      - name: 📂 Sync files via FTP
+      - name: 📂 Sync only build files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -55,5 +58,3 @@ jobs:
           exclude: |
             **/.git*
             **/.env*
-            **/.eslintrc*
-            **/eslint.config.*
