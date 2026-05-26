@@ -28,6 +28,11 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
 
+      - name: �️ Clean build artifacts
+        run: |
+          rm -rf .next
+          rm -rf node_modules
+
       - name: 📂 Sync files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -38,21 +43,22 @@ jobs:
           dangerous-clean-slate: false
           timeout: 600000
           exclude: |
-            .git*
-            node_modules/
-            src/
-            .github/
-            .vscode/
-            .next/
-            next-env.d.ts
-            tsconfig.json
-            tailwind.config.js
-            postcss.config.js
-            *.md
-            AGENTS.md
-            .env*
-            .eslintrc*
-            eslint.config.*
-            _backup_legacy/
-            design/
-            check-db.js
+            **/.git*
+            **/node_modules/**
+            **/src/**
+            **/.github/**
+            **/.vscode/**
+            **/.next/**
+            **/*.config.js
+            **/*.config.mjs
+            **/*.config.ts
+            **/tsconfig.json
+            **/next-env.d.ts
+            **/*.md
+            **/AGENTS.md
+            **/.env*
+            **/.eslintrc*
+            **/eslint.config.*
+            **/_backup_legacy/**
+            **/design/**
+            **/check-db.js
