@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Informatics Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-on-surface": "#303030",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary-container": "#2f4e28",
+                        "on-tertiary": "#313030",
+                        "surface-container": "#1f1f1f",
+                        "error-container": "#93000a",
+                        "outline": "#85967c",
+                        "on-surface": "#e2e2e2",
+                        "surface-container-highest": "#353535",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#0e0e0e",
+                        "tertiary": "#fdf9f9",
+                        "primary-fixed-dim": "#2ae500",
+                        "surface-variant": "#353535",
+                        "outline-variant": "#3c4b35",
+                        "primary-fixed": "#79ff5b",
+                        "secondary": "#acd19f",
+                        "tertiary-container": "#e0dddc",
+                        "on-primary": "#053900",
+                        "secondary-fixed-dim": "#acd19f",
+                        "background": "#131313",
+                        "on-secondary-container": "#9bbf8f",
+                        "surface-container-low": "#1b1b1b",
+                        "on-primary-container": "#107100",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "surface": "#131313",
+                        "inverse-primary": "#106e00",
+                        "on-background": "#e2e2e2",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "secondary-fixed": "#c8edb9",
+                        "on-primary-fixed-variant": "#095300",
+                        "on-secondary-fixed-variant": "#2f4e28",
+                        "on-tertiary-container": "#626161",
+                        "on-surface-variant": "#baccb0",
+                        "surface-tint": "#2ae500",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed": "#022100",
+                        "on-secondary-fixed": "#042102",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "on-secondary": "#193714",
+                        "primary-container": "#39ff14",
+                        "primary": "#efffe3",
+                        "inverse-surface": "#e2e2e2",
+                        "surface-bright": "#393939"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "container-max": "1280px",
+                        "gutter": "24px",
+                        "margin-desktop": "64px",
+                        "margin-mobile": "16px",
+                        "unit": "4px"
+                    },
+                    fontFamily: {
+                        "body-md": ["Inter", "sans-serif"],
+                        "label-sm": ["JetBrains Mono", "monospace"],
+                        "headline-md": ["JetBrains Mono", "monospace"],
+                        "headline-sm": ["JetBrains Mono", "monospace"],
+                        "label-md": ["JetBrains Mono", "monospace"],
+                        "headline-lg": ["JetBrains Mono", "monospace"],
+                        "body-lg": ["Inter", "sans-serif"]
+                    },
+                    boxShadow: {
+                        'neon': '0 0 8px rgba(57, 255, 20, 0.5)',
+                        'neon-hover': '0 0 16px rgba(57, 255, 20, 0.8)',
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .cyber-grid {
+            background-image: 
+                linear-gradient(to right, rgba(57, 255, 20, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(57, 255, 20, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .terminal-input:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
+            border-color: #39ff14;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col">
+<!-- TopNavBar (Shared Component, strictly applied) -->
+<div class="relative flex h-auto w-full flex-col bg-background overflow-x-hidden border-b border-surface-container-highest">
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-40 flex flex-1 justify-center py-5 max-md:px-4 max-md:py-3">
+<div class="layout-content-container flex flex-col max-w-[1280px] flex-1">
+<header class="flex items-center justify-between whitespace-nowrap px-10 py-3 max-md:px-2">
+<div class="flex items-center gap-4 text-primary-container">
+<div class="size-6">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_319)">
+<path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path>
+</g>
+<defs>
+<clippath id="clip0_6_319"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h2 class="text-on-background font-headline-sm tracking-tight">Informatics Profile</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9 max-md:hidden">
+<a class="text-on-surface-variant hover:text-primary-container font-label-md transition-colors" href="#about">About</a>
+<a class="text-on-surface-variant hover:text-primary-container font-label-md transition-colors" href="#portfolio">Portfolio</a>
+<a class="text-on-surface-variant hover:text-primary-container font-label-md transition-colors" href="#contact">Contact</a>
+</div>
+</div>
+</header>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col items-center w-full px-margin-mobile md:px-margin-desktop py-gutter gap-margin-desktop">
+<!-- Hero Section -->
+<section class="w-full max-w-container-max relative rounded-xl border border-outline-variant bg-surface-container-low overflow-hidden min-h-[400px] flex items-center justify-center p-8 cyber-grid">
+<div class="relative z-10 flex flex-col items-center text-center gap-6 bg-surface/80 backdrop-blur-md p-8 border border-surface-container-highest rounded-lg">
+<div class="flex flex-col gap-2">
+<p class="font-label-md text-primary-container tracking-widest uppercase">sys.init()</p>
+<h1 class="font-headline-lg text-primary text-4xl md:text-5xl lg:text-6xl max-w-3xl leading-tight">
+                        Building the Future through Code
+                    </h1>
+<h2 class="font-body-lg text-on-surface-variant mt-4 max-w-2xl mx-auto">
+                        Informatics Student | Web Developer | Tech Enthusiast
+                    </h2>
+</div>
+<div class="flex gap-4 mt-4">
+<button class="bg-primary-container text-background font-label-md px-6 py-3 rounded hover:bg-primary-fixed-dim hover:shadow-neon transition-all duration-300">
+                        &gt; Execute Portfolio
+                    </button>
+<button class="bg-transparent border border-primary-container text-primary-container font-label-md px-6 py-3 rounded hover:bg-primary-container/10 transition-all duration-300">
+                        View Source
+                    </button>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section class="w-full max-w-container-max flex flex-col gap-gutter" id="about">
+<div class="flex items-center gap-2 border-b border-surface-container-highest pb-2">
+<span class="material-symbols-outlined text-primary-container">person</span>
+<h2 class="font-headline-md text-on-background">About Me</h2>
+</div>
+<div class="flex flex-col md:flex-row gap-8 items-start bg-surface-container rounded-xl border border-outline-variant p-8 backdrop-blur-md">
+<div class="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-lg border border-primary-container shadow-neon bg-cover bg-center overflow-hidden" data-alt="A striking portrait of a digital avatar in a cyberpunk style. The character is illuminated by vibrant neon green and deep shadow green lights against a pure black background. They appear focused and technical, with subtle glowing circuitry elements on their attire. The overall mood is advanced, elite, and deeply embedded in hacker culture." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAkTcyREyk8CxiYytb4fkPmwpJIuO9oFEhy707nc3O3-P-6fqMnnaixt7wdWNO3lGAU5PKKf3uw9RxRL8HoGSW-gqKIJjl_rtEhric-5Jr_8S4m9aHz9qjrppp9TOOMr0LL2wEkA51qaWhBJOOm4edH1q-6hNARhXUMdy0dXtvZWx9NxYDhS9nc9jFqj5AHbG7_tpJl13phDPTWgzgEu07Ulc3r2v4L0NQibgM6e1nlRpEF6zaFUjz74OWyyfNFRYmR0dQGH1CFZtU6');">
+</div>
+<div class="flex flex-col gap-4 flex-grow">
+<h3 class="font-headline-sm text-primary">Technical Interests &amp; Skills</h3>
+<p class="font-body-md text-on-surface-variant leading-relaxed">
+                        Passionate about software development, with a strong foundation in backend architecture and frontend interfaces. Currently focusing on building robust, scalable applications and exploring the intersections of cybersecurity and modern web technologies. I thrive in command-line environments and believe in writing clean, modular code.
+                    </p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full mt-4">
+<!-- Left Column: Education & Experience -->
+<div class="flex flex-col gap-8">
+<!-- Education History -->
+<div class="bg-surface-container rounded-xl border border-outline-variant p-8 backdrop-blur-md flex flex-col gap-6">
+<h3 class="font-headline-sm text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">school</span> Education History
+            </h3>
+<div class="border-l-2 border-primary-container/30 pl-6 relative">
+<div class="relative mb-6">
+<div class="absolute -left-[33px] top-1 w-4 h-4 bg-background border-2 border-primary-container rounded-full shadow-neon"></div>
+<h4 class="font-headline-sm text-on-surface">Tech University</h4>
+<p class="font-label-md text-primary-container mt-1">B.S. in Informatics | 2021 - Present</p>
+<p class="font-body-md text-on-surface-variant mt-2">Current GPA: 3.8/4.0</p>
+<p class="font-label-sm text-on-surface-variant/80 mt-1">&gt; Key Coursework: Data Structures, Web Dev, Cybersecurity, Algorithms</p>
+</div>
+<div class="relative">
+<div class="absolute -left-[33px] top-1 w-4 h-4 bg-background border-2 border-outline-variant rounded-full"></div>
+<h4 class="font-headline-sm text-on-surface">Cyber High School</h4>
+<p class="font-label-md text-on-surface-variant mt-1">Science &amp; Technology Track | 2017 - 2021</p>
+</div>
+</div>
+</div>
+<!-- Experience Logs -->
+<div class="bg-surface-container rounded-xl border border-outline-variant p-8 backdrop-blur-md flex flex-col gap-6">
+<h3 class="font-headline-sm text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">work</span> Experience Logs
+            </h3>
+<div class="flex flex-col gap-6">
+<!-- Professional -->
+<div>
+<h4 class="font-label-md text-primary-container uppercase tracking-widest border-b border-surface-container-highest pb-2 mb-4">// Professional Experience</h4>
+<div class="font-label-sm font-mono text-on-surface-variant space-y-4">
+<div>
+<div class="text-on-surface font-headline-sm">&gt; Frontend Developer Intern</div>
+<div class="text-primary-container">@ CyberCorp Inc. [2023]</div>
+<ul class="list-disc list-inside ml-4 mt-2 space-y-1 text-body-md text-on-surface-variant font-sans">
+<li>Developed responsive UI components using React.</li>
+<li>Optimized application performance and load times by 20%.</li>
+<li>Collaborated with backend teams on REST API integration.</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Organizational -->
+<div>
+<h4 class="font-label-md text-primary-container uppercase tracking-widest border-b border-surface-container-highest pb-2 mb-4">// Organizational Experience</h4>
+<div class="font-label-sm font-mono text-on-surface-variant space-y-4">
+<div>
+<div class="text-on-surface font-headline-sm">&gt; Head of Web Development</div>
+<div class="text-primary-container">@ Informatics Student Union [2022 - 2023]</div>
+<ul class="list-disc list-inside ml-4 mt-2 space-y-1 text-body-md text-on-surface-variant font-sans">
+<li>Led a team of 5 developers to rebuild the student union portal.</li>
+<li>Organized tech workshops for 100+ students covering HTML, CSS, and JS basics.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Technical Skills -->
+<div class="flex flex-col gap-8">
+<div class="bg-surface-container rounded-xl border border-outline-variant p-8 backdrop-blur-md flex flex-col gap-6 h-full">
+<h3 class="font-headline-sm text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">code</span> System Capabilities
+            </h3>
+<div class="flex flex-col gap-6">
+<!-- Languages -->
+<div>
+<h4 class="font-label-md text-on-surface-variant mb-3">Languages</h4>
+<div class="flex flex-wrap gap-3">
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-primary-container/50 text-primary rounded shadow-[0_0_8px_rgba(57,255,20,0.2)]">JavaScript / TS</span>
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-primary-container/50 text-primary rounded shadow-[0_0_8px_rgba(57,255,20,0.2)]">Python</span>
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-primary-container/50 text-primary rounded shadow-[0_0_8px_rgba(57,255,20,0.2)]">HTML/CSS</span>
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-outline-variant text-on-surface-variant rounded">C++</span>
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-outline-variant text-on-surface-variant rounded">SQL</span>
+</div>
+</div>
+<!-- Frameworks -->
+<div>
+<h4 class="font-label-md text-on-surface-variant mb-3">Frameworks &amp; Libraries</h4>
+<div class="flex flex-wrap gap-3">
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-primary-container/50 text-primary rounded shadow-[0_0_8px_rgba(57,255,20,0.2)]">React</span>
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-primary-container/50 text-primary rounded shadow-[0_0_8px_rgba(57,255,20,0.2)]">Node.js</span>
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-primary-container/50 text-primary rounded shadow-[0_0_8px_rgba(57,255,20,0.2)]">Tailwind CSS</span>
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-outline-variant text-on-surface-variant rounded">Next.js</span>
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-outline-variant text-on-surface-variant rounded">Express</span>
+</div>
+</div>
+<!-- Tools -->
+<div>
+<h4 class="font-label-md text-on-surface-variant mb-3">Tools &amp; Systems</h4>
+<div class="flex flex-wrap gap-3">
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-primary-container/50 text-primary rounded shadow-[0_0_8px_rgba(57,255,20,0.2)]">Git / GitHub</span>
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-primary-container/50 text-primary rounded shadow-[0_0_8px_rgba(57,255,20,0.2)]">Linux / Bash</span>
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-outline-variant text-on-surface-variant rounded">Cybersecurity</span>
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-outline-variant text-on-surface-variant rounded">Docker</span>
+<span class="px-4 py-2 font-label-sm bg-surface-container-high border border-outline-variant text-on-surface-variant rounded">Figma</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact Section -->
+<section class="w-full max-w-container-max flex flex-col gap-gutter mb-margin-desktop" id="contact">
+<div class="flex items-center gap-2 border-b border-surface-container-highest pb-2">
+<span class="material-symbols-outlined text-primary-container">mail</span>
+<h2 class="font-headline-md text-on-background">Comm Link</h2>
+</div>
+<div class="bg-surface-container rounded-xl border border-outline-variant p-8 w-full max-w-2xl mx-auto backdrop-blur-md">
+<form class="flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-primary-container flex items-center gap-2" for="name">
+<span>&gt;</span> Name
+                        </label>
+<input class="terminal-input bg-surface border border-outline-variant rounded px-4 py-3 text-on-background font-body-md w-full placeholder-on-surface-variant/50 transition-all duration-300" id="name" placeholder="Enter identification" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-primary-container flex items-center gap-2" for="email">
+<span>&gt;</span> Email Address
+                        </label>
+<input class="terminal-input bg-surface border border-outline-variant rounded px-4 py-3 text-on-background font-body-md w-full placeholder-on-surface-variant/50 transition-all duration-300" id="email" placeholder="user@domain.com" type="email"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-primary-container flex items-center gap-2" for="message">
+<span>&gt;</span> Data Payload
+                        </label>
+<textarea class="terminal-input bg-surface border border-outline-variant rounded px-4 py-3 text-on-background font-body-md w-full placeholder-on-surface-variant/50 transition-all duration-300 resize-none" id="message" placeholder="Transmit message..." rows="5"></textarea>
+</div>
+<button class="mt-4 bg-transparent border border-primary-container text-primary-container font-label-md px-6 py-3 rounded hover:bg-primary-container hover:text-background hover:shadow-neon transition-all duration-300 flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined text-sm">send</span>
+                        Transmit
+                    </button>
+</form>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-lowest border-t border-surface-container-highest py-8 mt-auto">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-2 text-primary-container opacity-80">
+<span class="material-symbols-outlined size-5">terminal</span>
+<span class="font-label-sm uppercase tracking-widest">Sys_Status: Online</span>
+</div>
+<p class="font-label-sm text-on-surface-variant">
+                © 2024 Informatics Profile. All systems operational.
+            </p>
+</div>
+</footer>
+</body></html>

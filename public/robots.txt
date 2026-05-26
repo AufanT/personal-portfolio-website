@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /diagnose/
+
+Sitemap: https://aufan.ifportofolio.com/sitemap.xml

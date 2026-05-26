@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+.env.local
+.DS_Store
+AGENTS.md
+.antigravitycli
+_backup_legacy
+.next
+tsconfig.tsbuildinfo
