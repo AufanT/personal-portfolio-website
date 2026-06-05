@@ -115,7 +115,7 @@ export default function HorizontalSection({ panels, mobilePanels }: HorizontalSe
 
   if (isMobile && isClient) {
     return (
-      <section className="w-full flex flex-col">
+      <section className="w-full flex flex-col overflow-x-hidden">
         {activeMobilePanels.map((panel) => (
           <div key={panel.id} className="w-full flex flex-col justify-center py-6 md:py-10">
             {panel.content}

@@ -89,7 +89,7 @@ export default function PanelAbout() {
   const isInView = useInView(containerRef, { once: true, amount: 0.1 });
 
   return (
-    <div className="w-full px-5 sm:px-8 md:px-10 lg:px-12 max-w-container-max mx-auto pt-6 pb-6 lg:pb-0 relative">
+    <div className="w-full px-5 sm:px-8 md:px-10 lg:px-12 max-w-container-max mx-auto pt-6 pb-6 lg:pb-0 relative overflow-hidden">
       
       {/* Custom Styles for Background Marquee Scroll */}
       <style dangerouslySetInnerHTML={{ __html: `

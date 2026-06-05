@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { ExternalLink, Github, Terminal, X, ArrowRight } from 'lucide-react';
 import RippleSection from '@/components/RippleSection';
 import { supabaseClient } from '@/lib/supabase';
+import ScrambleText from '@/components/ScrambleText';
 
 interface Project {
   id: string;
@@ -59,11 +60,69 @@ export default function PortfolioPage() {
     ? projects
     : projects.filter((p) => p.category_slug === activeFilter);
 
+  const { orderedProjects, projectSpans } = useMemo(() => {
+    const featured = filteredProjects.filter((p) => p.is_featured);
+    const nonFeatured = filteredProjects.filter((p) => !p.is_featured);
+
+    const ordered: Project[] = [];
+    const spans: string[] = [];
+
+    let rowCount = 0;
+
+    // 1. Interleave Featured (8) and Non-Featured (4)
+    while (featured.length > 0 && nonFeatured.length > 0) {
+      const f = featured.shift()!;
+      const nf = nonFeatured.shift()!;
+      
+      if (rowCount % 2 === 0) {
+        ordered.push(f, nf);
+        spans.push('md:col-span-8', 'md:col-span-4');
+      } else {
+        ordered.push(nf, f);
+        spans.push('md:col-span-4', 'md:col-span-8');
+      }
+      rowCount++;
+    }
+
+    // 2. Handle leftover Featured cards (pair 6+6 or single 12)
+    if (featured.length > 0) {
+      while (featured.length > 0) {
+        if (featured.length >= 2) {
+          ordered.push(featured.shift()!, featured.shift()!);
+          spans.push('md:col-span-6', 'md:col-span-6');
+        } else {
+          ordered.push(featured.shift()!);
+          spans.push('md:col-span-12');
+        }
+      }
+    }
+
+    // 3. Handle leftover Non-Featured cards (group 3 of col-4, pair 6+6, or single 12)
+    if (nonFeatured.length > 0) {
+      while (nonFeatured.length > 0) {
+        if (nonFeatured.length >= 3) {
+          ordered.push(nonFeatured.shift()!, nonFeatured.shift()!, nonFeatured.shift()!);
+          spans.push('md:col-span-4', 'md:col-span-4', 'md:col-span-4');
+        } else if (nonFeatured.length === 2) {
+          ordered.push(nonFeatured.shift()!, nonFeatured.shift()!);
+          spans.push('md:col-span-6', 'md:col-span-6');
+        } else {
+          ordered.push(nonFeatured.shift()!);
+          spans.push('md:col-span-12');
+        }
+      }
+    }
+
+    return { orderedProjects: ordered, projectSpans: spans };
+  }, [filteredProjects]);
+
+
+
   return (
     <div className="flex flex-col">
       {/* Header — full-width ripple background */}
       <RippleSection className="pt-24 md:pt-28">
-        <div className="border-l-4 border-primary-container pl-4 md:pl-5 py-4 md:py-6">
+        <div className="flex flex-col items-center text-center py-4 md:py-6">
           <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-primary-container uppercase">PROJECTS</span>
           <h1 className="font-mono text-2xl md:text-3xl lg:text-4xl text-on-surface mt-2 leading-tight tracking-tight">
             Collection
@@ -71,7 +130,7 @@ export default function PortfolioPage() {
         </div>
       </RippleSection>
 
-      <div className="w-full max-w-container-max pl-[36px] md:pl-[88px] pr-margin-mobile md:pr-margin-desktop pt-2 pb-12 flex flex-col gap-10">
+      <div className="w-full px-margin-mobile md:px-margin-desktop pt-2 pb-12 flex flex-col gap-10">
       {/* Filter Bar */}
       {!loading && categoryFilters.length > 1 && (
         <section className="flex flex-wrap gap-3">
@@ -105,9 +164,9 @@ export default function PortfolioPage() {
         /* Project Grid */
         <section className="grid grid-cols-1 md:grid-cols-12 gap-gutter mt-2">
           <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project) => {
+            {orderedProjects.map((project, idx) => {
               const isFeatured = project.is_featured;
-              const spanClass = isFeatured ? 'md:col-span-8' : 'md:col-span-4';
+              const spanClass = projectSpans[idx];
 
               return (
                 <motion.article
@@ -130,7 +189,7 @@ export default function PortfolioPage() {
                         src={project.image_url}
                         alt={project.title}
                         fill
-                        className="object-cover object-top opacity-60 group-hover:opacity-85 transition-opacity duration-300 mix-blend-luminosity hover:mix-blend-normal"
+                        className="object-cover object-top opacity-85 group-hover:opacity-100 transition-opacity duration-300"
                         sizes="(max-width: 768px) 100vw, 50vw"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
@@ -255,7 +314,7 @@ export default function PortfolioPage() {
                       className="px-4 py-2 border border-outline-variant text-on-background font-mono text-xs rounded hover:border-primary-container hover:text-primary-container transition-colors flex items-center gap-1.5"
                     >
                       <Github className="w-4 h-4" />
-                      <span>Repository</span>
+                      <span><ScrambleText>Repository</ScrambleText></span>
                     </a>
                   )}
                   {selectedProject.demo_url && selectedProject.demo_url !== '#' && (
@@ -266,7 +325,7 @@ export default function PortfolioPage() {
                       className="btn-neon flex items-center gap-1.5"
                     >
                       <ExternalLink className="w-4 h-4" />
-                      <span>Live Demo</span>
+                      <span><ScrambleText>Live Demo</ScrambleText></span>
                     </a>
                   )}
                 </div>

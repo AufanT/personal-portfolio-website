@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useLayoutEffect, useRef, useCallback } from 'react';
+import { useState, useLayoutEffect, useEffect, useRef, useCallback, startTransition } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Code2 } from 'lucide-react';
@@ -66,16 +66,41 @@ function LoadingOverlay({ visible }: { visible: boolean }) {
   );
 }
 
+// Maximum time (ms) to wait for navigation before force-dismissing the overlay
+const NAV_TIMEOUT_MS = 5000;
+// Minimum time (ms) the overlay must be visible before it can start dismissing
+const MIN_OVERLAY_MS = 660;
+
 export default function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+
   const prevPathname = useRef(pathname);
+  const isTransitioning = useRef(false);
+  const navTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const overlayShownAt = useRef<number>(0);
+
   const [displayChildren, setDisplayChildren] = useState(children);
   const [cachedIsAdmin, setCachedIsAdmin] = useState(
     pathname.startsWith('/admin') && pathname !== '/admin'
   );
   const [loading, setLoading] = useState(false);
-  const isTransitioning = useRef(false);
+
+  /** Dismisses the overlay, respecting MIN_OVERLAY_MS so it never flashes. */
+  const dismissOverlay = useCallback(() => {
+    if (navTimeoutRef.current) {
+      clearTimeout(navTimeoutRef.current);
+      navTimeoutRef.current = null;
+    }
+
+    const elapsed = Date.now() - overlayShownAt.current;
+    const remaining = Math.max(0, MIN_OVERLAY_MS - elapsed);
+
+    setTimeout(() => {
+      isTransitioning.current = false;
+      setLoading(false);
+    }, remaining);
+  }, []);
 
   const handleCaptureClick = useCallback((e: React.MouseEvent) => {
     if (isTransitioning.current) return;
@@ -93,29 +118,56 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
     e.preventDefault();
     isTransitioning.current = true;
+    overlayShownAt.current = Date.now();
     setLoading(true);
 
-    setTimeout(() => {
-      router.push(href);
-    }, 660);
-  }, [pathname, router]);
+    // Give the browser one rAF to paint the overlay, then start navigation.
+    // Using startTransition keeps the router.push non-blocking so the overlay
+    // frame is guaranteed to be committed before the heavy navigation work begins.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        startTransition(() => {
+          router.push(href);
+        });
+      });
+    });
 
+    // Fallback: if navigation never completes (network error, etc.), dismiss
+    // the overlay after NAV_TIMEOUT_MS so the UI is never permanently stuck.
+    navTimeoutRef.current = setTimeout(() => {
+      console.warn('[Shell] Navigation timeout — force-dismissing loading overlay.');
+      isTransitioning.current = false;
+      setLoading(false);
+    }, NAV_TIMEOUT_MS);
+  }, [pathname, router, dismissOverlay]);
+
+  // Detect when Next.js has finished navigating (pathname changed).
   useLayoutEffect(() => {
     if (prevPathname.current !== pathname && isTransitioning.current) {
       prevPathname.current = pathname;
-      isTransitioning.current = false;
+      // Update the rendered page content immediately so it's ready behind the overlay.
       setDisplayChildren(children);
       setCachedIsAdmin(pathname.startsWith('/admin') && pathname !== '/admin');
-      setTimeout(() => setLoading(false), 100);
+      // Then dismiss the overlay (with MIN_OVERLAY_MS guard).
+      dismissOverlay();
     }
-  }, [pathname, children]);
+  }, [pathname, children, dismissOverlay]);
 
-  useLayoutEffect(() => {
-    if (!loading) {
+  // When not transitioning, keep displayChildren in sync with children
+  // (e.g. server-side data refresh, ISR revalidation).
+  useEffect(() => {
+    if (!isTransitioning.current) {
       setDisplayChildren(children);
       setCachedIsAdmin(pathname.startsWith('/admin') && pathname !== '/admin');
     }
-  }, [children, loading]);
+  }, [children, pathname]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
+    };
+  }, []);
 
   return (
     <div onClickCapture={handleCaptureClick}>

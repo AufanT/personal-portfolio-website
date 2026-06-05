@@ -36,16 +36,15 @@ export default async function BlogPage() {
     <div className="min-h-screen relative flex flex-col items-center bg-background">
       {/* Header Section — full-width ripple */}
       <RippleSection className="pt-24 md:pt-28">
-        <div className="border-l-4 border-primary-container pl-4 md:pl-5 py-4 md:py-6">
+        <div className="flex flex-col items-center text-center py-4 md:py-6">
           <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-primary-container uppercase">LAB</span>
           <h1 className="font-mono text-3xl md:text-4xl lg:text-5xl text-on-surface mt-2 leading-tight tracking-tight">
             Reports
           </h1>
-
         </div>
       </RippleSection>
 
-      <div className="w-full pl-[36px] md:pl-[88px] pr-margin-mobile md:pr-margin-desktop pt-2 pb-12 relative z-10">
+      <div className="w-full px-margin-mobile md:px-margin-desktop pt-2 pb-12 relative z-10">
         {/* Client side search, filter & grid */}
         <BlogList initialBlogs={blogs} />
       </div>

@@ -23,6 +23,7 @@ import PanelExperience from '@/components/PanelExperience';
 import PanelSkills from '@/components/PanelSkills';
 import PanelFeaturedWork from '@/components/PanelFeaturedWork';
 import PanelFeaturedProject from '@/components/PanelFeaturedProject';
+import ScrambleText from '@/components/ScrambleText';
 
 interface Project {
   id: string;
@@ -212,7 +213,7 @@ export default function HomePage() {
                 href="/portofolio"
                 className="btn-neon inline-flex items-center gap-2 mt-4 text-sm md:text-base"
               >
-                <span>VIEW ALL PROJECTS</span>
+                <span><ScrambleText>VIEW ALL PROJECTS</ScrambleText></span>
                 <ArrowRight className="w-4 h-4" />
             </Link>
             </div>
@@ -269,7 +270,7 @@ export default function HomePage() {
 
           <div className="flex flex-wrap gap-4 mt-8 justify-center">
             <a href="#contact" className="btn-neon flex items-center gap-2">
-              <span>&gt; Hire me</span>
+              <span>&gt; <ScrambleText>Hire me</ScrambleText></span>
               <ArrowRight className="w-4 h-4" />
             </a>
             <a
@@ -279,7 +280,7 @@ export default function HomePage() {
               className="btn-neon-outline flex items-center gap-2"
             >
               <Github className="w-4 h-4" />
-              <span>View Source</span>
+              <span><ScrambleText>View Source</ScrambleText></span>
             </a>
           </div>
         </motion.div>

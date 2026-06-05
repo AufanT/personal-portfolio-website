@@ -22,11 +22,17 @@ import BlogTOC from '@/components/BlogTOC';
 
 export const revalidate = 60;
 
+interface ContentBlock {
+  type: 'text' | 'code' | 'image';
+  content: string;
+}
+
 interface Subtitle {
   title?: string;
   text?: string;
   images?: string[];
   codes?: string[];
+  blocks?: ContentBlock[];
 }
 
 interface BlogStep {
@@ -36,6 +42,8 @@ interface BlogStep {
   subtitles?: Subtitle[];
   code?: string;
   codes?: string[];
+  images?: string[];
+  blocks?: ContentBlock[];
 }
 
 interface AlatBahanItem {
@@ -43,37 +51,29 @@ interface AlatBahanItem {
   icon: string;
 }
 
+interface StructuredStep {
+  title: string;
+  text: string;
+  images?: string[];
+  subtitles?: {
+    title: string;
+    text: string;
+    images?: string[];
+    codes?: string[];
+    blocks?: ContentBlock[];
+  }[];
+  code?: string;
+  codes?: string[];
+  blocks?: ContentBlock[];
+}
+
 interface StructuredContent {
   format: 'structured';
   tujuan: string[];
   dasar_teori: string;
   alat_bahan: AlatBahanItem[];
-  langkah_kerja: {
-    title: string;
-    text: string;
-    images?: string[];
-    subtitles?: {
-      title: string;
-      text: string;
-      images?: string[];
-      codes?: string[];
-    }[];
-    code?: string;
-    codes?: string[];
-  }[];
-  latihan_tugas: {
-    title: string;
-    text: string;
-    images?: string[];
-    subtitles?: {
-      title: string;
-      text: string;
-      images?: string[];
-      codes?: string[];
-    }[];
-    code?: string;
-    codes?: string[];
-  }[];
+  langkah_kerja: StructuredStep[];
+  latihan_tugas: StructuredStep[];
   kesimpulan: string;
 }
 
@@ -263,12 +263,14 @@ export default async function BlogDetailPage({ params }: Props) {
                 title: step.title || '',
                 text: step.text || '',
                 images: Array.isArray(step.images) ? step.images : [],
+                blocks: Array.isArray(step.blocks) ? step.blocks : null,
                 subtitles: Array.isArray(step.subtitles)
                   ? step.subtitles.map((sub: any) => ({
                       title: sub.title || '',
                       text: sub.text || '',
                       images: Array.isArray(sub.images) ? sub.images : [],
                       codes: Array.isArray(sub.codes) ? sub.codes : [],
+                      blocks: Array.isArray(sub.blocks) ? sub.blocks : null,
                     }))
                   : [],
                 code: step.code || '',
@@ -280,12 +282,14 @@ export default async function BlogDetailPage({ params }: Props) {
                 title: task.title || '',
                 text: task.text || '',
                 images: Array.isArray(task.images) ? task.images : [],
+                blocks: Array.isArray(task.blocks) ? task.blocks : null,
                 subtitles: Array.isArray(task.subtitles)
                   ? task.subtitles.map((sub: any) => ({
                       title: sub.title || '',
                       text: sub.text || '',
                       images: Array.isArray(sub.images) ? sub.images : [],
                       codes: Array.isArray(sub.codes) ? sub.codes : [],
+                      blocks: Array.isArray(sub.blocks) ? sub.blocks : null,
                     }))
                   : [],
                 code: task.code || '',
@@ -496,39 +500,51 @@ export default async function BlogDetailPage({ params }: Props) {
                             <h3 className="font-mono text-base md:text-lg text-white mt-1 mb-2 break-words">
                               {step.title}
                             </h3>
-                            {step.text && (
-                              <p className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap mb-4 break-words">
-                                {step.text}
-                              </p>
-                            )}
 
-                            {/* Code snippet mockup */}
-                            {step.codes && step.codes.length > 0 ? (
-                              step.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))
-                            ) : (
-                              renderCodeSnippet(step.code)
-                            )}
-
-                            {/* Multi-images */}
-                            {step.images && step.images.length > 0 && (
-                              <div className={`grid gap-4 mb-4 ${step.images.length === 1 ? 'grid-cols-1 max-w-xl' : 'grid-cols-1 md:grid-cols-2'}`}>
-                                {step.images.map((imgUrl, imgIdx) => (
-                                  <div
-                                    key={imgIdx}
-                                    className="relative rounded-xl overflow-hidden border border-outline-variant bg-black/40 group hover:border-primary-container/40 transition-colors"
-                                  >
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                      src={imgUrl}
-                                      alt={`${step.title} visual reference ${imgIdx + 1}`}
-                                      loading="lazy"
-                                      width="800"
-                                      height="600"
-                                      className="w-full h-auto max-h-[300px] object-contain mx-auto transition-transform duration-300 group-hover:scale-[1.02]"
-                                    />
-                                  </div>
-                                ))}
+                            {/* Render blocks in order if available, otherwise fall back to legacy */}
+                            {step.blocks && step.blocks.length > 0 ? (
+                              <div className="space-y-3 mb-2">
+                                {step.blocks.filter((b: ContentBlock) => b.content?.trim()).map((block: ContentBlock, bIdx: number) => {
+                                  if (block.type === 'text') return (
+                                    <p key={bIdx} className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
+                                      {block.content}
+                                    </p>
+                                  );
+                                  if (block.type === 'code') return renderCodeSnippet(block.content, bIdx);
+                                  if (block.type === 'image') return (
+                                    <div key={bIdx} className="relative rounded-xl overflow-hidden border border-outline-variant bg-black/40 group hover:border-primary-container/40 transition-colors max-w-xl">
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img src={block.content} alt={`${step.title} visual reference ${bIdx + 1}`}
+                                        loading="lazy" width="800" height="600"
+                                        className="w-full h-auto max-h-[300px] object-contain mx-auto transition-transform duration-300 group-hover:scale-[1.02]" />
+                                    </div>
+                                  );
+                                  return null;
+                                })}
                               </div>
+                            ) : (
+                              <>
+                                {step.text && (
+                                  <p className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap mb-4 break-words">
+                                    {step.text}
+                                  </p>
+                                )}
+                                {step.codes && step.codes.length > 0
+                                  ? step.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))
+                                  : renderCodeSnippet(step.code)}
+                                {step.images && step.images.length > 0 && (
+                                  <div className={`grid gap-4 mb-4 ${step.images.length === 1 ? 'grid-cols-1 max-w-xl' : 'grid-cols-1 md:grid-cols-2'}`}>
+                                    {step.images.map((imgUrl, imgIdx) => (
+                                      <div key={imgIdx} className="relative rounded-xl overflow-hidden border border-outline-variant bg-black/40 group hover:border-primary-container/40 transition-colors">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={imgUrl} alt={`${step.title} visual reference ${imgIdx + 1}`}
+                                          loading="lazy" width="800" height="600"
+                                          className="w-full h-auto max-h-[300px] object-contain mx-auto transition-transform duration-300 group-hover:scale-[1.02]" />
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </>
                             )}
 
                             {/* Subtitles (Sub-Steps) */}
@@ -539,32 +555,49 @@ export default async function BlogDetailPage({ params }: Props) {
                                     <h4 className="font-mono text-xs md:text-sm text-primary-container flex items-center gap-1.5 font-bold uppercase break-words">
                                       <span className="opacity-75">{idx + 1}.{subIdx + 1} —</span> {sub.title}
                                     </h4>
-                                    {sub.text && (
-                                      <p className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
-                                        {sub.text}
-                                      </p>
-                                    )}
-                                    {sub.images && sub.images.length > 0 && (
-                                      <div className={`grid gap-4 mt-2 ${sub.images.length === 1 ? 'grid-cols-1 max-w-lg' : 'grid-cols-1 sm:grid-cols-2'}`}>
-                                        {sub.images.map((imgUrl, imgIdx) => (
-                                          <div
-                                            key={imgIdx}
-                                            className="relative rounded-lg overflow-hidden border border-outline-variant/20 bg-black/40"
-                                          >
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
-                                              src={imgUrl}
-                                              alt={`${sub.title} view ${imgIdx + 1}`}
-                                              loading="lazy"
-                                              width="800"
-                                              height="600"
-                                              className="w-full h-auto max-h-[200px] object-contain mx-auto"
-                                            />
-                                          </div>
-                                        ))}
+                                    {/* Sub-blocks ordered */}
+                                    {sub.blocks && sub.blocks.length > 0 ? (
+                                      <div className="space-y-3">
+                                        {sub.blocks.filter((b: ContentBlock) => b.content?.trim()).map((block: ContentBlock, bIdx: number) => {
+                                          if (block.type === 'text') return (
+                                            <p key={bIdx} className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
+                                              {block.content}
+                                            </p>
+                                          );
+                                          if (block.type === 'code') return renderCodeSnippet(block.content, bIdx);
+                                          if (block.type === 'image') return (
+                                            <div key={bIdx} className="relative rounded-lg overflow-hidden border border-outline-variant/20 bg-black/40 max-w-lg">
+                                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                                              <img src={block.content} alt={`${sub.title} view ${bIdx + 1}`}
+                                                loading="lazy" width="800" height="600"
+                                                className="w-full h-auto max-h-[200px] object-contain mx-auto" />
+                                            </div>
+                                          );
+                                          return null;
+                                        })}
                                       </div>
+                                    ) : (
+                                      <>
+                                        {sub.text && (
+                                          <p className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
+                                            {sub.text}
+                                          </p>
+                                        )}
+                                        {sub.images && sub.images.length > 0 && (
+                                          <div className={`grid gap-4 mt-2 ${sub.images.length === 1 ? 'grid-cols-1 max-w-lg' : 'grid-cols-1 sm:grid-cols-2'}`}>
+                                            {sub.images.map((imgUrl, imgIdx) => (
+                                              <div key={imgIdx} className="relative rounded-lg overflow-hidden border border-outline-variant/20 bg-black/40">
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                <img src={imgUrl} alt={`${sub.title} view ${imgIdx + 1}`}
+                                                  loading="lazy" width="800" height="600"
+                                                  className="w-full h-auto max-h-[200px] object-contain mx-auto" />
+                                              </div>
+                                            ))}
+                                          </div>
+                                        )}
+                                        {sub.codes && sub.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))}
+                                      </>
                                     )}
-                                    {sub.codes && sub.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))}
                                   </div>
                                 ))}
                               </div>
@@ -598,39 +631,51 @@ export default async function BlogDetailPage({ params }: Props) {
                             <h3 className="font-mono text-base md:text-lg text-white mb-3 break-words">
                               {task.title}
                             </h3>
-                            {task.text && (
-                              <p className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap mb-4 break-words">
-                                {task.text}
-                              </p>
-                            )}
 
-                            {/* Code snippet mockup */}
-                            {task.codes && task.codes.length > 0 ? (
-                              task.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))
-                            ) : (
-                              renderCodeSnippet(task.code)
-                            )}
-
-                            {/* Task Multi-images */}
-                            {task.images && task.images.length > 0 && (
-                              <div className={`grid gap-4 mb-4 ${task.images.length === 1 ? 'grid-cols-1 max-w-xl' : 'grid-cols-1 md:grid-cols-2'}`}>
-                                {task.images.map((imgUrl, imgIdx) => (
-                                  <div
-                                    key={imgIdx}
-                                    className="relative rounded-xl overflow-hidden border border-outline-variant/20 bg-black/40"
-                                  >
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img
-                                    src={imgUrl}
-                                    alt={`${task.title} view ${imgIdx + 1}`}
-                                    loading="lazy"
-                                    width="800"
-                                    height="600"
-                                    className="w-full h-auto max-h-[300px] object-contain mx-auto"
-                                  />
-                                  </div>
-                                ))}
+                            {/* Render blocks in order if available */}
+                            {task.blocks && task.blocks.length > 0 ? (
+                              <div className="space-y-3 mb-2">
+                                {task.blocks.filter((b: ContentBlock) => b.content?.trim()).map((block: ContentBlock, bIdx: number) => {
+                                  if (block.type === 'text') return (
+                                    <p key={bIdx} className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
+                                      {block.content}
+                                    </p>
+                                  );
+                                  if (block.type === 'code') return renderCodeSnippet(block.content, bIdx);
+                                  if (block.type === 'image') return (
+                                    <div key={bIdx} className="relative rounded-xl overflow-hidden border border-outline-variant/20 bg-black/40 max-w-xl">
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img src={block.content} alt={`${task.title} view ${bIdx + 1}`}
+                                        loading="lazy" width="800" height="600"
+                                        className="w-full h-auto max-h-[300px] object-contain mx-auto" />
+                                    </div>
+                                  );
+                                  return null;
+                                })}
                               </div>
+                            ) : (
+                              <>
+                                {task.text && (
+                                  <p className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap mb-4 break-words">
+                                    {task.text}
+                                  </p>
+                                )}
+                                {task.codes && task.codes.length > 0
+                                  ? task.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))
+                                  : renderCodeSnippet(task.code)}
+                                {task.images && task.images.length > 0 && (
+                                  <div className={`grid gap-4 mb-4 ${task.images.length === 1 ? 'grid-cols-1 max-w-xl' : 'grid-cols-1 md:grid-cols-2'}`}>
+                                    {task.images.map((imgUrl, imgIdx) => (
+                                      <div key={imgIdx} className="relative rounded-xl overflow-hidden border border-outline-variant/20 bg-black/40">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={imgUrl} alt={`${task.title} view ${imgIdx + 1}`}
+                                          loading="lazy" width="800" height="600"
+                                          className="w-full h-auto max-h-[300px] object-contain mx-auto" />
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </>
                             )}
 
                             {/* Subtitles (Sub-Tugas) */}
@@ -641,32 +686,48 @@ export default async function BlogDetailPage({ params }: Props) {
                                     <h4 className="font-mono text-xs md:text-sm text-primary-container flex items-center gap-1.5 font-bold uppercase break-words">
                                       <span className="opacity-75">#{subIdx + 1}</span> {sub.title}
                                     </h4>
-                                    {sub.text && (
-                                      <p className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
-                                        {sub.text}
-                                      </p>
-                                    )}
-                                    {sub.images && sub.images.length > 0 && (
-                                      <div className={`grid gap-4 mt-2 ${sub.images.length === 1 ? 'grid-cols-1 max-w-lg' : 'grid-cols-1 sm:grid-cols-2'}`}>
-                                        {sub.images.map((imgUrl, imgIdx) => (
-                                          <div
-                                            key={imgIdx}
-                                            className="relative rounded-lg overflow-hidden border border-outline-variant/20 bg-black/40"
-                                          >
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
-                                              src={imgUrl}
-                                              alt={`${sub.title} view ${imgIdx + 1}`}
-                                              loading="lazy"
-                                              width="800"
-                                              height="600"
-                                              className="w-full h-auto max-h-[200px] object-contain mx-auto"
-                                            />
-                                          </div>
-                                        ))}
+                                    {sub.blocks && sub.blocks.length > 0 ? (
+                                      <div className="space-y-3">
+                                        {sub.blocks.filter((b: ContentBlock) => b.content?.trim()).map((block: ContentBlock, bIdx: number) => {
+                                          if (block.type === 'text') return (
+                                            <p key={bIdx} className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
+                                              {block.content}
+                                            </p>
+                                          );
+                                          if (block.type === 'code') return renderCodeSnippet(block.content, bIdx);
+                                          if (block.type === 'image') return (
+                                            <div key={bIdx} className="relative rounded-lg overflow-hidden border border-outline-variant/20 bg-black/40 max-w-lg">
+                                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                                              <img src={block.content} alt={`${sub.title} view ${bIdx + 1}`}
+                                                loading="lazy" width="800" height="600"
+                                                className="w-full h-auto max-h-[200px] object-contain mx-auto" />
+                                            </div>
+                                          );
+                                          return null;
+                                        })}
                                       </div>
+                                    ) : (
+                                      <>
+                                        {sub.text && (
+                                          <p className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
+                                            {sub.text}
+                                          </p>
+                                        )}
+                                        {sub.images && sub.images.length > 0 && (
+                                          <div className={`grid gap-4 mt-2 ${sub.images.length === 1 ? 'grid-cols-1 max-w-lg' : 'grid-cols-1 sm:grid-cols-2'}`}>
+                                            {sub.images.map((imgUrl, imgIdx) => (
+                                              <div key={imgIdx} className="relative rounded-lg overflow-hidden border border-outline-variant/20 bg-black/40">
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                <img src={imgUrl} alt={`${sub.title} view ${imgIdx + 1}`}
+                                                  loading="lazy" width="800" height="600"
+                                                  className="w-full h-auto max-h-[200px] object-contain mx-auto" />
+                                              </div>
+                                            ))}
+                                          </div>
+                                        )}
+                                        {sub.codes && sub.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))}
+                                      </>
                                     )}
-                                    {sub.codes && sub.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))}
                                   </div>
                                 ))}
                               </div>

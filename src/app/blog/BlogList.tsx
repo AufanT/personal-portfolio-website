@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import ScrambleText from '@/components/ScrambleText';
 
 interface Blog {
   id: string;
@@ -112,7 +113,7 @@ export default function BlogList({ initialBlogs }: BlogListProps) {
 
                 {/* Read Button at bottom */}
                 <div className="mt-auto flex items-center gap-2 text-on-surface font-mono text-xs group-hover:text-primary-container transition-colors duration-200 font-semibold">
-                  <span>READ_FILE</span>
+                  <span><ScrambleText>READ_FILE</ScrambleText></span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>

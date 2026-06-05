@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight, Github } from 'lucide-react';
+import ScrambleText from '@/components/ScrambleText';
 
 interface Project {
   id: string;
@@ -92,7 +93,7 @@ export default function PanelFeaturedProject({ project }: PanelFeaturedProjectPr
               rel="noopener noreferrer"
               className="btn-neon text-xs inline-flex items-center gap-2"
             >
-              <span>LIVE DEMO</span>
+              <span><ScrambleText>LIVE DEMO</ScrambleText></span>
               <ArrowRight className="w-3 h-3" />
             </a>
           )}
@@ -104,7 +105,7 @@ export default function PanelFeaturedProject({ project }: PanelFeaturedProjectPr
               className="btn-neon-outline text-xs inline-flex items-center gap-2"
             >
               <Github className="w-3.5 h-3.5" />
-              <span>SOURCE</span>
+              <span><ScrambleText>SOURCE</ScrambleText></span>
             </a>
           )}
         </div>

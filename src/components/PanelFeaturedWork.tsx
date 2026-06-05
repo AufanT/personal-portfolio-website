@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight, Github, ExternalLink, Layers } from 'lucide-react';
+import ScrambleText from '@/components/ScrambleText';
 
 interface Project {
   id: string;
@@ -35,7 +36,7 @@ export default function PanelFeaturedWork({ projects }: PanelFeaturedWorkProps) 
             href="/portofolio"
             className="btn-neon-outline text-xs inline-flex items-center gap-2 shrink-0 mb-2"
           >
-            <span>VIEW ALL</span>
+            <span><ScrambleText>VIEW ALL</ScrambleText></span>
             <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
@@ -125,7 +126,7 @@ export default function PanelFeaturedWork({ projects }: PanelFeaturedWorkProps) 
             </div>
             <div className="flex flex-col gap-1.5">
               <span className="font-mono text-[10px] tracking-[0.25em] text-primary-container uppercase">
-                EXPLORE MORE
+                <ScrambleText>EXPLORE MORE</ScrambleText>
               </span>
               <p className="font-mono text-sm text-on-background font-bold leading-snug">
                 View Full Collection
@@ -135,7 +136,7 @@ export default function PanelFeaturedWork({ projects }: PanelFeaturedWorkProps) 
               </p>
             </div>
             <div className="flex items-center gap-2 font-mono text-xs text-primary-container group-hover:gap-3 transition-all duration-300">
-              <span>VIEW ALL</span>
+              <span><ScrambleText>VIEW ALL</ScrambleText></span>
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </Link>
