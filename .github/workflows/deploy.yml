@@ -32,16 +32,20 @@ jobs:
       # STAGE 1: Deploy Node.js runtime ke nodejs/aufan/
       # ─────────────────────────────────────────────
       - name: 📁 Prepare nodejs deploy folder
+        shell: bash
         run: |
-          mkdir -p /tmp/nodejs-deploy
+          set -e
+          mkdir -p _deploy/nodejs
 
-          # Salin file & folder runtime Node.js
-          cp -r .next /tmp/nodejs-deploy/.next
-          cp -r node_modules /tmp/nodejs-deploy/node_modules
-          [ -d public ] && cp -r public /tmp/nodejs-deploy/public
-          [ -f package.json ] && cp package.json /tmp/nodejs-deploy/package.json
-          [ -f package-lock.json ] && cp package-lock.json /tmp/nodejs-deploy/package-lock.json
-          [ -f server.js ] && cp server.js /tmp/nodejs-deploy/server.js
+          cp -r .next _deploy/nodejs/.next
+          cp -r node_modules _deploy/nodejs/node_modules
+          if [ -d public ]; then cp -r public _deploy/nodejs/public; fi
+          if [ -f package.json ]; then cp package.json _deploy/nodejs/package.json; fi
+          if [ -f package-lock.json ]; then cp package-lock.json _deploy/nodejs/package-lock.json; fi
+          if [ -f server.js ]; then cp server.js _deploy/nodejs/server.js; fi
+
+          echo "✅ nodejs deploy folder ready:"
+          ls -la _deploy/nodejs/
 
       - name: 🚀 Deploy ke nodejs/aufan/ via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -49,7 +53,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: /tmp/nodejs-deploy/
+          local-dir: ./_deploy/nodejs/
           server-dir: nodejs/aufan/
           dangerous-clean-slate: false
           timeout: 900000
@@ -61,14 +65,16 @@ jobs:
       # STAGE 2: Deploy static files ke public_html/aufan/
       # ─────────────────────────────────────────────
       - name: 📁 Prepare public_html deploy folder
+        shell: bash
         run: |
-          mkdir -p /tmp/pubhtml-deploy
+          set -e
+          mkdir -p _deploy/pubhtml
 
-          # Salin folder .builds jika ada
-          [ -d .builds ] && cp -r .builds /tmp/pubhtml-deploy/.builds
+          if [ -d .builds ]; then cp -r .builds _deploy/pubhtml/.builds; fi
+          if [ -f .htaccess ]; then cp .htaccess _deploy/pubhtml/.htaccess; fi
 
-          # Salin .htaccess jika ada
-          [ -f .htaccess ] && cp .htaccess /tmp/pubhtml-deploy/.htaccess
+          echo "✅ public_html deploy folder ready:"
+          ls -la _deploy/pubhtml/
 
       - name: 🌐 Deploy ke public_html/aufan/ via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -76,7 +82,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: /tmp/pubhtml-deploy/
+          local-dir: ./_deploy/pubhtml/
           server-dir: public_html/aufan/
           dangerous-clean-slate: false
           timeout: 120000
