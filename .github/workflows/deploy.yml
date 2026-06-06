@@ -1,4 +1,4 @@
-﻿name: Deploy to Subdomain
+name: Deploy to Subdomain
 
 on:
   push:
@@ -36,6 +36,8 @@ jobs:
           mkdir -p _deploy/nodejs
 
           cp -r .next _deploy/nodejs/.next
+          # Hapus cache lama agar server generate fresh cache sendiri
+          rm -rf _deploy/nodejs/.next/cache
           if [ -d public ]; then cp -r public _deploy/nodejs/public; fi
           if [ -f package.json ]; then cp package.json _deploy/nodejs/package.json; fi
           if [ -f package-lock.json ]; then cp package-lock.json _deploy/nodejs/package-lock.json; fi
@@ -60,6 +62,7 @@ jobs:
             **/.git*
             **/.env*
             **/node_modules/**
+            **/.next/cache/**
 
       # STAGE 2: Upload static files ke public_html/aufan/ via FTPS
       - name: Prepare public_html deploy folder
