@@ -63,6 +63,10 @@ jobs:
             **/.env*
             **/node_modules/**
             **/.next/cache/**
+            **/.ftp-deploy-sync-state.json
+            **/tmp/**
+            **/console.log
+            **/stderr.log
 
       # STAGE 2: Upload static files ke public_html/aufan/ via FTPS
       - name: Prepare public_html deploy folder
@@ -92,6 +96,7 @@ jobs:
           exclude: |
             **/.git*
             **/.env*
+            **/.ftp-deploy-sync-state.json
 
       # STAGE 3: SSH - npm install & restart app
       # Catatan: jika SSH masih timeout, step ini akan gagal
