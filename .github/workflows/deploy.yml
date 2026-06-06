@@ -1,4 +1,4 @@
-name: Deploy to Subdomain
+﻿name: Deploy to Subdomain
 
 on:
   push:
@@ -9,30 +9,28 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: 🚚 Get latest code
+      - name: Get latest code
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
 
-      - name: 📦 Install dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: 🏗️ Build Next.js
+      - name: Build Next.js
         run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
 
-      # ─────────────────────────────────────────────
-      # STAGE 1: Deploy Node.js runtime ke nodejs/aufan/
-      # node_modules TIDAK diupload — di-install via SSH
-      # ─────────────────────────────────────────────
-      - name: 📁 Prepare nodejs deploy folder
+      # STAGE 1: Upload Node.js files ke nodejs/aufan/ via SCP
+      # node_modules TIDAK diupload - di-install via SSH
+      - name: Prepare nodejs deploy folder
         shell: bash
         run: |
           set -e
@@ -44,28 +42,22 @@ jobs:
           if [ -f package-lock.json ]; then cp package-lock.json _deploy/nodejs/package-lock.json; fi
           if [ -f server.js ]; then cp server.js _deploy/nodejs/server.js; fi
 
-          echo "✅ nodejs deploy folder ready:"
+          echo "nodejs deploy folder ready:"
           ls -la _deploy/nodejs/
 
-      - name: 🚀 Deploy ke nodejs/aufan/ via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Upload ke nodejs/aufan/ via SCP
+        uses: appleboy/scp-action@v0.1.7
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./_deploy/nodejs/
-          server-dir: nodejs/aufan/
-          dangerous-clean-slate: false
-          timeout: 300000
-          exclude: |
-            **/.git*
-            **/.env*
-            **/node_modules/**
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          source: "_deploy/nodejs/*"
+          target: "nodejs/aufan/"
+          strip_components: 2
 
-      # ─────────────────────────────────────────────
-      # STAGE 2: Deploy static files ke public_html/aufan/
-      # ─────────────────────────────────────────────
-      - name: 📁 Prepare public_html deploy folder
+      # STAGE 2: Upload static files ke public_html/aufan/ via SCP
+      - name: Prepare public_html deploy folder
         shell: bash
         run: |
           set -e
@@ -74,27 +66,22 @@ jobs:
           if [ -d .builds ]; then cp -r .builds _deploy/pubhtml/.builds; fi
           if [ -f .htaccess ]; then cp .htaccess _deploy/pubhtml/.htaccess; fi
 
-          echo "✅ public_html deploy folder ready:"
+          echo "public_html deploy folder ready:"
           ls -la _deploy/pubhtml/
 
-      - name: 🌐 Deploy ke public_html/aufan/ via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Upload ke public_html/aufan/ via SCP
+        uses: appleboy/scp-action@v0.1.7
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./_deploy/pubhtml/
-          server-dir: public_html/aufan/
-          dangerous-clean-slate: false
-          timeout: 120000
-          exclude: |
-            **/.git*
-            **/.env*
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          source: "_deploy/pubhtml/*"
+          target: "public_html/aufan/"
+          strip_components: 2
 
-      # ─────────────────────────────────────────────
-      # STAGE 3: SSH ke server — npm install & restart app
-      # ─────────────────────────────────────────────
-      - name: 🔑 SSH — npm install & restart Node.js app
+      # STAGE 3: SSH - npm install & restart app
+      - name: SSH - npm install and restart Node.js app
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -104,8 +91,5 @@ jobs:
           script: |
             cd ~/nodejs/aufan
             npm install --production --prefer-offline
-            # Restart app (sesuaikan dengan cara hosting kamu menjalankan Node.js)
-            # Jika pakai passenger/phusion (cPanel style):
-            touch tmp/restart.txt
-            echo "✅ Deploy selesai!"
-
+            mkdir -p tmp && touch tmp/restart.txt
+            echo "Deploy selesai!"
