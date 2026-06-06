@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Get latest code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -28,83 +30,42 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
 
-      - name: Install lftp
-        run: sudo apt-get install -y lftp
-
-      # STAGE 1: Upload Node.js files ke nodejs/aufan/ via FTPS
-      - name: Prepare nodejs deploy folder
+      - name: Push built files to deploy branch
         shell: bash
         run: |
           set -e
-          mkdir -p _deploy/nodejs
 
-          cp -r .next _deploy/nodejs/.next
-          rm -rf _deploy/nodejs/.next/cache
-          if [ -d public ]; then cp -r public _deploy/nodejs/public; fi
-          if [ -f package.json ]; then cp package.json _deploy/nodejs/package.json; fi
-          if [ -f package-lock.json ]; then cp package-lock.json _deploy/nodejs/package-lock.json; fi
-          if [ -f server.js ]; then cp server.js _deploy/nodejs/server.js; fi
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
 
-          echo "nodejs deploy folder ready:"
-          ls -la _deploy/nodejs/
+          # Buat folder staging deploy
+          mkdir -p /tmp/deploy-stage
 
-      - name: Upload ke nodejs/aufan/ via FTPS (lftp)
-        shell: bash
-        run: |
-          lftp -u "${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }}" \
-            -e "
-              set ftp:ssl-force true;
-              set ssl:verify-certificate no;
-              set net:timeout 30;
-              set net:max-retries 3;
-              set net:reconnect-interval-base 5;
-              mirror --reverse --only-newer --no-perms --parallel=5 \
-                _deploy/nodejs/ nodejs/aufan/;
-              quit
-            " \
-            "${{ secrets.FTP_SERVER }}"
+          # Copy file-file yang dibutuhkan server
+          cp -r .next /tmp/deploy-stage/.next
+          rm -rf /tmp/deploy-stage/.next/cache
+          if [ -d public ]; then cp -r public /tmp/deploy-stage/public; fi
+          if [ -f package.json ]; then cp package.json /tmp/deploy-stage/package.json; fi
+          if [ -f package-lock.json ]; then cp package-lock.json /tmp/deploy-stage/package-lock.json; fi
+          if [ -f server.js ]; then cp server.js /tmp/deploy-stage/server.js; fi
 
-      # STAGE 2: Upload static files ke public_html/aufan/ via FTPS
-      - name: Prepare public_html deploy folder
-        shell: bash
-        run: |
-          set -e
-          mkdir -p _deploy/pubhtml
+          # Checkout atau buat branch deploy
+          git fetch origin deploy 2>/dev/null || true
+          git worktree add /tmp/deploy-worktree deploy 2>/dev/null || \
+            (git branch deploy origin/deploy 2>/dev/null || git branch deploy; \
+             git worktree add /tmp/deploy-worktree deploy)
 
-          if [ -d .builds ]; then cp -r .builds _deploy/pubhtml/.builds; fi
-          if [ -f .htaccess ]; then cp .htaccess _deploy/pubhtml/.htaccess; fi
+          # Hapus isi lama, copy konten baru
+          cd /tmp/deploy-worktree
+          git rm -rf . --quiet 2>/dev/null || true
+          cp -r /tmp/deploy-stage/. .
 
-          echo "public_html deploy folder ready:"
-          ls -la _deploy/pubhtml/
-
-      - name: Upload ke public_html/aufan/ via FTPS (lftp)
-        shell: bash
-        run: |
-          lftp -u "${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }}" \
-            -e "
-              set ftp:ssl-force true;
-              set ssl:verify-certificate no;
-              set net:timeout 30;
-              set net:max-retries 3;
-              set net:reconnect-interval-base 5;
-              mirror --reverse --only-newer --no-perms --parallel=5 \
-                _deploy/pubhtml/ public_html/aufan/;
-              quit
-            " \
-            "${{ secrets.FTP_SERVER }}"
-
-      # STAGE 3: SSH - npm install & restart app
-      - name: SSH - npm install and restart Node.js app
-        shell: bash
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh -p ${{ secrets.SSH_PORT }} \
-            -i ~/.ssh/deploy_key \
-            -o StrictHostKeyChecking=no \
-            -o ConnectTimeout=30 \
-            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
-            "cd ~/nodejs/aufan && npm install --production --prefer-offline && mkdir -p tmp && touch tmp/restart.txt && echo Deploy selesai" \
-            || echo "SSH step gagal - jalankan npm install manual via hPanel Terminal"
-        continue-on-error: true
+          # Commit dan push
+          git add -A
+          if git diff --staged --quiet; then
+            echo "Tidak ada perubahan, skip push"
+          else
+            git commit -m "deploy: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            git push origin deploy
+            echo "Deploy branch updated!"
+          fi
