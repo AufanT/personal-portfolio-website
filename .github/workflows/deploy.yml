@@ -28,14 +28,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
 
-      - name: Setup SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
-
-      # STAGE 1: Upload Node.js files ke nodejs/aufan/ via SCP
+      # STAGE 1: Upload Node.js files ke nodejs/aufan/ via FTPS
       - name: Prepare nodejs deploy folder
         shell: bash
         run: |
@@ -51,15 +44,24 @@ jobs:
           echo "nodejs deploy folder ready:"
           ls -la _deploy/nodejs/
 
-      - name: Upload ke nodejs/aufan/ via SCP
-        run: |
-          scp -P ${{ secrets.SSH_PORT }} \
-            -i ~/.ssh/deploy_key \
-            -o StrictHostKeyChecking=no \
-            -r _deploy/nodejs/. \
-            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/nodejs/aufan/
+      - name: Upload ke nodejs/aufan/ via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./_deploy/nodejs/
+          server-dir: nodejs/aufan/
+          dangerous-clean-slate: false
+          timeout: 300000
+          exclude: |
+            **/.git*
+            **/.env*
+            **/node_modules/**
 
-      # STAGE 2: Upload static files ke public_html/aufan/ via SCP
+      # STAGE 2: Upload static files ke public_html/aufan/ via FTPS
       - name: Prepare public_html deploy folder
         shell: bash
         run: |
@@ -72,19 +74,35 @@ jobs:
           echo "public_html deploy folder ready:"
           ls -la _deploy/pubhtml/
 
-      - name: Upload ke public_html/aufan/ via SCP
-        run: |
-          scp -P ${{ secrets.SSH_PORT }} \
-            -i ~/.ssh/deploy_key \
-            -o StrictHostKeyChecking=no \
-            -r _deploy/pubhtml/. \
-            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/public_html/aufan/
+      - name: Upload ke public_html/aufan/ via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./_deploy/pubhtml/
+          server-dir: public_html/aufan/
+          dangerous-clean-slate: false
+          timeout: 120000
+          exclude: |
+            **/.git*
+            **/.env*
 
       # STAGE 3: SSH - npm install & restart app
+      # Catatan: jika SSH masih timeout, step ini akan gagal
+      # Solusi: jalankan npm install manual di server via hPanel Terminal
       - name: SSH - npm install and restart Node.js app
         run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
           ssh -p ${{ secrets.SSH_PORT }} \
             -i ~/.ssh/deploy_key \
             -o StrictHostKeyChecking=no \
+            -o ConnectTimeout=30 \
             ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
-            "cd ~/nodejs/aufan && npm install --production --prefer-offline && mkdir -p tmp && touch tmp/restart.txt && echo 'Deploy selesai!'"
+            "cd ~/nodejs/aufan && npm install --production --prefer-offline && mkdir -p tmp && touch tmp/restart.txt && echo Deploy selesai" || echo "SSH step gagal - jalankan npm install manual via hPanel Terminal"
+        continue-on-error: true
