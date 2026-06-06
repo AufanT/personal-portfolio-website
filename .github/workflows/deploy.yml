@@ -30,6 +30,7 @@ jobs:
 
       # ─────────────────────────────────────────────
       # STAGE 1: Deploy Node.js runtime ke nodejs/aufan/
+      # node_modules TIDAK diupload — di-install via SSH
       # ─────────────────────────────────────────────
       - name: 📁 Prepare nodejs deploy folder
         shell: bash
@@ -38,7 +39,6 @@ jobs:
           mkdir -p _deploy/nodejs
 
           cp -r .next _deploy/nodejs/.next
-          cp -r node_modules _deploy/nodejs/node_modules
           if [ -d public ]; then cp -r public _deploy/nodejs/public; fi
           if [ -f package.json ]; then cp package.json _deploy/nodejs/package.json; fi
           if [ -f package-lock.json ]; then cp package-lock.json _deploy/nodejs/package-lock.json; fi
@@ -56,10 +56,11 @@ jobs:
           local-dir: ./_deploy/nodejs/
           server-dir: nodejs/aufan/
           dangerous-clean-slate: false
-          timeout: 900000
+          timeout: 300000
           exclude: |
             **/.git*
             **/.env*
+            **/node_modules/**
 
       # ─────────────────────────────────────────────
       # STAGE 2: Deploy static files ke public_html/aufan/
@@ -89,3 +90,22 @@ jobs:
           exclude: |
             **/.git*
             **/.env*
+
+      # ─────────────────────────────────────────────
+      # STAGE 3: SSH ke server — npm install & restart app
+      # ─────────────────────────────────────────────
+      - name: 🔑 SSH — npm install & restart Node.js app
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd ~/nodejs/aufan
+            npm install --production --prefer-offline
+            # Restart app (sesuaikan dengan cara hosting kamu menjalankan Node.js)
+            # Jika pakai passenger/phusion (cPanel style):
+            touch tmp/restart.txt
+            echo "✅ Deploy selesai!"
+
