@@ -4,12 +4,12 @@
   "/admin/form/page": "app/admin/form/page.js",
   "/admin/page": "app/admin/page.js",
   "/admin/portfolio/form/page": "app/admin/portfolio/form/page.js",
-  "/api/deploy/route": "app/api/deploy/route.js",
   "/admin/portfolio/page": "app/admin/portfolio/page.js",
+  "/api/deploy/route": "app/api/deploy/route.js",
   "/page": "app/page.js",
   "/sitemap.xml/route": "app/sitemap.xml/route.js",
   "/portofolio/page": "app/portofolio/page.js",
-  "/diagnose/page": "app/diagnose/page.js",
   "/blog/page": "app/blog/page.js",
+  "/diagnose/page": "app/diagnose/page.js",
   "/blog/[id]/page": "app/blog/[id]/page.js"
 }
