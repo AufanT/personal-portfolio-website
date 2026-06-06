@@ -51,7 +51,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: 65002
           source: "_deploy/nodejs/*"
           target: "nodejs/aufan/"
           strip_components: 2
@@ -75,7 +75,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: 65002
           source: "_deploy/pubhtml/*"
           target: "public_html/aufan/"
           strip_components: 2
@@ -87,7 +87,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: 65002
           script: |
             cd ~/nodejs/aufan
             npm install --production --prefer-offline
