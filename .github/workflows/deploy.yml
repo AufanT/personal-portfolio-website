@@ -28,8 +28,14 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
 
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
       # STAGE 1: Upload Node.js files ke nodejs/aufan/ via SCP
-      # node_modules TIDAK diupload - di-install via SSH
       - name: Prepare nodejs deploy folder
         shell: bash
         run: |
@@ -46,15 +52,12 @@ jobs:
           ls -la _deploy/nodejs/
 
       - name: Upload ke nodejs/aufan/ via SCP
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 65002
-          source: "_deploy/nodejs/*"
-          target: "nodejs/aufan/"
-          strip_components: 2
+        run: |
+          scp -P ${{ secrets.SSH_PORT }} \
+            -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            -r _deploy/nodejs/. \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/nodejs/aufan/
 
       # STAGE 2: Upload static files ke public_html/aufan/ via SCP
       - name: Prepare public_html deploy folder
@@ -70,26 +73,18 @@ jobs:
           ls -la _deploy/pubhtml/
 
       - name: Upload ke public_html/aufan/ via SCP
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 65002
-          source: "_deploy/pubhtml/*"
-          target: "public_html/aufan/"
-          strip_components: 2
+        run: |
+          scp -P ${{ secrets.SSH_PORT }} \
+            -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            -r _deploy/pubhtml/. \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/public_html/aufan/
 
       # STAGE 3: SSH - npm install & restart app
       - name: SSH - npm install and restart Node.js app
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 65002
-          script: |
-            cd ~/nodejs/aufan
-            npm install --production --prefer-offline
-            mkdir -p tmp && touch tmp/restart.txt
-            echo "Deploy selesai!"
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} \
+            -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
+            "cd ~/nodejs/aufan && npm install --production --prefer-offline && mkdir -p tmp && touch tmp/restart.txt && echo 'Deploy selesai!'"
