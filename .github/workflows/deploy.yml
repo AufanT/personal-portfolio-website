@@ -79,6 +79,8 @@ jobs:
           response=$(curl -s -o /tmp/webhook_response.txt -w "%{http_code}" \
             -X POST "${{ secrets.DEPLOY_WEBHOOK_URL }}" \
             -H "x-deploy-token: ${{ secrets.DEPLOY_WEBHOOK_SECRET }}" \
+            -H "User-Agent: Mozilla/5.0 (compatible; GitHub-Actions-Deploy/1.0)" \
+            -H "Accept: application/json" \
             --max-time 60)
 
           echo "HTTP Status: $response"
