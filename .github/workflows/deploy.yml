@@ -71,3 +71,22 @@ jobs:
             git push origin deploy
             echo "Deploy branch updated!"
           fi
+
+      - name: Trigger deploy webhook di server
+        shell: bash
+        run: |
+          echo "Memanggil webhook server..."
+          response=$(curl -s -o /tmp/webhook_response.txt -w "%{http_code}" \
+            -X POST "${{ secrets.DEPLOY_WEBHOOK_URL }}" \
+            -H "x-deploy-token: ${{ secrets.DEPLOY_WEBHOOK_SECRET }}" \
+            --max-time 60)
+
+          echo "HTTP Status: $response"
+          echo "Response: $(cat /tmp/webhook_response.txt)"
+
+          if [ "$response" != "200" ]; then
+            echo "Webhook gagal (HTTP $response) — pull manual diperlukan di server"
+            exit 0
+          fi
+
+          echo "Deploy berhasil!"
