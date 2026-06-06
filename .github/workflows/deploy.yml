@@ -1,4 +1,4 @@
-﻿name: Deploy to Subdomain
+name: Deploy to Subdomain
 
 on:
   push:
@@ -8,6 +8,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Get latest code
         uses: actions/checkout@v4
