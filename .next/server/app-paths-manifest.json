@@ -1,14 +1,14 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
   "/admin/dashboard/page": "app/admin/dashboard/page.js",
+  "/admin/form/page": "app/admin/form/page.js",
   "/admin/page": "app/admin/page.js",
   "/admin/portfolio/form/page": "app/admin/portfolio/form/page.js",
-  "/admin/portfolio/page": "app/admin/portfolio/page.js",
   "/api/deploy/route": "app/api/deploy/route.js",
+  "/admin/portfolio/page": "app/admin/portfolio/page.js",
   "/page": "app/page.js",
   "/portofolio/page": "app/portofolio/page.js",
   "/sitemap.xml/route": "app/sitemap.xml/route.js",
-  "/admin/form/page": "app/admin/form/page.js",
   "/blog/page": "app/blog/page.js",
   "/diagnose/page": "app/diagnose/page.js",
   "/blog/[id]/page": "app/blog/[id]/page.js"
