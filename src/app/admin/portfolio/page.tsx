@@ -11,7 +11,7 @@ import {
   RefreshCw,
   FolderKanban,
 } from 'lucide-react';
-import { supabaseClient } from '@/lib/supabase';
+import { api, ApiError } from '@/lib/api';
 import { useToast, ToastComponent } from '@/components/Toast';
 
 interface Project {
@@ -35,42 +35,45 @@ export default function AdminPortfolioPage() {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabaseClient
-        .from('projects')
-        .select('id, title, category, category_slug, status, is_published, is_featured, created_at')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setProjects(data || []);
-    } catch (err: any) {
-      showToast('Error fetching projects: ' + err.message, 'error');
+      const { projects } = await api.get<{ projects: Project[] }>('/api/projects');
+      setProjects(projects);
+    } catch (err) {
+      if (err instanceof ApiError && err.isUnauthorized) {
+        router.push('/admin');
+        return;
+      }
+      showToast(
+        err instanceof ApiError ? err.message : 'Gagal memuat project.',
+        'error'
+      );
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const initSession = async () => {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
-        router.push('/admin');
-        return;
-      }
-      fetchProjects();
-    };
-    initSession();
+    // Halaman ini kini juga dijaga middleware — dulu /admin/portfolio lolos
+    // dari matcher dan hanya mengandalkan pengecekan di sisi browser.
+    fetchProjects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   const handleDelete = async (id: string, title: string) => {
     if (!confirm(`Hapus project "${title}"? Tindakan ini tidak dapat dibatalkan.`)) return;
     setDeletingId(id);
     try {
-      const { error } = await supabaseClient.from('projects').delete().eq('id', id);
-      if (error) throw error;
+      await api.del(`/api/projects/${id}`);
       setProjects((prev) => prev.filter((p) => p.id !== id));
       showToast(`Project "${title}" berhasil dihapus.`, 'success');
-    } catch (err: any) {
-      showToast('Gagal menghapus: ' + err.message, 'error');
+    } catch (err) {
+      if (err instanceof ApiError && err.isUnauthorized) {
+        router.push('/admin');
+        return;
+      }
+      showToast(
+        err instanceof ApiError ? err.message : 'Gagal menghapus project.',
+        'error'
+      );
     } finally {
       setDeletingId(null);
     }

@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -17,7 +18,7 @@ import {
   Shield,
   FileText,
 } from 'lucide-react';
-import { getSupabaseServerClient } from '@/lib/supabase';
+import { getAdjacentBlogs, getPublishedBlogById } from '@/lib/blogs';
 import BlogTOC from '@/components/BlogTOC';
 
 export const revalidate = 60;
@@ -80,13 +81,13 @@ interface StructuredContent {
 interface Blog {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   subject: string;
-  cover_url: string;
+  cover_url: string | null;
   created_at: string;
   is_published: boolean;
-  content: string | BlogStep[] | StructuredContent;
-  github_url?: string;
+  content: string | BlogStep[] | StructuredContent | null;
+  github_url?: string | null;
 }
 
 interface NavBlog {
@@ -100,53 +101,27 @@ interface Props {
   };
 }
 
-async function getBlog(id: string): Promise<Blog | null> {
-  const supabase = getSupabaseServerClient();
-  const { data, error } = await supabase
-    .from('blogs')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-  if (error || !data) {
-    console.error('Error fetching blog detail:', error);
+/**
+ * Dibungkus `cache()` supaya `generateMetadata` dan komponen halaman berbagi
+ * satu hasil query, bukan dua kali memukul database untuk request yang sama.
+ */
+const getBlog = cache(async (id: string): Promise<Blog | null> => {
+  try {
+    return (await getPublishedBlogById(id)) as Blog | null;
+  } catch (error) {
+    console.error('Gagal memuat detail artikel:', error);
     return null;
   }
-  return data;
-}
+});
 
-async function getPrevAndNextBlogs(createdAt: string): Promise<{ prev: NavBlog | null; next: NavBlog | null }> {
-  const supabase = getSupabaseServerClient();
-  
+async function getPrevAndNextBlogs(
+  id: string
+): Promise<{ prev: NavBlog | null; next: NavBlog | null }> {
   try {
-    if (!createdAt) {
-      return { prev: null, next: null };
-    }
-
-    // Previous blog (older: created_at < current, ordered desc)
-    const { data: prevData } = await supabase
-      .from('blogs')
-      .select('id, title')
-      .eq('is_published', true)
-      .lt('created_at', createdAt)
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    // Next blog (newer: created_at > current, ordered asc)
-    const { data: nextData } = await supabase
-      .from('blogs')
-      .select('id, title')
-      .eq('is_published', true)
-      .gt('created_at', createdAt)
-      .order('created_at', { ascending: true })
-      .limit(1);
-
-    return {
-      prev: prevData && prevData.length > 0 ? prevData[0] : null,
-      next: nextData && nextData.length > 0 ? nextData[0] : null,
-    };
-  } catch (e) {
-    console.error('Error fetching prev/next blogs:', e);
+    return await getAdjacentBlogs(id);
+  } catch (error) {
+    // Navigasi prev/next hanya pelengkap — artikelnya sendiri tetap tampil.
+    console.error('Gagal memuat navigasi artikel:', error);
     return { prev: null, next: null };
   }
 }
@@ -154,10 +129,17 @@ async function getPrevAndNextBlogs(createdAt: string): Promise<{ prev: NavBlog |
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const blog = await getBlog(params.id);
 
+  // Artikel draft atau id yang tidak ada menampilkan halaman "not found",
+  // dan isi artikelnya tidak pernah dikirim ke browser.
+  //
+  // Catatan: status HTTP-nya tetap 200, bukan 404. `src/app/loading.tsx`
+  // membuat Suspense boundary global, jadi respons sudah mulai di-stream
+  // sebelum kode ini selesai dan status tidak bisa diubah lagi. Perilaku ini
+  // sudah ada sejak sebelum migrasi. Menghapus loading.tsx memang membuat
+  // statusnya benar, tapi build gagal karena form admin bergantung pada
+  // boundary itu untuk useSearchParams() - jadi dibiarkan apa adanya.
   if (!blog) {
-    return {
-      title: 'Blog Not Found',
-    };
+    notFound();
   }
 
   return {
@@ -165,7 +147,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: blog.description || 'Tech blog post detailing cyber-informatics research.',
     openGraph: {
       title: `${blog.title} | Aufan Taufiqurrahman`,
-      description: blog.description,
+      description: blog.description ?? undefined,
       images: blog.cover_url ? [blog.cover_url] : [],
     },
   };
@@ -232,7 +214,7 @@ export default async function BlogDetailPage({ params }: Props) {
     notFound();
   }
 
-  const { prev: prevBlog, next: nextBlog } = await getPrevAndNextBlogs(blog.created_at);
+  const { prev: prevBlog, next: nextBlog } = await getPrevAndNextBlogs(blog.id);
 
   // Parse content defensively
   let structuredContent: StructuredContent | null = null;

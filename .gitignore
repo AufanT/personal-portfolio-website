@@ -1,10 +1,18 @@
 node_modules
 dist
 build
-.env.local
 .DS_Store
 AGENTS.md
 .antigravitycli
 _backup_legacy
 .next
 tsconfig.tsbuildinfo
+# Hasil `node scripts/export-data.mjs` - snapshot berkala, tidak perlu di git.
+# backup/blogs-recovered-*.json justru SENGAJA ikut ter-commit sebagai
+# salinan cadangan laporan praktikum.
+backup/exports
+# Dibangkitkan scripts/make-migration-sql.mjs - memuat hash password admin.
+db/migration.sql
+# Repo ini PUBLIC: semua file env berisi kredensial, kecuali contohnya.
+.env*
+!.env.example

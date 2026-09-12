@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     template: '%s - Aufan Taufiqurrahman',
     default: 'Aufan Taufiqurrahman - Personal Portfolio',
   },
-  description: 'Personal portfolio website of Aufan Taufiqurrahman, an Informatics Student, Web Developer, and Cybersecurity Enthusiast. Built with Next.js, Tailwind CSS, and Supabase.',
-  keywords: ['Aufan Taufiqurrahman', 'Informatics', 'Portfolio', 'Web Developer', 'Cybersecurity', 'Next.js', 'Tailwind', 'Supabase'],
+  description: 'Personal portfolio website of Aufan Taufiqurrahman, an Informatics Student, Web Developer, and Cybersecurity Enthusiast. Built with Next.js, Tailwind CSS, and MySQL.',
+  keywords: ['Aufan Taufiqurrahman', 'Informatics', 'Portfolio', 'Web Developer', 'Cybersecurity', 'Next.js', 'Tailwind', 'MySQL'],
   authors: [{ name: 'Aufan Taufiqurrahman' }],
   icons: {
     icon: '/favicon.svg',

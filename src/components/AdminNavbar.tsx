@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ShieldAlert, FileText, LayoutDashboard, LogOut, FolderKanban, ExternalLink } from 'lucide-react';
-import { supabaseClient } from '@/lib/supabase';
+import { api } from '@/lib/api';
 import ScrambleText from '@/components/ScrambleText';
 
 export default function AdminNavbar() {
@@ -11,7 +11,12 @@ export default function AdminNavbar() {
   const router = useRouter();
 
   const handleLogout = async () => {
-    await supabaseClient.auth.signOut();
+    try {
+      await api.post('/api/auth/logout');
+    } catch {
+      // Kalau request gagal, tetap pulangkan ke halaman login — middleware
+      // akan menolak masuk lagi selama cookie session tidak valid.
+    }
     router.push('/admin');
     router.refresh();
   };

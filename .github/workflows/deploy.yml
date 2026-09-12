@@ -25,11 +25,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Typecheck
+        run: npm run typecheck
+
+      # Kredensial database TIDAK diperlukan saat build: semua query dijalankan
+      # saat request/revalidate di server, bukan saat kompilasi. DB_* hanya
+      # disetel di Environment Variables Node app di hPanel.
       - name: Build Next.js
         run: npm run build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
 
       - name: Push built files to deploy branch
@@ -47,6 +51,10 @@ jobs:
           cp -r .next /tmp/deploy-stage/.next
           rm -rf /tmp/deploy-stage/.next/cache
           if [ -d public ]; then cp -r public /tmp/deploy-stage/public; fi
+          # scripts/ dan db/ ikut dikirim supaya backup berkala bisa dijalankan
+          # di server (cron hPanel: node scripts/export-data.mjs).
+          if [ -d scripts ]; then cp -r scripts /tmp/deploy-stage/scripts; fi
+          if [ -d db ]; then cp -r db /tmp/deploy-stage/db; fi
           if [ -f package.json ]; then cp package.json /tmp/deploy-stage/package.json; fi
           if [ -f package-lock.json ]; then cp package-lock.json /tmp/deploy-stage/package-lock.json; fi
           if [ -f server.js ]; then cp server.js /tmp/deploy-stage/server.js; fi

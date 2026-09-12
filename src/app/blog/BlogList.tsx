@@ -10,12 +10,12 @@ import ScrambleText from '@/components/ScrambleText';
 interface Blog {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   subject: string;
-  cover_url: string;
+  cover_url: string | null;
   created_at: string;
   is_published: boolean;
-  github_url?: string;
+  github_url?: string | null;
 }
 
 interface BlogListProps {

@@ -17,7 +17,7 @@ import {
   Code,
   Image as ImageIcon,
 } from 'lucide-react';
-import { supabaseClient } from '@/lib/supabase';
+import { api, ApiError } from '@/lib/api';
 import { useToast, ToastComponent } from '@/components/Toast';
 import ImageUpload from '@/components/ImageUpload';
 import CodeTextarea from '@/components/CodeTextarea';
@@ -608,26 +608,22 @@ function AdminFormContent() {
   const lt = makeHandlers(setLatihanTugas);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) { router.push('/admin'); return; }
-      if (blogId) {
-        loadBlogData(blogId);
-      } else {
-        setTujuan(['']);
-        setAlatBahan([{ name: '', icon: 'laptop' }]);
-        setLangkahKerja([{ title: '', blocks: [], subtitles: [] }]);
-        setLatihanTugas([{ title: '', blocks: [], subtitles: [] }]);
-      }
-    };
-    checkAuth();
+    // Middleware menjaga akses ke halaman ini; di sini cukup memuat data.
+    if (blogId) {
+      loadBlogData(blogId);
+    } else {
+      setTujuan(['']);
+      setAlatBahan([{ name: '', icon: 'laptop' }]);
+      setLangkahKerja([{ title: '', blocks: [], subtitles: [] }]);
+      setLatihanTugas([{ title: '', blocks: [], subtitles: [] }]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blogId, router]);
 
   const loadBlogData = async (id: string) => {
     setFetching(true);
     try {
-      const { data, error } = await supabaseClient.from('blogs').select('*').eq('id', id).single();
-      if (error) throw error;
+      const { blog: data } = await api.get<{ blog: any }>(`/api/blogs/${id}`);
       if (data) {
         setTitle(data.title ?? '');
         setDescription(data.description ?? '');
@@ -662,8 +658,15 @@ function AdminFormContent() {
           setLatihanTugas([{ title: '', blocks: [], subtitles: [] }]);
         }
       }
-    } catch (err: any) {
-      showToast('Gagal memuat data: ' + err.message, 'error');
+    } catch (err) {
+      if (err instanceof ApiError && err.isUnauthorized) {
+        router.push('/admin');
+        return;
+      }
+      showToast(
+        'Gagal memuat data: ' + (err instanceof Error ? err.message : String(err)),
+        'error'
+      );
       setTimeout(() => router.push('/admin/dashboard'), 1500);
     } finally {
       setFetching(false);
@@ -752,17 +755,22 @@ function AdminFormContent() {
     };
 
     try {
-      let result;
       if (blogId) {
-        result = await supabaseClient.from('blogs').update(payload).eq('id', blogId);
+        await api.put(`/api/blogs/${blogId}`, payload);
       } else {
-        result = await supabaseClient.from('blogs').insert([payload]);
+        await api.post('/api/blogs', payload);
       }
-      if (result.error) throw result.error;
       showToast('Artikel berhasil disimpan!', 'success');
       setTimeout(() => { router.push('/admin/dashboard'); router.refresh(); }, 1500);
-    } catch (err: any) {
-      showToast('Gagal menyimpan artikel: ' + err.message, 'error');
+    } catch (err) {
+      if (err instanceof ApiError && err.isUnauthorized) {
+        router.push('/admin');
+        return;
+      }
+      showToast(
+        'Gagal menyimpan artikel: ' + (err instanceof Error ? err.message : String(err)),
+        'error'
+      );
     } finally {
       setLoading(false);
     }

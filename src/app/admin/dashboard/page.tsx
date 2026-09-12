@@ -13,16 +13,16 @@ import {
   RefreshCw,
   Terminal,
 } from 'lucide-react';
-import { supabaseClient } from '@/lib/supabase';
+import { api, ApiError } from '@/lib/api';
 import { useToast, ToastComponent } from '@/components/Toast';
 import { motion } from 'framer-motion';
 
 interface Blog {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   subject: string;
-  cover_url: string;
+  cover_url: string | null;
   created_at: string;
   is_published: boolean;
 }
@@ -39,42 +39,43 @@ export default function AdminDashboardPage() {
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabaseClient
-        .from('blogs')
-        .select('id, title, description, subject, cover_url, created_at, is_published')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setBlogs(data || []);
-    } catch (err: any) {
-      showToast('Error fetching blogs: ' + err.message, 'error');
+      const { blogs } = await api.get<{ blogs: Blog[] }>('/api/blogs');
+      setBlogs(blogs);
+    } catch (err) {
+      if (err instanceof ApiError && err.isUnauthorized) {
+        router.push('/admin');
+        return;
+      }
+      showToast(
+        err instanceof ApiError ? err.message : 'Gagal memuat artikel.',
+        'error'
+      );
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const initSession = async () => {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
-        router.push('/admin');
-        return;
+    // Middleware sudah memastikan halaman ini hanya terbuka untuk admin yang
+    // login; permintaan session di sini hanya untuk menampilkan email SYSOP.
+    let active = true;
+
+    const init = async () => {
+      try {
+        const session = await api.get<{ email: string }>('/api/auth/session');
+        if (active) setUserEmail(session.email);
+      } catch {
+        // Bukan hal fatal — label SYSOP saja yang tidak tampil.
       }
-      setUserEmail(session.user?.email || null);
-      fetchBlogs();
+      if (active) fetchBlogs();
     };
 
-    initSession();
-
-    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        router.push('/admin');
-      }
-    });
+    init();
 
     return () => {
-      subscription.unsubscribe();
+      active = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   const handleDelete = async (id: string, title: string) => {
@@ -82,22 +83,22 @@ export default function AdminDashboardPage() {
 
     setDeletingId(id);
     try {
-      const { error } = await supabaseClient
-        .from('blogs')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
+      await api.del(`/api/blogs/${id}`);
       setBlogs((prev) => prev.filter((blog) => blog.id !== id));
       showToast(`Artikel "${title}" berhasil dihapus.`, 'success');
-    } catch (err: any) {
-      showToast('Gagal menghapus artikel: ' + err.message, 'error');
+    } catch (err) {
+      if (err instanceof ApiError && err.isUnauthorized) {
+        router.push('/admin');
+        return;
+      }
+      showToast(
+        err instanceof ApiError ? err.message : 'Gagal menghapus artikel.',
+        'error'
+      );
     } finally {
       setDeletingId(null);
     }
   };
-
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('id-ID', {
@@ -213,14 +214,16 @@ export default function AdminDashboardPage() {
                       </td>
                       <td className="py-4 px-6 text-right">
                         <div className="flex items-center justify-end gap-2.5">
-                          <Link
-                            href={`/blog/${blog.id}`}
-                            target="_blank"
-                            title="View live post"
-                            className="w-8 h-8 rounded border border-outline-variant/30 hover:border-primary-container/60 hover:text-primary-container flex items-center justify-center transition-colors"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Link>
+                          {blog.is_published && (
+                            <Link
+                              href={`/blog/${blog.id}`}
+                              target="_blank"
+                              title="View live post"
+                              className="w-8 h-8 rounded border border-outline-variant/30 hover:border-primary-container/60 hover:text-primary-container flex items-center justify-center transition-colors"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Link>
+                          )}
                           <Link
                             href={`/admin/form?id=${blog.id}`}
                             title="Edit record"

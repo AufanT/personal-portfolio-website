@@ -9,7 +9,7 @@ import {
   RefreshCw,
   FolderOpen,
 } from 'lucide-react';
-import { supabaseClient } from '@/lib/supabase';
+import { api, ApiError } from '@/lib/api';
 import { useToast, ToastComponent } from '@/components/Toast';
 import ImageUpload from '@/components/ImageUpload';
 
@@ -43,29 +43,17 @@ export default function PortfolioFormPage() {
   const { toast, showToast, setToast } = useToast();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
-        router.push('/admin');
-        return;
-      }
-      if (projectId) {
-        loadProject(projectId);
-      }
-    };
-    checkAuth();
+    // Middleware menjaga akses ke halaman ini; di sini cukup memuat data.
+    if (projectId) {
+      loadProject(projectId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, router]);
 
   const loadProject = async (id: string) => {
     setFetching(true);
     try {
-      const { data, error } = await supabaseClient
-        .from('projects')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
+      const { project: data } = await api.get<{ project: any }>(`/api/projects/${id}`);
       if (data) {
         setTitle(data.title || '');
         setCategory(data.category || 'Web Development');
@@ -79,8 +67,15 @@ export default function PortfolioFormPage() {
         setIsPublished(data.is_published || false);
         setIsFeatured(data.is_featured || false);
       }
-    } catch (err: any) {
-      showToast('Gagal memuat data: ' + err.message, 'error');
+    } catch (err) {
+      if (err instanceof ApiError && err.isUnauthorized) {
+        router.push('/admin');
+        return;
+      }
+      showToast(
+        'Gagal memuat data: ' + (err instanceof Error ? err.message : String(err)),
+        'error'
+      );
     } finally {
       setFetching(false);
     }
@@ -116,22 +111,26 @@ export default function PortfolioFormPage() {
     };
 
     try {
-      let result;
       if (projectId) {
-        result = await supabaseClient.from('projects').update(payload).eq('id', projectId);
+        await api.put(`/api/projects/${projectId}`, payload);
       } else {
-        result = await supabaseClient.from('projects').insert([payload]);
+        await api.post('/api/projects', payload);
       }
-
-      if (result.error) throw result.error;
 
       showToast('Project berhasil disimpan!', 'success');
       setTimeout(() => {
         router.push('/admin/portfolio');
         router.refresh();
       }, 1500);
-    } catch (err: any) {
-      showToast('Gagal menyimpan: ' + err.message, 'error');
+    } catch (err) {
+      if (err instanceof ApiError && err.isUnauthorized) {
+        router.push('/admin');
+        return;
+      }
+      showToast(
+        'Gagal menyimpan: ' + (err instanceof Error ? err.message : String(err)),
+        'error'
+      );
     } finally {
       setLoading(false);
     }

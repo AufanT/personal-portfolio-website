@@ -1,9 +1,17 @@
 import type { Metadata } from 'next';
-import { getSupabaseServerClient } from '@/lib/supabase';
+import { getPublishedBlogs } from '@/lib/blogs';
 import BlogList from './BlogList';
 import RippleSection from '@/components/RippleSection';
 
-export const revalidate = 60;
+/**
+ * Dirender per request, bukan ISR.
+ *
+ * Build berjalan di GitHub Actions yang tidak punya akses ke MySQL milik
+ * hosting, jadi prerender saat build akan menghasilkan halaman KOSONG yang
+ * lalu tersaji ke pengunjung pertama sampai revalidasi pertama terjadi.
+ * Database ada di localhost server yang sama, jadi query per request murah.
+ */
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Blog',
@@ -15,18 +23,14 @@ export const metadata: Metadata = {
 };
 
 async function getBlogs() {
-  const supabase = getSupabaseServerClient();
-  const { data, error } = await supabase
-    .from('blogs')
-    .select('*')
-    .eq('is_published', true)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Supabase blogs fetch error:', error);
+  try {
+    return await getPublishedBlogs();
+  } catch (error) {
+    // Halaman tetap dirender walau database sedang tidak bisa dihubungi,
+    // supaya kunjungan tidak berujung error page.
+    console.error('Gagal memuat daftar artikel:', error);
     return [];
   }
-  return data || [];
 }
 
 export default async function BlogPage() {

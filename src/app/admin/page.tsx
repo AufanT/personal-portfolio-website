@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ShieldAlert, ArrowRight, ArrowLeft, RefreshCw, KeyRound, Mail } from 'lucide-react';
 import Link from 'next/link';
-import { supabaseClient } from '@/lib/supabase';
+import { api, ApiError } from '@/lib/api';
 import { motion } from 'framer-motion';
 
 export default function AdminLoginPage() {
@@ -14,16 +14,9 @@ export default function AdminLoginPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Redirect to dashboard if user is already logged in
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) {
-        router.push('/admin/dashboard');
-      }
-    };
-    checkSession();
-  }, [router]);
+  // Middleware sudah memantulkan sesi yang masih hidup dari /admin ke
+  // /admin/dashboard sebelum halaman ini dirender, jadi tidak perlu lagi
+  // pengecekan session di sisi browser seperti pada versi Supabase.
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,25 +24,13 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const { error } = await supabaseClient.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        const errMap: Record<string, string> = {
-          'Invalid login credentials': 'Email atau password salah.',
-          'Email not confirmed': 'Email belum dikonfirmasi. Cek inbox Anda.',
-          'Too many requests': 'Terlalu banyak percobaan. Silakan coba lagi nanti.',
-        };
-        setErrorMsg(errMap[error.message] || error.message);
-        setLoading(false);
-      } else {
-        router.push('/admin/dashboard');
-        router.refresh();
-      }
-    } catch (err: any) {
-      setErrorMsg('Terdapat kesalahan koneksi ke server.');
+      await api.post('/api/auth/login', { email, password });
+      router.push('/admin/dashboard');
+      router.refresh();
+    } catch (err) {
+      setErrorMsg(
+        err instanceof ApiError ? err.message : 'Terdapat kesalahan koneksi ke server.'
+      );
       setLoading(false);
     }
   };

@@ -8,7 +8,7 @@ interface Project {
   id: string;
   title: string;
   category: string;
-  description: string;
+  description: string | null;
   image_url: string | null;
   demo_url: string | null;
   github_url: string | null;
