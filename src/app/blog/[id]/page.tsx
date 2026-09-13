@@ -129,15 +129,13 @@ async function getPrevAndNextBlogs(
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const blog = await getBlog(params.id);
 
-  // Artikel draft atau id yang tidak ada menampilkan halaman "not found",
-  // dan isi artikelnya tidak pernah dikirim ke browser.
+  // Artikel draft atau id yang tidak ada dijawab 404, dan isi artikelnya
+  // tidak pernah dikirim ke browser.
   //
-  // Catatan: status HTTP-nya tetap 200, bukan 404. `src/app/loading.tsx`
-  // membuat Suspense boundary global, jadi respons sudah mulai di-stream
-  // sebelum kode ini selesai dan status tidak bisa diubah lagi. Perilaku ini
-  // sudah ada sejak sebelum migrasi. Menghapus loading.tsx memang membuat
-  // statusnya benar, tapi build gagal karena form admin bergantung pada
-  // boundary itu untuk useSearchParams() - jadi dibiarkan apa adanya.
+  // Jangan tambahkan src/app/loading.tsx lagi: Suspense boundary global dari
+  // file itu membuat respons mulai di-stream sebelum notFound() berjalan,
+  // sehingga halaman "not found" terkirim dengan status 200. File itu juga
+  // mengacaukan transisi halaman di src/components/Shell.tsx.
   if (!blog) {
     notFound();
   }

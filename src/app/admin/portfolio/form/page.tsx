@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -22,7 +22,7 @@ const CATEGORIES = [
   { name: 'Other', slug: 'other' },
 ];
 
-export default function PortfolioFormPage() {
+function PortfolioFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const projectId = searchParams.get('id');
@@ -271,5 +271,26 @@ export default function PortfolioFormPage() {
 
       {toast && <ToastComponent toast={toast} onClose={() => setToast(null)} />}
     </div>
+  );
+}
+
+/**
+ * useSearchParams() wajib berada di dalam Suspense boundary agar halaman ini
+ * bisa diprerender. Sebelumnya boundary itu disediakan diam-diam oleh
+ * src/app/loading.tsx; sejak file itu dihapus, boundary-nya dipasang di sini,
+ * sama seperti /admin/form.
+ */
+export default function PortfolioFormPage() {
+  return (
+    <Suspense fallback={
+      <div className="cyber-grid min-h-screen py-12 flex items-center justify-center relative">
+        <div className="text-center font-mono text-sm text-on-surface-variant flex flex-col items-center gap-3 relative z-10">
+          <RefreshCw className="w-8 h-8 animate-spin text-primary-container" />
+          <span>LOADING_EDITOR_DEPENDENCIES...</span>
+        </div>
+      </div>
+    }>
+      <PortfolioFormContent />
+    </Suspense>
   );
 }
