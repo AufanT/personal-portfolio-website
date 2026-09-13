@@ -10,8 +10,8 @@ import PortfolioView from './PortfolioView';
  * sampai ke browser — dan versi server ini juga menghilangkan kedipan
  * loading serta membuat isi galeri terbaca oleh crawler.
  *
- * force-dynamic, bukan ISR: build di CI tidak bisa menghubungi database, jadi
- * prerender saat build hanya akan mencache galeri kosong.
+ * force-dynamic, bukan ISR: lingkungan build tidak dijamin bisa menghubungi
+ * database, jadi prerender saat build bisa mencache galeri kosong.
  */
 export const dynamic = 'force-dynamic';
 

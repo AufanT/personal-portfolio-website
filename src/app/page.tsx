@@ -5,8 +5,9 @@ import HomeView, { type Project } from './HomeView';
  * Homepage. Project unggulan diambil di server lalu diturunkan sebagai props
  * ke HomeView (Client Component) yang memegang seluruh animasi dan interaksi.
  */
-// force-dynamic, bukan ISR: build di CI tidak punya akses database, sehingga
-// prerender saat build akan mencache homepage tanpa panel project.
+// force-dynamic, bukan ISR: lingkungan build tidak dijamin bisa menghubungi
+// database, sehingga prerender saat build bisa mencache homepage tanpa panel
+// project.
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {

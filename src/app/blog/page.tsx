@@ -6,9 +6,9 @@ import RippleSection from '@/components/RippleSection';
 /**
  * Dirender per request, bukan ISR.
  *
- * Build berjalan di GitHub Actions yang tidak punya akses ke MySQL milik
- * hosting, jadi prerender saat build akan menghasilkan halaman KOSONG yang
- * lalu tersaji ke pengunjung pertama sampai revalidasi pertama terjadi.
+ * Lingkungan build tidak dijamin bisa menghubungi MySQL, jadi prerender saat
+ * build berisiko menghasilkan halaman KOSONG yang lalu tersaji ke pengunjung
+ * pertama sampai revalidasi pertama terjadi.
  * Database ada di localhost server yang sama, jadi query per request murah.
  */
 export const dynamic = 'force-dynamic';

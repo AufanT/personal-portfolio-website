@@ -28,7 +28,7 @@
 | **Nama** | Aufan Taufiqurrahman |
 | **NIM** | 2411532011 |
 | **Domain** | [aufan.ifportofolio.com](https://aufan.ifportofolio.com) |
-| **Hosting** | Hostinger shared hosting (hPanel, Node.js + Passenger) |
+| **Hosting** | Hostinger Node.js web app (hPanel) |
 
 ## Deskripsi
 
@@ -53,7 +53,7 @@ Tema *dark mode* dengan aksen hijau neon `#11cf3d`.
 | Database | MySQL (`mysql2`) — satu server dengan aplikasi |
 | Auth admin | Session cookie HMAC-SHA256, password scrypt |
 | Upload gambar | Cloudinary (upload widget) |
-| Deploy | GitHub Actions → branch `deploy` → webhook → Passenger restart |
+| Deploy | Hostinger auto-deploy: setiap push ke `main` dibangun ulang otomatis |
 
 > Sebelumnya backend memakai Supabase. Migrasi ke MySQL dilakukan pada 2026-09-12 karena
 > project Supabase free tier dipause saat jarang diakses lalu dihapus permanen — yang
@@ -70,7 +70,7 @@ src/
 │   ├── blog/                 # daftar & detail laporan praktikum
 │   ├── portofolio/           # galeri project
 │   ├── admin/                # login + CRUD blog & project
-│   ├── api/                  # auth, blogs, projects, deploy
+│   ├── api/                  # auth, blogs, projects
 │   └── diagnose/             # alat diagnosa database (admin-only)
 ├── components/
 ├── hooks/
@@ -98,25 +98,35 @@ npm run admin:create -- you@mail.com "password-yang-panjang"
 npm run dev                    # http://localhost:3000
 ```
 
+## Deploy
+
+Situs di-deploy sebagai **Node.js web app** di Hostinger yang terhubung ke repo GitHub ini
+(branch `main`, preset Next.js). Setiap push ke `main` otomatis dibangun ulang dan dipasang
+oleh Hostinger — tidak ada GitHub Actions atau langkah manual.
+
+Environment variable diatur di dashboard app → **Environment variables**; menyimpannya
+memicu deploy ulang. Restart tanpa deploy: klik badge **Running** → **Restart**.
+
 ## Setup Database di Hostinger
 
-Cara paling mudah di shared hosting, tanpa perlu mengaktifkan Remote MySQL:
+Cara paling mudah, tanpa terminal dan tanpa mengaktifkan Remote MySQL:
 
 ```bash
-npm run db:sql -- you@mail.com "password-yang-panjang"
+node scripts/make-migration-sql.mjs you@mail.com "password-yang-panjang"
 ```
 
 Perintah itu menghasilkan `db/migration.sql` (skema + user admin + laporan praktikum).
-Buka **hPanel → Databases → phpMyAdmin**, pilih database, tab **SQL**, tempel isinya, **Run**.
+Buka **hPanel → Databases → phpMyAdmin**, pilih database, tab **Import**, upload file itu.
+Hapus `db/migration.sql` setelahnya — isinya memuat hash password admin.
 
-Lalu isi environment variable di **hPanel → Node.js app**: `DB_HOST=localhost`, `DB_PORT`,
-`DB_USER`, `DB_PASSWORD`, `DB_NAME`, `SESSION_SECRET`, `NEXT_PUBLIC_SITE_URL`.
+Lalu isi environment variable app: `DB_HOST=localhost`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`,
+`DB_NAME`, `SESSION_SECRET` (dari `npm run secret`), `NEXT_PUBLIC_SITE_URL`.
 
 ## Backup
 
-Shared hosting tidak memberi backup database yang bisa diandalkan, dan data laporan pernah
-hilang sekali. Jalankan berkala (bisa lewat cron job hPanel) lalu simpan hasilnya di luar
-server:
+Data laporan pernah hilang sekali karena bergantung pada satu penyedia. Backup secara berkala
+dan simpan hasilnya di luar server. Tanpa terminal, cara termudah adalah **phpMyAdmin → Export**.
+Dari laptop (dengan Remote MySQL aktif) bisa juga:
 
 ```bash
 npm run db:export     # -> backup/exports/blogs-YYYY-MM-DD.json
