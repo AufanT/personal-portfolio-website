@@ -402,3 +402,42 @@
 }
 .lightbox-nav:hover,
 .lightbox-nav:focus-visible { color: #39ff14; border-color: rgba(57, 255, 20, 0.5); outline: none; }
+
+/* =====================================================================
+ * Homepage
+ * ===================================================================== */
+/* Tombol hero: mengisi kolom grid sehingga "Hire me" dan "View Source" sama besar. */
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  white-space: nowrap;
+}
+
+/* Avatar panel About membesar saat di-hover. */
+.avatar-hover {
+  transform-origin: 50% 60%;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@media (hover: hover) {
+  .avatar-hover:hover { transform: scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .avatar-hover { transition: width 0.3s; }
+  .avatar-hover:hover { transform: none; }
+}
+
+/* Pudar tepi kanan panel About — cerminan mask tepi kiri BackgroundRippleEffect
+   (transparan 0 → 0,3 di 20vh → penuh di 45vh), dibalik menjadi warna latar. */
+.panel-edge-fade-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 45vh;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to left, #131313 0, rgba(19, 19, 19, 0.7) 20vh, rgba(19, 19, 19, 0) 45vh);
+}

@@ -7,7 +7,6 @@ import {
   ArrowRight,
   Github,
   Mail,
-  Phone,
   MapPin,
   Instagram,
   ShieldCheck,
@@ -186,7 +185,7 @@ export default function HomeView({ featuredProjects }: HomeViewProps) {
         id: 'view-all',
         content: (
           <div className="relative w-full h-full flex flex-col items-center justify-center gap-6 px-margin-mobile md:px-margin-desktop overflow-hidden">
-            <BackgroundRippleEffect onCellClick={() => {}} />
+            <BackgroundRippleEffect />
             <div className="relative z-10 flex flex-col items-center gap-6">
               <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-primary-container uppercase">
                 EXPLORE MORE
@@ -230,9 +229,7 @@ export default function HomeView({ featuredProjects }: HomeViewProps) {
     <div className="w-full flex flex-col items-center">
       {/* Hero Section */}
       <section className="w-full min-h-screen relative flex flex-col justify-center items-center py-16 px-6 overflow-hidden bg-background">
-        <BackgroundRippleEffect
-          onCellClick={() => window.dispatchEvent(new CustomEvent('music:hero-play'))}
-        />
+        <BackgroundRippleEffect />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -252,12 +249,13 @@ export default function HomeView({ featuredProjects }: HomeViewProps) {
           </h2>
 
           <p className="font-sans text-base md:text-lg text-outline max-w-2xl mt-4 leading-relaxed">
-            Informatics Student, Web Developer, and Tech Enthusiast. Building performant, clean, and
-            secure web applications with high-fidelity coding style.
+            Building performant, clean, and secure web applications with high-fidelity coding style.
           </p>
 
-          <div className="flex flex-wrap gap-4 mt-8 justify-center">
-            <a href="#contact" className="btn-neon flex items-center gap-2">
+          {/* inline-grid dua kolom 1fr: kedua tombol otomatis selebar tombol yang
+              paling lebar, jadi ukurannya selalu sama walau teksnya berbeda. */}
+          <div className="inline-grid grid-cols-1 min-[420px]:grid-cols-2 gap-4 mt-8">
+            <a href="#contact" className="btn-neon hero-cta">
               <span>&gt; <ScrambleText>Hire me</ScrambleText></span>
               <ArrowRight className="w-4 h-4" />
             </a>
@@ -265,7 +263,7 @@ export default function HomeView({ featuredProjects }: HomeViewProps) {
               href="https://github.com/AufanT"
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-neon-outline flex items-center gap-2"
+              className="btn-neon-outline hero-cta"
             >
               <Github className="w-4 h-4" />
               <span><ScrambleText>View Source</ScrambleText></span>
@@ -351,17 +349,6 @@ export default function HomeView({ featuredProjects }: HomeViewProps) {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 rounded border border-primary-container/20 bg-primary-container/5 flex items-center justify-center text-primary-container shadow-[0_0_10px_rgba(57,255,20,0.1)]">
-                    <Phone className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-mono text-xs text-on-surface-variant font-bold uppercase tracking-wider">
-                      Phone / WhatsApp
-                    </h4>
-                    <p className="font-sans text-sm text-white mt-0.5">+62 895 0862 7517</p>
-                  </div>
-                </div>
               </div>
 
               <div className="mt-12 pt-6 border-t border-outline-variant/20">

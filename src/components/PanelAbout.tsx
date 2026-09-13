@@ -89,7 +89,16 @@ export default function PanelAbout() {
   const isInView = useInView(containerRef, { once: true, amount: 0.1 });
 
   return (
-    <div className="w-full px-5 sm:px-8 md:px-10 lg:px-12 max-w-container-max mx-auto pt-6 pb-6 lg:pb-0 relative overflow-hidden">
+    // Root selebar panel, bukan dibatasi max-w-container-max: overflow-hidden di
+    // sini memotong watermark di tepi LAYAR. Dulu batas lebar dan overflow-hidden
+    // ada di elemen yang sama, sehingga di layar >1280px tulisan latar terpotong
+    // di tepi wadah konten dan tidak menyentuh sisi kiri-kanan layar.
+    <div className="w-full pt-6 pb-6 lg:pb-0 relative overflow-hidden">
+      {/* Pudar di tepi kanan (desktop): watermark tenggelam ke latar gelap di
+          batas dengan panel project, cerminan pudar tepi kiri grid project.
+          z-[1]: di atas watermark (z-0), di bawah avatar dan kartu (z-10). */}
+      <div aria-hidden="true" className="panel-edge-fade-right hidden lg:block" />
+      <div className="w-full px-5 sm:px-8 md:px-10 lg:px-12 max-w-container-max mx-auto">
       
       {/* Custom Styles for Background Marquee Scroll */}
       <style dangerouslySetInnerHTML={{ __html: `
@@ -113,7 +122,9 @@ export default function PanelAbout() {
             className="absolute pointer-events-none overflow-hidden z-0 flex items-center select-none"
             style={{
               left: '50%',
-              width: '100vw',
+              // 200vw: tetap menutup kedua sisi layar walau kolom avatar tidak
+              // tepat di tengah; kelebihannya dipotong root panel.
+              width: '200vw',
               transform: 'translateX(-50%)',
               height: '100%',
             }}
@@ -129,11 +140,13 @@ export default function PanelAbout() {
           </div>
 
           <div 
-            className="relative overflow-visible flex items-center justify-center z-10 w-[400px] sm:w-[600px] md:w-[740px] lg:w-[360px] xl:w-[420px] h-[480px] sm:h-[680px] md:h-[840px] lg:h-[410px] xl:h-[470px] max-w-full"
+            // avatar-hover (globals.css) memperbesar avatar saat di-hover. Scale
+            // dipasang di elemen ber-mask ini agar gradasi pudarnya ikut membesar;
+            // transform glitch ada di elemen anak sehingga tidak saling menimpa.
+            className="avatar-hover relative overflow-visible flex items-center justify-center z-10 w-[400px] sm:w-[600px] md:w-[740px] lg:w-[360px] xl:w-[420px] h-[480px] sm:h-[680px] md:h-[840px] lg:h-[410px] xl:h-[470px] max-w-full"
             style={{ 
               maskImage: 'linear-gradient(to bottom, black 55%, transparent 85%)',
               WebkitMaskImage: 'linear-gradient(to bottom, black 55%, transparent 85%)',
-              transition: 'width 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
             {/* Skew/Jitter Wrapper */}
@@ -221,6 +234,7 @@ export default function PanelAbout() {
           ))}
         </div>
 
+      </div>
       </div>
     </div>
   );

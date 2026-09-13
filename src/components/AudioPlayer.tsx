@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { announceMusicState, MUSIC_STATE_REQUEST_EVENT, MUSIC_TOGGLE_EVENT } from '@/lib/music';
 
 const playlist = ['/music/song.mp3'];
 
@@ -40,6 +41,15 @@ export default function AudioPlayer() {
       audioRef.current.pause();
       localStorage.setItem('musicPlaying', 'false');
     }
+    announceMusicState(isPlaying);
+  }, [isPlaying]);
+
+  // Komponen yang baru dipasang (misalnya grid di panel berikutnya) meminta
+  // status terkini agar label play/pause-nya langsung benar.
+  useEffect(() => {
+    const onRequest = () => announceMusicState(isPlaying);
+    window.addEventListener(MUSIC_STATE_REQUEST_EVENT, onRequest);
+    return () => window.removeEventListener(MUSIC_STATE_REQUEST_EVENT, onRequest);
   }, [isPlaying]);
 
   useEffect(() => {
@@ -58,8 +68,8 @@ export default function AudioPlayer() {
         return !prev;
       });
     };
-    window.addEventListener('music:hero-play', handler);
-    return () => window.removeEventListener('music:hero-play', handler);
+    window.addEventListener(MUSIC_TOGGLE_EVENT, handler);
+    return () => window.removeEventListener(MUSIC_TOGGLE_EVENT, handler);
   }, []);
 
   const handleEnded = () => {

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowRight, Github } from 'lucide-react';
 import ScrambleText from '@/components/ScrambleText';
+import BackgroundRippleEffect from '@/components/ui/BackgroundRippleEffect';
 
 interface Project {
   id: string;
@@ -20,9 +21,16 @@ interface PanelFeaturedProjectProps {
 
 export default function PanelFeaturedProject({ project }: PanelFeaturedProjectProps) {
   return (
-    <div className="w-full h-full flex flex-col md:flex-row overflow-hidden">
+    <div className="relative w-full h-full flex flex-col md:flex-row overflow-hidden">
+      {/* Latar grid yang sama dengan panel "Explore More" di ujung scroll
+          horizontal, sehingga sisi teks setiap project terlihat menyambung
+          dengannya. Klik kotak kosong memutar/menjeda musik. Tepi kiri
+          memudar agar batas dengan panel sebelumnya lembut, sama seperti
+          batas bawah hero. */}
+      <BackgroundRippleEffect fadeEdges={['bottom', 'left']} />
+
       {/* Image — compact height on mobile, full height on desktop */}
-      <div className="w-full h-[38vh] md:w-[60%] md:h-full overflow-hidden relative flex-shrink-0 order-1 md:order-2">
+      <div className="w-full h-[38vh] md:w-[60%] md:h-full overflow-hidden relative z-10 flex-shrink-0 order-1 md:order-2">
         <div
           className="absolute inset-0 w-full h-full parallax-image will-change-transform"
           style={{
@@ -72,7 +80,11 @@ export default function PanelFeaturedProject({ project }: PanelFeaturedProjectPr
       </div>
 
       {/* Text — below image on mobile, left panel on desktop */}
-      <div className="w-full flex-1 md:w-[40%] flex flex-col justify-center px-5 sm:px-8 md:px-10 lg:px-14 py-6 md:py-0 order-2 md:order-1">
+      <div className="relative z-10 pointer-events-none w-full flex-1 md:w-[40%] flex flex-col justify-center px-5 sm:px-8 md:px-10 lg:px-14 py-6 md:py-0 order-2 md:order-1">
+        {/* Kolom setinggi panel ini menutupi grid di belakangnya. Kolomnya tembus
+            klik, hanya konten di bawah ini yang menangkap klik, sehingga area
+            kosong di atas dan bawah teks tetap bisa memutar musik. */}
+        <div className="pointer-events-auto flex flex-col">
         <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-primary-container uppercase mb-2 md:mb-3">
           {project.category || 'Project'}
         </span>
@@ -108,6 +120,7 @@ export default function PanelFeaturedProject({ project }: PanelFeaturedProjectPr
               <span><ScrambleText>SOURCE</ScrambleText></span>
             </a>
           )}
+        </div>
         </div>
       </div>
     </div>
