@@ -200,19 +200,25 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   const isAdmin = pathname.startsWith('/admin') && pathname !== '/admin';
   const overlayVisible = phase === 'covering' || phase === 'navigating';
 
+  // overflow-x-clip pada <main>: elemen yang sesaat menonjol ke samping (mis.
+  // animasi masuk framer-motion dengan x: ±20 sebelum terlihat di layar) tidak
+  // lagi melebarkan halaman. Browser HP tetap mengizinkan geser horizontal
+  // walau <html> overflow-x: hidden, jadi kelebihannya harus dipotong di sini.
+  // "clip", bukan "hidden": tidak membuat scroll container, sehingga
+  // position: sticky di HorizontalSection tetap bekerja.
   return (
     <div onClickCapture={handleCaptureClick}>
       {isAdmin ? (
         <>
           <AdminNavbar />
-          <main id="main-content" className="flex-grow pt-16 flex flex-col min-h-screen">
+          <main id="main-content" className="flex-grow pt-16 flex flex-col min-h-screen overflow-x-clip">
             {children}
           </main>
         </>
       ) : (
         <>
           <Navbar />
-          <main id="main-content" className="flex-grow flex flex-col">
+          <main id="main-content" className="flex-grow flex flex-col overflow-x-clip">
             {children}
           </main>
           <AudioPlayer />

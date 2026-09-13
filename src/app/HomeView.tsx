@@ -194,16 +194,17 @@ export default function HomeView({ featuredProjects }: HomeViewProps) {
     [featuredProjects]
   );
 
-  // Mobile: all panels stacked — experience & skills included
+  // Mobile: semua panel ditumpuk. Featured Work langsung setelah panel avatar,
+  // sama seperti di desktop di mana project muncul tepat setelah panel About.
   const mobilePanels = useMemo(
     () => [
       { id: 'about', content: <PanelAbout /> },
-      { id: 'experience', content: <PanelExperience /> },
-      { id: 'skills', content: <PanelSkills /> },
       {
         id: 'featured-work',
         content: <PanelFeaturedWork projects={featuredProjects} />,
       },
+      { id: 'experience', content: <PanelExperience /> },
+      { id: 'skills', content: <PanelSkills /> },
     ],
     [featuredProjects]
   );

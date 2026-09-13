@@ -1,26 +1,28 @@
 'use client';
 
 const experience = {
-  professional: [
-    {
-      role: 'Frontend Developer Intern',
-      company: 'CyberCorp Inc.',
-      period: '2023',
-      bullets: [
-        'Developed responsive UI components using React and Tailwind CSS.',
-        'Optimized application performance and load times by 20%.',
-        'Collaborated with backend teams on REST API integration.',
-      ],
-    },
-  ],
+  // Disembunyikan sementara (belum ada pengalaman profesional yang ditampilkan).
+  // Aktifkan lagi bersama kartu "// Professional" di bawah.
+  // professional: [
+  //   {
+  //     role: 'Frontend Developer Intern',
+  //     company: 'CyberCorp Inc.',
+  //     period: '2023',
+  //     bullets: [
+  //       'Developed responsive UI components using React and Tailwind CSS.',
+  //       'Optimized application performance and load times by 20%.',
+  //       'Collaborated with backend teams on REST API integration.',
+  //     ],
+  //   },
+  // ],
   organizational: [
     {
-      role: 'Head of Web Development',
-      company: 'Informatics Student Union',
-      period: '2022 - 2023',
+      role: 'Programming Division Staff — Backend',
+      company: 'Operations Department, UKM Neo Telemetri',
+      period: '2026',
       bullets: [
-        'Led a team of 5 developers to rebuild the student union portal.',
-        'Organized tech workshops for 100+ students covering HTML, CSS, and JS basics.',
+        'Collaborated with team members to build a web portal for incoming students.',
+        'Co-designed the Backend Developer Bootcamp curriculum and served as an instructor.',
       ],
     },
   ],
@@ -42,7 +44,7 @@ export default function PanelExperience() {
 
         {/* Experience Cards Grid — stack on mobile, side by side on md */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          {/* Professional */}
+          {/* Professional — disembunyikan sementara, aktifkan bersama data `professional` di atas.
           <div className="glass-panel p-5 md:p-8">
             <h3 className="font-mono text-xs text-primary-container uppercase tracking-widest border-b border-outline-variant/10 pb-2 mb-4">
               // Professional
@@ -65,6 +67,7 @@ export default function PanelExperience() {
               ))}
             </div>
           </div>
+          */}
 
           {/* Organizational */}
           <div className="glass-panel p-5 md:p-8">

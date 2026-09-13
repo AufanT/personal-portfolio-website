@@ -146,13 +146,13 @@ export default function Navbar() {
                     e.stopPropagation();
                     close();
                   }}
-                  className={`font-mono text-base px-5 py-2.5 rounded-full border inline-flex items-center gap-2 transition-all duration-200 ${
+                  className={`w-full font-mono text-2xl px-4 py-3 rounded-full border flex items-center justify-center gap-2.5 transition-all duration-200 ${
                     loginActive
                       ? 'bg-primary-container text-black border-primary-container'
                       : 'bg-primary-container/10 text-primary-container border-primary-container/40 hover:bg-primary-container hover:text-black'
                   }`}
                 >
-                  <LogIn className="w-4 h-4" aria-hidden="true" />
+                  <LogIn className="w-5 h-5" aria-hidden="true" />
                   <ScrambleText>Login</ScrambleText>
                 </Link>
               </motion.li>
