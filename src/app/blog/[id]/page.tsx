@@ -21,6 +21,8 @@ import {
 import { getAdjacentBlogs, getPublishedBlogById } from '@/lib/blogs';
 import BlogTOC from '@/components/BlogTOC';
 import CodeWindow from '@/components/CodeWindow';
+import ImageLightbox from '@/components/ImageLightbox';
+import ReportImage from '@/components/ReportImage';
 import RichText from '@/components/RichText';
 import { isRichTextEmpty } from '@/lib/rich-text';
 import { numberSections, type ReportSectionKey } from '@/lib/report-sections';
@@ -332,6 +334,7 @@ export default async function BlogDetailPage({ params }: Props) {
       <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background pointer-events-none" />
 
       <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10 w-full">
+        <ImageLightbox>
         {isStructured && structuredContent ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter w-full">
             {/* TOC Sidebar */}
@@ -491,12 +494,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                   );
                                   if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                   if (block.type === 'image') return (
-                                    <div key={bIdx} className="relative rounded-xl overflow-hidden border border-outline-variant bg-black/40 group hover:border-primary-container/40 transition-colors max-w-xl">
-                                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                                      <img src={block.content} alt={`${step.title} visual reference ${bIdx + 1}`}
-                                        loading="lazy" width="800" height="600"
-                                        className="w-full h-auto max-h-[300px] object-contain mx-auto transition-transform duration-300 group-hover:scale-[1.02]" />
-                                    </div>
+                                    <ReportImage key={bIdx} src={block.content} alt={`${step.title} visual reference ${bIdx + 1}`} />
                                   );
                                   return null;
                                 })}
@@ -510,14 +508,9 @@ export default async function BlogDetailPage({ params }: Props) {
                                   ? step.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))
                                   : renderCodeSnippet(step.code)}
                                 {step.images && step.images.length > 0 && (
-                                  <div className={`grid gap-4 mb-4 ${step.images.length === 1 ? 'grid-cols-1 max-w-xl' : 'grid-cols-1 md:grid-cols-2'}`}>
+                                  <div className="flex flex-col items-start gap-4 mb-4">
                                     {step.images.map((imgUrl, imgIdx) => (
-                                      <div key={imgIdx} className="relative rounded-xl overflow-hidden border border-outline-variant bg-black/40 group hover:border-primary-container/40 transition-colors">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={imgUrl} alt={`${step.title} visual reference ${imgIdx + 1}`}
-                                          loading="lazy" width="800" height="600"
-                                          className="w-full h-auto max-h-[300px] object-contain mx-auto transition-transform duration-300 group-hover:scale-[1.02]" />
-                                      </div>
+                                      <ReportImage key={imgIdx} src={imgUrl} alt={`${step.title} visual reference ${imgIdx + 1}`} />
                                     ))}
                                   </div>
                                 )}
@@ -541,12 +534,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                           );
                                           if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                           if (block.type === 'image') return (
-                                            <div key={bIdx} className="relative rounded-lg overflow-hidden border border-outline-variant/20 bg-black/40 max-w-lg">
-                                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                                              <img src={block.content} alt={`${sub.title} view ${bIdx + 1}`}
-                                                loading="lazy" width="800" height="600"
-                                                className="w-full h-auto max-h-[200px] object-contain mx-auto" />
-                                            </div>
+                                            <ReportImage key={bIdx} src={block.content} alt={`${sub.title} view ${bIdx + 1}`} />
                                           );
                                           return null;
                                         })}
@@ -557,14 +545,9 @@ export default async function BlogDetailPage({ params }: Props) {
                                           <RichText value={sub.text} className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed break-words" />
                                         )}
                                         {sub.images && sub.images.length > 0 && (
-                                          <div className={`grid gap-4 mt-2 ${sub.images.length === 1 ? 'grid-cols-1 max-w-lg' : 'grid-cols-1 sm:grid-cols-2'}`}>
+                                          <div className="flex flex-col items-start gap-4 mt-2">
                                             {sub.images.map((imgUrl, imgIdx) => (
-                                              <div key={imgIdx} className="relative rounded-lg overflow-hidden border border-outline-variant/20 bg-black/40">
-                                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                <img src={imgUrl} alt={`${sub.title} view ${imgIdx + 1}`}
-                                                  loading="lazy" width="800" height="600"
-                                                  className="w-full h-auto max-h-[200px] object-contain mx-auto" />
-                                              </div>
+                                              <ReportImage key={imgIdx} src={imgUrl} alt={`${sub.title} view ${imgIdx + 1}`} />
                                             ))}
                                           </div>
                                         )}
@@ -614,12 +597,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                   );
                                   if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                   if (block.type === 'image') return (
-                                    <div key={bIdx} className="relative rounded-xl overflow-hidden border border-outline-variant/20 bg-black/40 max-w-xl">
-                                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                                      <img src={block.content} alt={`${task.title} view ${bIdx + 1}`}
-                                        loading="lazy" width="800" height="600"
-                                        className="w-full h-auto max-h-[300px] object-contain mx-auto" />
-                                    </div>
+                                    <ReportImage key={bIdx} src={block.content} alt={`${task.title} view ${bIdx + 1}`} />
                                   );
                                   return null;
                                 })}
@@ -633,14 +611,9 @@ export default async function BlogDetailPage({ params }: Props) {
                                   ? task.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))
                                   : renderCodeSnippet(task.code)}
                                 {task.images && task.images.length > 0 && (
-                                  <div className={`grid gap-4 mb-4 ${task.images.length === 1 ? 'grid-cols-1 max-w-xl' : 'grid-cols-1 md:grid-cols-2'}`}>
+                                  <div className="flex flex-col items-start gap-4 mb-4">
                                     {task.images.map((imgUrl, imgIdx) => (
-                                      <div key={imgIdx} className="relative rounded-xl overflow-hidden border border-outline-variant/20 bg-black/40">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={imgUrl} alt={`${task.title} view ${imgIdx + 1}`}
-                                          loading="lazy" width="800" height="600"
-                                          className="w-full h-auto max-h-[300px] object-contain mx-auto" />
-                                      </div>
+                                      <ReportImage key={imgIdx} src={imgUrl} alt={`${task.title} view ${imgIdx + 1}`} />
                                     ))}
                                   </div>
                                 )}
@@ -663,12 +636,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                           );
                                           if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                           if (block.type === 'image') return (
-                                            <div key={bIdx} className="relative rounded-lg overflow-hidden border border-outline-variant/20 bg-black/40 max-w-lg">
-                                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                                              <img src={block.content} alt={`${sub.title} view ${bIdx + 1}`}
-                                                loading="lazy" width="800" height="600"
-                                                className="w-full h-auto max-h-[200px] object-contain mx-auto" />
-                                            </div>
+                                            <ReportImage key={bIdx} src={block.content} alt={`${sub.title} view ${bIdx + 1}`} />
                                           );
                                           return null;
                                         })}
@@ -679,14 +647,9 @@ export default async function BlogDetailPage({ params }: Props) {
                                           <RichText value={sub.text} className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed break-words" />
                                         )}
                                         {sub.images && sub.images.length > 0 && (
-                                          <div className={`grid gap-4 mt-2 ${sub.images.length === 1 ? 'grid-cols-1 max-w-lg' : 'grid-cols-1 sm:grid-cols-2'}`}>
+                                          <div className="flex flex-col items-start gap-4 mt-2">
                                             {sub.images.map((imgUrl, imgIdx) => (
-                                              <div key={imgIdx} className="relative rounded-lg overflow-hidden border border-outline-variant/20 bg-black/40">
-                                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                <img src={imgUrl} alt={`${sub.title} view ${imgIdx + 1}`}
-                                                  loading="lazy" width="800" height="600"
-                                                  className="w-full h-auto max-h-[200px] object-contain mx-auto" />
-                                              </div>
+                                              <ReportImage key={imgIdx} src={imgUrl} alt={`${sub.title} view ${imgIdx + 1}`} />
                                             ))}
                                           </div>
                                         )}
@@ -846,17 +809,7 @@ export default async function BlogDetailPage({ params }: Props) {
                         )}
 
                         {step.image_url && (
-                          <div className="relative rounded overflow-hidden border border-outline-variant/20 mb-6 max-h-[400px] bg-black/40">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={step.image_url}
-                              alt={step.title || `Step ${index + 1}`}
-                              loading="lazy"
-                              width="800"
-                              height="600"
-                              className="w-full h-auto max-h-[400px] object-contain mx-auto"
-                            />
-                          </div>
+                          <ReportImage src={step.image_url} alt={step.title || `Step ${index + 1}`} />
                         )}
 
                         {/* Subtitles rendering */}
@@ -871,22 +824,9 @@ export default async function BlogDetailPage({ params }: Props) {
                                   <RichText value={sub.text} className="font-sans text-sm text-on-surface-variant leading-relaxed break-words" />
                                 )}
                                 {sub.images && sub.images.length > 0 && (
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+                                  <div className="flex flex-col items-start gap-4 mt-2">
                                     {sub.images.map((imgUrl, imgIdx) => (
-                                      <div
-                                        key={imgIdx}
-                                        className="relative rounded overflow-hidden border border-outline-variant/20 max-h-[250px] bg-black/40"
-                                      >
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
-                                          src={imgUrl}
-                                          alt={step.title || `Sub-item visual reference`}
-                                          loading="lazy"
-                                          width="800"
-                                          height="600"
-                                          className="w-full h-auto max-h-[250px] object-contain mx-auto"
-                                        />
-                                      </div>
+                                      <ReportImage key={imgIdx} src={imgUrl} alt={step.title || `Sub-item visual reference`} />
                                     ))}
                                   </div>
                                 )}
@@ -950,6 +890,7 @@ export default async function BlogDetailPage({ params }: Props) {
             )}
           </div>
         )}
+        </ImageLightbox>
       </div>
     </div>
   );
