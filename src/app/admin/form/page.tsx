@@ -16,19 +16,33 @@ import {
   ChevronDown,
   Code,
   Image as ImageIcon,
+  GraduationCap,
 } from 'lucide-react';
 import { api, ApiError } from '@/lib/api';
 import { useToast, ToastComponent } from '@/components/Toast';
 import ImageUpload from '@/components/ImageUpload';
 import CodeTextarea from '@/components/CodeTextarea';
+import RichTextEditor from '@/components/RichTextEditor';
+import { CODE_LANGUAGES } from '@/lib/code-languages';
+import { isRichTextEmpty, normaliseRichText } from '@/lib/rich-text';
+import { numberSections, REPORT_SECTIONS } from '@/lib/report-sections';
+
+const REPORT_TABS = REPORT_SECTIONS.map((section) => ({ id: section.key, label: section.tab }));
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface ContentBlock {
   id: string;
   type: 'text' | 'code' | 'image';
+  /** Teks: HTML dari editor rich text. Kode: source code. Gambar: URL. */
   content: string;
+  /** Hanya blok kode: bahasa syntax highlighting, 'auto' = deteksi otomatis. */
+  language?: string;
+  /** Hanya blok kode: judul jendela kode, misalnya "routes/web.php". */
+  filename?: string;
 }
+
+type BlockPatch = Partial<Pick<ContentBlock, 'content' | 'language' | 'filename'>>;
 
 interface SubstepItem {
   title: string;
@@ -65,7 +79,12 @@ function blocksFromLegacy(data: any): ContentBlock[] {
   const blocks: ContentBlock[] = [];
   // If already has blocks array saved, use it
   if (Array.isArray(data.blocks) && data.blocks.length > 0) {
-    return data.blocks.map((b: any) => ({ id: uid(), type: b.type, content: b.content ?? '' }));
+    return data.blocks.map((b: any) => ({
+      id: uid(),
+      type: b.type,
+      content: b.content ?? '',
+      ...(b.type === 'code' ? { language: b.language ?? 'auto', filename: b.filename ?? '' } : {}),
+    }));
   }
   // Old separate arrays: texts → codes → images
   const texts: string[] = data.texts?.length ? data.texts : data.text ? [data.text] : [];
@@ -89,6 +108,11 @@ function normaliseStep(s: any): LangkahItem {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+const newBlock = (type: ContentBlock['type']): ContentBlock =>
+  type === 'code'
+    ? { id: uid(), type, content: '', language: 'auto', filename: '' }
+    : { id: uid(), type, content: '' };
+
 type SetSteps = React.Dispatch<React.SetStateAction<LangkahItem[]>>;
 
 function makeHandlers(set: SetSteps) {
@@ -115,7 +139,7 @@ function makeHandlers(set: SetSteps) {
     upd((p) =>
       p.map((s, idx) =>
         idx === i
-          ? { ...s, blocks: [...s.blocks, { id: uid(), type, content: '' }] }
+          ? { ...s, blocks: [...s.blocks, newBlock(type)] }
           : s
       )
     );
@@ -127,11 +151,11 @@ function makeHandlers(set: SetSteps) {
       )
     );
 
-  const changeBlock = (i: number, bId: string, content: string) =>
+  const changeBlock = (i: number, bId: string, patch: BlockPatch) =>
     upd((p) =>
       p.map((s, idx) =>
         idx === i
-          ? { ...s, blocks: s.blocks.map((b) => (b.id === bId ? { ...b, content } : b)) }
+          ? { ...s, blocks: s.blocks.map((b) => (b.id === bId ? { ...b, ...patch } : b)) }
           : s
       )
     );
@@ -191,7 +215,7 @@ function makeHandlers(set: SetSteps) {
               ...s,
               subtitles: s.subtitles.map((sub, si) =>
                 si === sIdx
-                  ? { ...sub, blocks: [...sub.blocks, { id: uid(), type, content: '' }] }
+                  ? { ...sub, blocks: [...sub.blocks, newBlock(type)] }
                   : sub
               ),
             }
@@ -215,7 +239,7 @@ function makeHandlers(set: SetSteps) {
       )
     );
 
-  const changeSubBlock = (i: number, sIdx: number, bId: string, content: string) =>
+  const changeSubBlock = (i: number, sIdx: number, bId: string, patch: BlockPatch) =>
     upd((p) =>
       p.map((s, idx) =>
         idx === i
@@ -226,7 +250,7 @@ function makeHandlers(set: SetSteps) {
                   ? {
                       ...sub,
                       blocks: sub.blocks.map((b) =>
-                        b.id === bId ? { ...b, content } : b
+                        b.id === bId ? { ...b, ...patch } : b
                       ),
                     }
                   : sub
@@ -279,7 +303,7 @@ function BlockRow({
   onMoveUp,
   onMoveDown,
   onRemove,
-  onChangeContent,
+  onChange,
   stepTitle,
 }: {
   block: ContentBlock;
@@ -288,9 +312,10 @@ function BlockRow({
   onMoveUp: () => void;
   onMoveDown: () => void;
   onRemove: () => void;
-  onChangeContent: (v: string) => void;
+  onChange: (patch: BlockPatch) => void;
   stepTitle?: string;
 }) {
+  const onChangeContent = (content: string) => onChange({ content });
   const meta = BLOCK_META[block.type];
 
   return (
@@ -323,21 +348,43 @@ function BlockRow({
       {/* Center: content */}
       <div className="flex-grow min-w-0">
         {block.type === 'text' && (
-          <textarea
-            placeholder="Tulis penjelasan di sini..."
+          <RichTextEditor
             value={block.content}
-            onChange={(e) => onChangeContent(e.target.value)}
-            className="command-input min-h-[90px] text-sm w-full"
+            onChange={onChangeContent}
+            placeholder="Tulis penjelasan di sini..."
+            minHeight="90px"
           />
         )}
         {block.type === 'code' && (
-          <CodeTextarea
-            value={block.content}
-            onChange={onChangeContent}
-            placeholder="Masukkan code snippet di sini..."
-            className="command-input pl-3 pr-3 w-full"
-            minHeight="110px"
-          />
+          <div className="space-y-2">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <select
+                value={block.language ?? 'auto'}
+                onChange={(e) => onChange({ language: e.target.value })}
+                aria-label="Bahasa kode"
+                className="command-input py-1.5 text-xs sm:w-48 shrink-0"
+              >
+                {CODE_LANGUAGES.map((lang) => (
+                  <option key={lang.value} value={lang.value}>{lang.label}</option>
+                ))}
+              </select>
+              <input
+                type="text"
+                value={block.filename ?? ''}
+                onChange={(e) => onChange({ filename: e.target.value })}
+                placeholder="Nama file (opsional), mis. routes/web.php"
+                aria-label="Nama file"
+                className="command-input py-1.5 text-xs flex-grow font-mono"
+              />
+            </div>
+            <CodeTextarea
+              value={block.content}
+              onChange={onChangeContent}
+              placeholder="Masukkan code snippet di sini..."
+              className="command-input pl-3 pr-3 w-full"
+              minHeight="110px"
+            />
+          </div>
         )}
         {block.type === 'image' && (
           <div className="space-y-2">
@@ -456,7 +503,7 @@ function SubstepCard({
             onMoveUp={() => h.moveSubBlock(stepIdx, subIdx, block.id, -1)}
             onMoveDown={() => h.moveSubBlock(stepIdx, subIdx, block.id, 1)}
             onRemove={() => h.removeSubBlock(stepIdx, subIdx, block.id)}
-            onChangeContent={(v) => h.changeSubBlock(stepIdx, subIdx, block.id, v)}
+            onChange={(patch) => h.changeSubBlock(stepIdx, subIdx, block.id, patch)}
             stepTitle={sub.title}
           />
         ))}
@@ -535,7 +582,7 @@ function StepCard({
                 onMoveUp={() => h.moveBlock(idx, block.id, -1)}
                 onMoveDown={() => h.moveBlock(idx, block.id, 1)}
                 onRemove={() => h.removeBlock(idx, block.id)}
-                onChangeContent={(v) => h.changeBlock(idx, block.id, v)}
+                onChange={(patch) => h.changeBlock(idx, block.id, patch)}
                 stepTitle={step.title}
               />
             ))}
@@ -587,6 +634,8 @@ function AdminFormContent() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [subject, setSubject] = useState('Praktikum');
+  const [course, setCourse] = useState('');
+  const [knownCourses, setKnownCourses] = useState<string[]>([]);
   const [githubUrl, setGithubUrl] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
   const [isPublished, setIsPublished] = useState(false);
@@ -620,6 +669,21 @@ function AdminFormContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blogId, router]);
 
+  // Saran mata kuliah dari laporan yang sudah ada, supaya penulisan nama tetap
+  // seragam ("Aplikasi Mobile", bukan kadang "App Mobile") dan kartu di /blog
+  // tidak terpecah jadi beberapa label untuk mata kuliah yang sama.
+  useEffect(() => {
+    api
+      .get<{ blogs: { course: string | null }[] }>('/api/blogs')
+      .then(({ blogs }) => {
+        const unique = Array.from(new Set(blogs.map((b) => b.course?.trim()).filter(Boolean) as string[]));
+        setKnownCourses(unique.sort((a, b) => a.localeCompare(b, 'id')));
+      })
+      .catch(() => {
+        // Hanya saran; form tetap bisa dipakai tanpa daftar ini.
+      });
+  }, []);
+
   const loadBlogData = async (id: string) => {
     setFetching(true);
     try {
@@ -628,6 +692,7 @@ function AdminFormContent() {
         setTitle(data.title ?? '');
         setDescription(data.description ?? '');
         setSubject(data.subject ?? 'Praktikum');
+        setCourse(data.course ?? '');
         setGithubUrl(data.github_url ?? '');
         setCoverUrl(data.cover_url ?? '');
         setIsPublished(data.is_published ?? false);
@@ -691,8 +756,22 @@ function AdminFormContent() {
     if (!title.trim()) { showToast('Judul artikel wajib diisi.', 'error'); return; }
     setLoading(true);
 
-    const cleanBlock = (b: ContentBlock) => ({ type: b.type, content: b.content.trim() });
-    const isBlockFilled = (b: ContentBlock) => b.content.trim().length > 0;
+    const cleanBlock = (b: ContentBlock) => {
+      if (b.type === 'text') return { type: b.type, content: normaliseRichText(b.content) };
+      if (b.type === 'code') {
+        return {
+          type: b.type,
+          // Kode tidak di-trim di awal: indentasi baris pertama itu bermakna.
+          content: b.content.replace(/\s+$/, ''),
+          language: b.language && b.language !== 'auto' ? b.language : 'auto',
+          filename: (b.filename ?? '').trim(),
+        };
+      }
+      return { type: b.type, content: b.content.trim() };
+    };
+    // Editor rich text yang kosong menghasilkan "<p></p>", bukan string kosong.
+    const isBlockFilled = (b: ContentBlock) =>
+      b.type === 'text' ? !isRichTextEmpty(b.content) : b.content.trim().length > 0;
 
     const cleanSub = (sub: SubstepItem) => {
       const blocks = sub.blocks.filter(isBlockFilled).map(cleanBlock);
@@ -731,7 +810,7 @@ function AdminFormContent() {
     const payloadContent: StructuredContent = {
       format: 'structured',
       tujuan: tujuan.map((t) => t.trim()).filter(Boolean),
-      dasar_teori: dasarTeori.trim(),
+      dasar_teori: normaliseRichText(dasarTeori),
       alat_bahan: alatBahan
         .map((ab) => ({ name: ab.name.trim(), icon: ab.icon.trim() }))
         .filter((ab) => ab.name),
@@ -741,13 +820,14 @@ function AdminFormContent() {
       latihan_tugas: latihanTugas
         .map(cleanStep)
         .filter((s) => s.title || s.blocks.length > 0) as any,
-      kesimpulan: kesimpulan.trim(),
+      kesimpulan: normaliseRichText(kesimpulan),
     };
 
     const payload = {
       title: title.trim(),
       description: description.trim() || null,
       subject: subject.trim() || 'Praktikum',
+      course: course.trim() || null,
       github_url: githubUrl.trim() || null,
       cover_url: coverUrl.trim() || null,
       is_published: isPublished,
@@ -776,31 +856,20 @@ function AdminFormContent() {
     }
   };
 
-  // Dynamic tab numbering
-  const sectionHasContent: Record<string, boolean> = {
-    tujuan: tujuan.filter(Boolean).length > 0,
-    dasar_teori: dasarTeori.trim().length > 0,
-    alat_bahan: alatBahan.filter((a) => a.name.trim()).length > 0,
+  // Penomoran tab memakai fungsi yang sama dengan halaman publik, jadi nomor
+  // di editor selalu cocok dengan nomor yang dilihat pembaca.
+  const numbered = numberSections({
+    tujuan: tujuan.some((t) => t.trim()),
+    dasar_teori: !isRichTextEmpty(dasarTeori),
+    alat_bahan: alatBahan.some((a) => a.name.trim()),
     langkah_kerja: langkahKerja.some((s) => s.title.trim()),
     latihan_tugas: latihanTugas.some((s) => s.title.trim()),
-    kesimpulan: kesimpulan.trim().length > 0,
-  };
+    kesimpulan: !isRichTextEmpty(kesimpulan),
+  });
 
-  const ALL_SECTIONS = [
-    { id: 'tujuan', label: 'TUJUAN' },
-    { id: 'dasar_teori', label: 'DASAR TEORI' },
-    { id: 'alat_bahan', label: 'ALAT & BAHAN' },
-    { id: 'langkah_kerja', label: 'LANGKAH KERJA' },
-    { id: 'latihan_tugas', label: 'LATIHAN & TUGAS' },
-    { id: 'kesimpulan', label: 'KESIMPULAN' },
-  ];
-
-  const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
-  let counter = 0;
-  const tabs = ALL_SECTIONS.map((sec) => {
-    const hasContent = sectionHasContent[sec.id];
-    const numLabel = hasContent ? `${ROMAN[counter++]}. ${sec.label}` : sec.label;
-    return { ...sec, numLabel, hasContent };
+  const tabs = REPORT_TABS.map((sec) => {
+    const found = numbered.find((n) => n.key === sec.id);
+    return { ...sec, numLabel: found ? `${found.numeral}. ${sec.label}` : sec.label, hasContent: !!found };
   });
 
   if (fetching) {
@@ -873,20 +942,36 @@ function AdminFormContent() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
+                <label htmlFor="course" className="font-mono text-xs text-on-surface-variant font-bold mb-1.5 block">--mata-kuliah</label>
+                <div className="relative">
+                  <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-container pointer-events-none" />
+                  <input type="text" id="course" list="known-courses" maxLength={150}
+                    placeholder="Contoh: Aplikasi Mobile"
+                    value={course} onChange={(e) => setCourse(e.target.value)} className="command-input pl-9" />
+                  <datalist id="known-courses">
+                    {knownCourses.map((name) => <option key={name} value={name} />)}
+                  </datalist>
+                </div>
+                <p className="font-mono text-[10px] text-on-surface-variant/60 mt-1">
+                  Tampil di kartu laporan. Pilih dari saran agar penulisan nama mata kuliah seragam.
+                </p>
+              </div>
+              <div>
                 <label htmlFor="subject" className="font-mono text-xs text-on-surface-variant font-bold mb-1.5 block">--subject</label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-sm text-primary-container">&gt;</span>
-                  <input type="text" id="subject" placeholder="Contoh: Praktikum, Cybersecurity"
+                  <input type="text" id="subject" placeholder="Contoh: Praktikum 1"
                     value={subject} onChange={(e) => setSubject(e.target.value)} className="command-input pl-8" />
                 </div>
               </div>
-              <div>
-                <label htmlFor="githubUrl" className="font-mono text-xs text-on-surface-variant font-bold mb-1.5 block">--github-url</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-sm text-primary-container">&gt;</span>
-                  <input type="url" id="githubUrl" placeholder="https://github.com/..."
-                    value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} className="command-input pl-8" />
-                </div>
+            </div>
+
+            <div>
+              <label htmlFor="githubUrl" className="font-mono text-xs text-on-surface-variant font-bold mb-1.5 block">--github-url</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-sm text-primary-container">&gt;</span>
+                <input type="url" id="githubUrl" placeholder="https://github.com/..."
+                  value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} className="command-input pl-8" />
               </div>
             </div>
 
@@ -988,9 +1073,12 @@ function AdminFormContent() {
                   <label className="font-mono text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-2 block">
                     Dasar Teori Text <span className="text-on-surface-variant/40 normal-case font-normal">(opsional)</span>
                   </label>
-                  <textarea placeholder="Masukkan landasan teori/dasar teori..."
-                    value={dasarTeori} onChange={(e) => setDasarTeori(e.target.value)}
-                    className="command-input min-h-[300px] text-sm font-sans" />
+                  <RichTextEditor
+                    value={dasarTeori}
+                    onChange={setDasarTeori}
+                    placeholder="Masukkan landasan teori/dasar teori..."
+                    minHeight="300px"
+                  />
                 </div>
               )}
 
@@ -1100,9 +1188,12 @@ function AdminFormContent() {
                   <label className="font-mono text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-2 block">
                     Kesimpulan Text <span className="text-on-surface-variant/40 normal-case font-normal">(opsional)</span>
                   </label>
-                  <textarea placeholder="Masukkan poin kesimpulan akhir dari praktikum..."
-                    value={kesimpulan} onChange={(e) => setKesimpulan(e.target.value)}
-                    className="command-input min-h-[250px] text-sm font-sans" />
+                  <RichTextEditor
+                    value={kesimpulan}
+                    onChange={setKesimpulan}
+                    placeholder="Masukkan poin kesimpulan akhir dari praktikum..."
+                    minHeight="250px"
+                  />
                 </div>
               )}
             </div>

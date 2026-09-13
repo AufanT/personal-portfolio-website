@@ -20,12 +20,20 @@ import {
 } from 'lucide-react';
 import { getAdjacentBlogs, getPublishedBlogById } from '@/lib/blogs';
 import BlogTOC from '@/components/BlogTOC';
+import CodeWindow from '@/components/CodeWindow';
+import RichText from '@/components/RichText';
+import { isRichTextEmpty } from '@/lib/rich-text';
+import { numberSections, type ReportSectionKey } from '@/lib/report-sections';
 
 export const revalidate = 60;
 
 interface ContentBlock {
   type: 'text' | 'code' | 'image';
   content: string;
+  /** Hanya blok kode: bahasa untuk syntax highlighting ('auto' atau kosong = deteksi otomatis). */
+  language?: string;
+  /** Hanya blok kode: judul jendela, misalnya "routes/web.php". */
+  filename?: string;
 }
 
 interface Subtitle {
@@ -184,25 +192,14 @@ function getAlatIcon(iconName: string) {
   }
 }
 
-function renderCodeSnippet(code: string | undefined | null, index?: number) {
+function renderCodeSnippet(
+  code: string | undefined | null,
+  index?: number,
+  language?: string,
+  filename?: string
+) {
   if (!code) return null;
-  return (
-    <div key={index} className="w-full max-w-2xl rounded-xl overflow-hidden border border-outline-variant bg-surface-container-lowest shadow-lg my-4">
-      <div className="bg-surface-container-high px-4 py-2 flex items-center justify-between border-b border-outline-variant">
-        <div className="flex gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-error"></div>
-          <div className="w-2.5 h-2.5 rounded-full bg-[#f5d547]"></div>
-          <div className="w-2.5 h-2.5 rounded-full bg-primary-container"></div>
-        </div>
-        <span className="font-mono text-[10px] text-on-surface-variant opacity-70 flex items-center gap-1">
-          <Terminal className="w-3.5 h-3.5" /> bash
-        </span>
-      </div>
-      <pre className="p-4 font-mono text-xs text-on-surface overflow-x-auto whitespace-pre leading-relaxed break-all scrollbar-cyber">
-        <code>{code}</code>
-      </pre>
-    </div>
-  );
+  return <CodeWindow key={index} code={code} language={language} filename={filename} />;
 }
 
 export default async function BlogDetailPage({ params }: Props) {
@@ -316,16 +313,19 @@ export default async function BlogDetailPage({ params }: Props) {
     }
   };
 
-  // Filter sections for TOC
-  const availableSections: string[] = [];
-  if (isStructured && structuredContent) {
-    if (structuredContent.tujuan && structuredContent.tujuan.length > 0) availableSections.push('tujuan');
-    if (structuredContent.dasar_teori && structuredContent.dasar_teori.trim()) availableSections.push('dasar-teori');
-    if (structuredContent.alat_bahan && structuredContent.alat_bahan.length > 0) availableSections.push('alat-bahan');
-    if (structuredContent.langkah_kerja && structuredContent.langkah_kerja.length > 0) availableSections.push('langkah-kerja');
-    if (structuredContent.latihan_tugas && structuredContent.latihan_tugas.length > 0) availableSections.push('latihan-tugas');
-    if (structuredContent.kesimpulan && structuredContent.kesimpulan.trim()) availableSections.push('kesimpulan');
-  }
+  // Nomor romawi hanya untuk section yang berisi, sesuai urutan baku —
+  // laporan tanpa Tujuan dimulai dari "I. Dasar Teori".
+  const sections = isStructured && structuredContent
+    ? numberSections({
+        tujuan: structuredContent.tujuan.some((item) => item?.trim()),
+        dasar_teori: !isRichTextEmpty(structuredContent.dasar_teori),
+        alat_bahan: structuredContent.alat_bahan.length > 0,
+        langkah_kerja: structuredContent.langkah_kerja.length > 0,
+        latihan_tugas: structuredContent.latihan_tugas.length > 0,
+        kesimpulan: !isRichTextEmpty(structuredContent.kesimpulan),
+      })
+    : [];
+  const numeral = (key: ReportSectionKey) => sections.find((section) => section.key === key)?.numeral ?? '';
 
   return (
     <div className="cyber-grid min-h-screen pt-28 pb-12 relative w-full">
@@ -335,7 +335,7 @@ export default async function BlogDetailPage({ params }: Props) {
         {isStructured && structuredContent ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter w-full">
             {/* TOC Sidebar */}
-            <BlogTOC availableSections={availableSections} />
+            <BlogTOC sections={sections} />
 
             {/* Main Content Area */}
             <article className="col-span-1 lg:col-span-9 flex flex-col gap-12">
@@ -397,15 +397,15 @@ export default async function BlogDetailPage({ params }: Props) {
                 </div>
               )}
 
-              {/* I. Tujuan Praktikum */}
-              {structuredContent.tujuan && structuredContent.tujuan.length > 0 && (
+              {/* Tujuan Praktikum */}
+              {structuredContent.tujuan.some((item) => item?.trim()) && (
                 <section
                   id="tujuan"
                   className="bg-surface-container border border-outline-variant rounded-2xl p-6 md:p-8 relative overflow-hidden group hover:border-primary-container/30 transition-colors corner-glow"
                 >
                   <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/5 rounded-bl-full blur-2xl group-hover:bg-primary-container/10 transition-colors pointer-events-none" />
                   <h2 className="font-mono text-base md:text-lg text-primary-container mb-6 flex items-center gap-3">
-                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">I</span>
+                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">{numeral('tujuan')}</span>
                     Tujuan Praktikum
                   </h2>
                   <p className="mb-4 text-on-surface-variant font-mono text-xs uppercase tracking-wider">Setelah menyelesaikan praktikum ini, mahasiswa diharapkan mampu:</p>
@@ -420,24 +420,25 @@ export default async function BlogDetailPage({ params }: Props) {
                 </section>
               )}
 
-              {/* II. Dasar Teori */}
-              {structuredContent.dasar_teori && structuredContent.dasar_teori.trim() && (
+              {/* Dasar Teori */}
+              {!isRichTextEmpty(structuredContent.dasar_teori) && (
                 <section id="dasar-teori" className="flex flex-col gap-6">
                   <h2 className="font-mono text-base md:text-lg text-primary-container flex items-center gap-3 border-b border-outline-variant pb-2">
-                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">II</span>
+                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">{numeral('dasar_teori')}</span>
                     Dasar Teori
                   </h2>
-                  <div className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed space-y-4 whitespace-pre-wrap break-words">
-                    {structuredContent.dasar_teori}
-                  </div>
+                  <RichText
+                    value={structuredContent.dasar_teori}
+                    className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed break-words"
+                  />
                 </section>
               )}
 
-              {/* III. Alat dan Bahan */}
+              {/* Alat dan Bahan */}
               {structuredContent.alat_bahan && structuredContent.alat_bahan.length > 0 && (
                 <section id="alat-bahan" className="flex flex-col gap-6">
                   <h2 className="font-mono text-base md:text-lg text-primary-container flex items-center gap-3 border-b border-outline-variant pb-2">
-                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">III</span>
+                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">{numeral('alat_bahan')}</span>
                     Alat dan Bahan
                   </h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -454,11 +455,11 @@ export default async function BlogDetailPage({ params }: Props) {
                 </section>
               )}
 
-              {/* IV. Langkah Kerja */}
+              {/* Langkah Kerja */}
               {structuredContent.langkah_kerja && structuredContent.langkah_kerja.length > 0 && (
                 <section id="langkah-kerja" className="flex flex-col gap-10">
                   <h2 className="font-mono text-base md:text-lg text-primary-container flex items-center gap-3 border-b border-outline-variant pb-2">
-                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">IV</span>
+                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">{numeral('langkah_kerja')}</span>
                     Langkah Kerja Praktikum
                   </h2>
                   <div className="space-y-0 pl-2">
@@ -484,13 +485,11 @@ export default async function BlogDetailPage({ params }: Props) {
                             {/* Render blocks in order if available, otherwise fall back to legacy */}
                             {step.blocks && step.blocks.length > 0 ? (
                               <div className="space-y-3 mb-2">
-                                {step.blocks.filter((b: ContentBlock) => b.content?.trim()).map((block: ContentBlock, bIdx: number) => {
+                                {step.blocks.filter((b: ContentBlock) => (b.type === 'text' ? !isRichTextEmpty(b.content) : b.content?.trim())).map((block: ContentBlock, bIdx: number) => {
                                   if (block.type === 'text') return (
-                                    <p key={bIdx} className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
-                                      {block.content}
-                                    </p>
+                                    <RichText key={bIdx} value={block.content} className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed break-words" />
                                   );
-                                  if (block.type === 'code') return renderCodeSnippet(block.content, bIdx);
+                                  if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                   if (block.type === 'image') return (
                                     <div key={bIdx} className="relative rounded-xl overflow-hidden border border-outline-variant bg-black/40 group hover:border-primary-container/40 transition-colors max-w-xl">
                                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -505,9 +504,7 @@ export default async function BlogDetailPage({ params }: Props) {
                             ) : (
                               <>
                                 {step.text && (
-                                  <p className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap mb-4 break-words">
-                                    {step.text}
-                                  </p>
+                                  <RichText value={step.text} className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed mb-4 break-words" />
                                 )}
                                 {step.codes && step.codes.length > 0
                                   ? step.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))
@@ -538,13 +535,11 @@ export default async function BlogDetailPage({ params }: Props) {
                                     {/* Sub-blocks ordered */}
                                     {sub.blocks && sub.blocks.length > 0 ? (
                                       <div className="space-y-3">
-                                        {sub.blocks.filter((b: ContentBlock) => b.content?.trim()).map((block: ContentBlock, bIdx: number) => {
+                                        {sub.blocks.filter((b: ContentBlock) => (b.type === 'text' ? !isRichTextEmpty(b.content) : b.content?.trim())).map((block: ContentBlock, bIdx: number) => {
                                           if (block.type === 'text') return (
-                                            <p key={bIdx} className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
-                                              {block.content}
-                                            </p>
+                                            <RichText key={bIdx} value={block.content} className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed break-words" />
                                           );
-                                          if (block.type === 'code') return renderCodeSnippet(block.content, bIdx);
+                                          if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                           if (block.type === 'image') return (
                                             <div key={bIdx} className="relative rounded-lg overflow-hidden border border-outline-variant/20 bg-black/40 max-w-lg">
                                               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -559,9 +554,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                     ) : (
                                       <>
                                         {sub.text && (
-                                          <p className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
-                                            {sub.text}
-                                          </p>
+                                          <RichText value={sub.text} className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed break-words" />
                                         )}
                                         {sub.images && sub.images.length > 0 && (
                                           <div className={`grid gap-4 mt-2 ${sub.images.length === 1 ? 'grid-cols-1 max-w-lg' : 'grid-cols-1 sm:grid-cols-2'}`}>
@@ -590,11 +583,11 @@ export default async function BlogDetailPage({ params }: Props) {
                 </section>
               )}
 
-              {/* V. Latihan dan Tugas */}
+              {/* Latihan dan Tugas */}
               {structuredContent.latihan_tugas && structuredContent.latihan_tugas.length > 0 && (
                 <section id="latihan-tugas" className="flex flex-col gap-6">
                   <h2 className="font-mono text-base md:text-lg text-primary-container flex items-center gap-3 border-b border-outline-variant pb-2">
-                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">V</span>
+                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">{numeral('latihan_tugas')}</span>
                     Latihan dan Tugas
                   </h2>
                   <div className="space-y-6">
@@ -615,13 +608,11 @@ export default async function BlogDetailPage({ params }: Props) {
                             {/* Render blocks in order if available */}
                             {task.blocks && task.blocks.length > 0 ? (
                               <div className="space-y-3 mb-2">
-                                {task.blocks.filter((b: ContentBlock) => b.content?.trim()).map((block: ContentBlock, bIdx: number) => {
+                                {task.blocks.filter((b: ContentBlock) => (b.type === 'text' ? !isRichTextEmpty(b.content) : b.content?.trim())).map((block: ContentBlock, bIdx: number) => {
                                   if (block.type === 'text') return (
-                                    <p key={bIdx} className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
-                                      {block.content}
-                                    </p>
+                                    <RichText key={bIdx} value={block.content} className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed break-words" />
                                   );
-                                  if (block.type === 'code') return renderCodeSnippet(block.content, bIdx);
+                                  if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                   if (block.type === 'image') return (
                                     <div key={bIdx} className="relative rounded-xl overflow-hidden border border-outline-variant/20 bg-black/40 max-w-xl">
                                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -636,9 +627,7 @@ export default async function BlogDetailPage({ params }: Props) {
                             ) : (
                               <>
                                 {task.text && (
-                                  <p className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap mb-4 break-words">
-                                    {task.text}
-                                  </p>
+                                  <RichText value={task.text} className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed mb-4 break-words" />
                                 )}
                                 {task.codes && task.codes.length > 0
                                   ? task.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))
@@ -668,13 +657,11 @@ export default async function BlogDetailPage({ params }: Props) {
                                     </h4>
                                     {sub.blocks && sub.blocks.length > 0 ? (
                                       <div className="space-y-3">
-                                        {sub.blocks.filter((b: ContentBlock) => b.content?.trim()).map((block: ContentBlock, bIdx: number) => {
+                                        {sub.blocks.filter((b: ContentBlock) => (b.type === 'text' ? !isRichTextEmpty(b.content) : b.content?.trim())).map((block: ContentBlock, bIdx: number) => {
                                           if (block.type === 'text') return (
-                                            <p key={bIdx} className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
-                                              {block.content}
-                                            </p>
+                                            <RichText key={bIdx} value={block.content} className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed break-words" />
                                           );
-                                          if (block.type === 'code') return renderCodeSnippet(block.content, bIdx);
+                                          if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                           if (block.type === 'image') return (
                                             <div key={bIdx} className="relative rounded-lg overflow-hidden border border-outline-variant/20 bg-black/40 max-w-lg">
                                               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -689,9 +676,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                     ) : (
                                       <>
                                         {sub.text && (
-                                          <p className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
-                                            {sub.text}
-                                          </p>
+                                          <RichText value={sub.text} className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed break-words" />
                                         )}
                                         {sub.images && sub.images.length > 0 && (
                                           <div className={`grid gap-4 mt-2 ${sub.images.length === 1 ? 'grid-cols-1 max-w-lg' : 'grid-cols-1 sm:grid-cols-2'}`}>
@@ -720,16 +705,17 @@ export default async function BlogDetailPage({ params }: Props) {
                 </section>
               )}
 
-              {/* VI. Kesimpulan */}
-              {structuredContent.kesimpulan && structuredContent.kesimpulan.trim() && (
+              {/* Kesimpulan */}
+              {!isRichTextEmpty(structuredContent.kesimpulan) && (
                 <section id="kesimpulan" className="flex flex-col gap-6">
                   <h2 className="font-mono text-base md:text-lg text-primary-container flex items-center gap-3 border-b border-outline-variant pb-2">
-                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">VI</span>
+                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">{numeral('kesimpulan')}</span>
                     Kesimpulan
                   </h2>
-                  <div className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
-                    {structuredContent.kesimpulan}
-                  </div>
+                  <RichText
+                    value={structuredContent.kesimpulan}
+                    className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed break-words"
+                  />
                 </section>
               )}
 
@@ -849,9 +835,7 @@ export default async function BlogDetailPage({ params }: Props) {
                           {step.title || 'Untitled Step'}
                         </h3>
                         {step.text && (
-                          <p className="font-sans text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap mb-6 break-words">
-                            {step.text}
-                          </p>
+                          <RichText value={step.text} className="font-sans text-base text-on-surface-variant leading-relaxed mb-6 break-words" />
                         )}
 
                         {/* Code snippet mockup */}
@@ -884,9 +868,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                   <span className="opacity-75">#</span> {sub.title || `Sub-item ${subIdx + 1}`}
                                 </h4>
                                 {sub.text && (
-                                  <p className="font-sans text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap break-words">
-                                    {sub.text}
-                                  </p>
+                                  <RichText value={sub.text} className="font-sans text-sm text-on-surface-variant leading-relaxed break-words" />
                                 )}
                                 {sub.images && sub.images.length > 0 && (
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">

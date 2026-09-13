@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS blogs (
   id           CHAR(36)     NOT NULL,
   title        VARCHAR(300) NOT NULL,
   subject      VARCHAR(150) NOT NULL DEFAULT 'Praktikum',
+  course       VARCHAR(150) NULL,      -- mata kuliah, mis. "Aplikasi Mobile"
   description  TEXT         NULL,
   content      LONGTEXT     NULL,
   github_url   VARCHAR(500) NULL,

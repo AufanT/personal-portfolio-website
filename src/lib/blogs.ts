@@ -8,6 +8,7 @@ export interface Blog {
   id: string;
   title: string;
   subject: string;
+  course: string | null;
   description: string | null;
   content: any;
   github_url: string | null;
@@ -21,6 +22,7 @@ export interface BlogSummary {
   id: string;
   title: string;
   subject: string;
+  course: string | null;
   description: string | null;
   cover_url: string | null;
   is_published: boolean;
@@ -30,6 +32,7 @@ export interface BlogSummary {
 export interface BlogInput {
   title: string;
   subject: string;
+  course: string | null;
   description: string | null;
   content: any;
   github_url: string | null;
@@ -38,13 +41,14 @@ export interface BlogInput {
 }
 
 const SUMMARY_COLUMNS =
-  'id, title, subject, description, cover_url, is_published, created_at';
+  'id, title, subject, course, description, cover_url, is_published, created_at';
 
 function mapSummary(row: any): BlogSummary {
   return {
     id: row.id,
     title: row.title,
     subject: row.subject,
+    course: row.course ?? null,
     description: row.description,
     cover_url: row.cover_url,
     is_published: toBool(row.is_published),
@@ -139,12 +143,13 @@ export async function createBlog(input: BlogInput): Promise<string> {
   const id = randomUUID();
   await execute(
     `INSERT INTO blogs
-       (id, title, subject, description, content, github_url, cover_url, is_published, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(6))`,
+       (id, title, subject, course, description, content, github_url, cover_url, is_published, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(6))`,
     [
       id,
       input.title,
       input.subject,
+      input.course,
       input.description,
       input.content == null ? null : JSON.stringify(input.content),
       input.github_url,
@@ -159,12 +164,13 @@ export async function createBlog(input: BlogInput): Promise<string> {
 export async function updateBlog(id: string, input: BlogInput): Promise<boolean> {
   const affected = await execute(
     `UPDATE blogs SET
-       title = ?, subject = ?, description = ?, content = ?,
+       title = ?, subject = ?, course = ?, description = ?, content = ?,
        github_url = ?, cover_url = ?, is_published = ?
      WHERE id = ?`,
     [
       input.title,
       input.subject,
+      input.course,
       input.description,
       input.content == null ? null : JSON.stringify(input.content),
       input.github_url,

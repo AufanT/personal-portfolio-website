@@ -41,6 +41,9 @@ export function parseBlogInput(body: any): Parsed<BlogInput> {
   const subject = nullableStr(body?.subject, 150, 'Subject');
   if (!subject.ok) return subject;
 
+  const course = nullableStr(body?.course, 150, 'Mata kuliah');
+  if (!course.ok) return course;
+
   const description = nullableStr(body?.description, 5000, 'Deskripsi');
   if (!description.ok) return description;
 
@@ -66,6 +69,7 @@ export function parseBlogInput(body: any): Parsed<BlogInput> {
     value: {
       title: title.value,
       subject: subject.value ?? 'Praktikum',
+      course: course.value,
       description: description.value,
       content,
       github_url: githubUrl.value,

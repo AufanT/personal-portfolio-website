@@ -186,3 +186,148 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* =====================================================================
+ * Rich text — field laporan (dasar teori, kesimpulan, blok teks).
+ * Kelas yang sama dipakai editor Tiptap dan halaman publik, jadi yang
+ * terlihat saat menulis sama dengan yang dibaca dosen.
+ * ===================================================================== */
+.rich-text {
+  /* Mempertahankan spasi & baris baru teks lama; HTML dari editor tidak
+     memuat newline di antara tag, jadi tidak ada baris kosong tambahan. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.rich-text > * + * { margin-top: 0.75em; }
+.rich-text p:empty::before { content: '\00a0'; }
+.rich-text strong, .rich-text b { color: #ffffff; font-weight: 700; }
+.rich-text em, .rich-text i { font-style: italic; }
+.rich-text u { text-decoration: underline; text-underline-offset: 3px; }
+.rich-text s, .rich-text strike { text-decoration: line-through; opacity: 0.75; }
+.rich-text mark {
+  background: rgba(57, 255, 20, 0.22);
+  color: #efffe3;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+.rich-text code {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.875em;
+  color: #39ff14;
+  background: rgba(57, 255, 20, 0.08);
+  border: 1px solid rgba(57, 255, 20, 0.18);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  white-space: break-spaces;
+}
+.rich-text a {
+  color: #39ff14;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.rich-text a:hover { color: #efffe3; }
+.rich-text h3 { font-size: 1.125em; color: #ffffff; margin-top: 1.25em; }
+.rich-text h4 { font-size: 1em; color: #baccb0; margin-top: 1em; }
+.rich-text ul, .rich-text ol { padding-left: 1.5em; }
+.rich-text ul { list-style: disc; }
+.rich-text ol { list-style: decimal; }
+.rich-text li + li { margin-top: 0.25em; }
+.rich-text li::marker { color: #39ff14; }
+.rich-text li > p { margin: 0; }
+.rich-text blockquote {
+  border-left: 3px solid #39ff14;
+  padding: 0.25em 0 0.25em 1em;
+  color: #baccb0;
+  background: rgba(57, 255, 20, 0.04);
+}
+.rich-text hr { border: 0; border-top: 1px solid #3c4b35; }
+
+/* Editor Tiptap */
+.rich-text-editor { outline: none; }
+.rich-text-editor p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: rgba(186, 204, 176, 0.4);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* =====================================================================
+ * Jendela kode ala carbon.now.sh — tema One Dark.
+ * ===================================================================== */
+.code-window {
+  width: fit-content;
+  min-width: min(100%, 320px);
+  max-width: 100%;
+  margin: 1.25rem 0;
+  border-radius: 10px;
+  background: #282c34;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.code-window-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 14px 16px 4px;
+}
+.code-window-dots { display: flex; gap: 8px; }
+.code-window-dots span { width: 12px; height: 12px; border-radius: 9999px; }
+.code-window-title {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: #7f848e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 40ch;
+}
+.code-window-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.code-window-lang {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  color: #5c6370;
+  text-transform: lowercase;
+}
+.code-window-copy {
+  color: #5c6370;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 150ms, background-color 150ms;
+}
+.code-window-copy:hover { color: #abb2bf; background: rgba(255, 255, 255, 0.06); }
+.code-window-body {
+  margin: 0;
+  padding: 12px 22px 22px;
+  overflow-x: auto;
+  font-family: var(--font-mono), monospace;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #abb2bf;
+  white-space: pre;
+  tab-size: 2;
+}
+.code-window-body.scrollbar-cyber::-webkit-scrollbar { height: 6px; }
+.code-window-body code { font-family: inherit; background: none; }
+
+/* Token warna One Dark */
+.hljs-comment, .hljs-quote { color: #5c6370; font-style: italic; }
+.hljs-doctag, .hljs-keyword, .hljs-formula, .hljs-selector-tag { color: #c678dd; }
+.hljs-section, .hljs-name, .hljs-deletion, .hljs-subst, .hljs-tag { color: #e06c75; }
+.hljs-literal { color: #56b6c2; }
+.hljs-string, .hljs-regexp, .hljs-addition, .hljs-attribute, .hljs-meta .hljs-string { color: #98c379; }
+.hljs-attr, .hljs-variable, .hljs-template-variable, .hljs-type, .hljs-selector-class,
+.hljs-selector-attr, .hljs-selector-pseudo, .hljs-number { color: #d19a66; }
+.hljs-symbol, .hljs-bullet, .hljs-link, .hljs-meta, .hljs-selector-id, .hljs-title { color: #61aeee; }
+.hljs-built_in, .hljs-title.class_, .hljs-class .hljs-title { color: #e6c07b; }
+.hljs-title.function_ { color: #61aeee; }
+.hljs-params { color: #abb2bf; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: bold; }
+.hljs-link { text-decoration: underline; }

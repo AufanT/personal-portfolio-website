@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Menu, X, Code2 } from 'lucide-react';
+import { Menu, X, Code2, LogIn } from 'lucide-react';
 import ScrambleText from '@/components/ScrambleText';
 
 export default function Navbar() {
@@ -25,6 +25,10 @@ export default function Navbar() {
     { name: 'Portfolio', path: '/portofolio' },
     { name: 'Blog', path: '/blog' },
   ];
+
+  // Tombol login dibedakan dari link navigasi biasa lewat latar dan border
+  // membulat, tapi memakai tipografi dan animasi yang sama.
+  const loginActive = pathname.startsWith('/admin');
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -68,6 +72,17 @@ export default function Navbar() {
               <ScrambleText>{link.name}</ScrambleText>
             </Link>
           ))}
+          <Link
+            href="/admin"
+            className={`ml-2 font-mono text-sm px-4 py-2 rounded-full border flex items-center gap-2 transition-all duration-300 ease-in-out active:scale-95 ${
+              loginActive
+                ? 'bg-primary-container text-black border-primary-container shadow-neon'
+                : 'bg-primary-container/10 text-primary-container border-primary-container/40 hover:bg-primary-container hover:text-black hover:shadow-neon'
+            }`}
+          >
+            <LogIn className="w-4 h-4" aria-hidden="true" />
+            <ScrambleText>Login</ScrambleText>
+          </Link>
         </div>
 
         {/* Mobile Hamburger */}
@@ -96,7 +111,18 @@ export default function Navbar() {
               <ScrambleText>{link.name}</ScrambleText>
             </Link>
           ))}
-
+          <Link
+            href="/admin"
+            onClick={() => setIsOpen(false)}
+            className={`font-mono text-base px-4 py-2.5 rounded-full border flex items-center gap-2 w-fit transition-all duration-200 ${
+              loginActive
+                ? 'bg-primary-container text-black border-primary-container'
+                : 'bg-primary-container/10 text-primary-container border-primary-container/40 hover:bg-primary-container hover:text-black'
+            }`}
+          >
+            <LogIn className="w-4 h-4" aria-hidden="true" />
+            <ScrambleText>Login</ScrambleText>
+          </Link>
         </div>
       )}
     </nav>

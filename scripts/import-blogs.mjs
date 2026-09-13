@@ -24,6 +24,9 @@ import { toMysqlDateTime } from './lib/datetime.mjs';
 
 const DEFAULT_FILE = 'backup/blogs-recovered-2026-09-12.json';
 
+/** Dipakai untuk baris tanpa mata kuliah — semua laporan hasil recovery. */
+const DEFAULT_COURSE = 'Pemrograman Web';
+
 /** Baris uji coba yang tidak perlu ikut pindah. */
 const DEFAULT_SKIP = [
   'd1068b42-c9a8-47d9-9020-71763409570f', // "tes"
@@ -80,11 +83,12 @@ try {
 
     await connection.execute(
       `INSERT INTO blogs
-         (id, title, subject, description, content, github_url, cover_url, is_published, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+         (id, title, subject, course, description, content, github_url, cover_url, is_published, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON DUPLICATE KEY UPDATE
          title = VALUES(title),
          subject = VALUES(subject),
+         course = VALUES(course),
          description = VALUES(description),
          content = VALUES(content),
          github_url = VALUES(github_url),
@@ -95,6 +99,7 @@ try {
         row.id,
         row.title,
         row.subject || 'Praktikum',
+        row.course || DEFAULT_COURSE,
         row.description ?? null,
         row.content == null
           ? null

@@ -26,6 +26,9 @@ const scrypt = promisify(scryptCb);
 
 const BLOGS_FILE = 'backup/blogs-recovered-2026-09-12.json';
 
+/** Semua laporan hasil recovery berasal dari mata kuliah semester lalu. */
+const RECOVERED_COURSE = 'Pemrograman Web';
+
 /** Baris uji coba yang tidak perlu ikut pindah. */
 const SKIP_IDS = new Set([
   'd1068b42-c9a8-47d9-9020-71763409570f', // "tes"
@@ -118,12 +121,12 @@ if (blogRows.length > 0) {
 
     parts.push(
       `-- ${row.subject || '-'}: ${row.title.replace(/\s+/g, ' ').slice(0, 70)}`,
-      'INSERT INTO blogs (id, title, subject, description, content, github_url, cover_url, is_published, created_at)',
-      `VALUES (${escape(row.id)}, ${escape(row.title)}, ${escape(row.subject || 'Praktikum')}, ` +
+      'INSERT INTO blogs (id, title, subject, course, description, content, github_url, cover_url, is_published, created_at)',
+      `VALUES (${escape(row.id)}, ${escape(row.title)}, ${escape(row.subject || 'Praktikum')}, ${escape(row.course || RECOVERED_COURSE)}, ` +
         `${escape(row.description ?? null)}, ${content}, ${escape(row.github_url ?? null)}, ` +
         `${escape(row.cover_url ?? null)}, ${row.is_published ? 1 : 0}, ${escape(toMysqlDateTime(row.created_at))})`,
       'ON DUPLICATE KEY UPDATE',
-      '  title = VALUES(title), subject = VALUES(subject), description = VALUES(description),',
+      '  title = VALUES(title), subject = VALUES(subject), course = VALUES(course), description = VALUES(description),',
       '  content = VALUES(content), github_url = VALUES(github_url), cover_url = VALUES(cover_url),',
       '  is_published = VALUES(is_published), created_at = VALUES(created_at);',
       ''

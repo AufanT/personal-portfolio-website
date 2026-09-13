@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar, ArrowRight } from 'lucide-react';
+import { Calendar, ArrowRight, GraduationCap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ScrambleText from '@/components/ScrambleText';
 
@@ -12,6 +12,7 @@ interface Blog {
   title: string;
   description: string | null;
   subject: string;
+  course?: string | null;
   cover_url: string | null;
   created_at: string;
   is_published: boolean;
@@ -103,6 +104,13 @@ export default function BlogList({ initialBlogs }: BlogListProps) {
                     <span>{formatDate(blog.created_at)}</span>
                   </div>
                 </div>
+
+                {blog.course && (
+                  <div className="flex items-center gap-1.5 mb-1.5 font-mono text-[11px] uppercase tracking-wider text-on-surface-variant">
+                    <GraduationCap className="w-3.5 h-3.5 text-primary-container shrink-0" aria-hidden="true" />
+                    <span className="truncate" title={blog.course}>{blog.course}</span>
+                  </div>
+                )}
 
                 <h3 className="font-mono text-base font-bold text-on-surface mb-2 group-hover:text-primary-container transition-colors duration-200 line-clamp-2 text-left">
                   {blog.title}

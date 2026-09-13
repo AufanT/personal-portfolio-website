@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   
@@ -32,12 +30,6 @@ export default function Footer() {
           >
             [LinkedIn]
           </a>
-          <Link
-            href="/admin"
-            className="text-on-surface-variant hover:text-primary-container transition-colors"
-          >
-            [Admin]
-          </Link>
         </div>
       </div>
     </footer>
