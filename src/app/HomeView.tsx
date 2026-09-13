@@ -43,7 +43,7 @@ function TypingEffect() {
     'AI Enthusiast',
     'UI/UX Designer',
     'Full Stack Developer',
-    'Computer Science Student',
+    'Data Scientist',
   ];
   const [wordIndex, setWordIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
@@ -107,18 +107,8 @@ export default function HomeView({ featuredProjects }: HomeViewProps) {
     agreement: false,
   });
 
-  const [terminalLogs, setTerminalLogs] = useState<string[]>([
-    'SYSTEM: Initializing transmission protocol...',
-    'SYSTEM: Connection established on port 443.',
-    'SYSTEM: Awaiting guest credentials...',
-  ]);
-
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-
-  const addTerminalLog = (msg: string) => {
-    setTerminalLogs((prev) => [...prev, msg]);
-  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -136,26 +126,20 @@ export default function HomeView({ featuredProjects }: HomeViewProps) {
     if (!formData.name || !formData.email || !formData.phone || !formData.subject || !formData.message) {
       setStatus('error');
       setErrorMessage('INPUT_ERROR: All fields are required.');
-      addTerminalLog('ERROR: Form validation failed. Missing required fields.');
       return;
     }
 
     if (!formData.agreement) {
       setStatus('error');
       setErrorMessage('INPUT_ERROR: Security agreement checkbox required.');
-      addTerminalLog('ERROR: Security clearance rejected. Checkbox not verified.');
       return;
     }
 
     setStatus('submitting');
-    addTerminalLog(`USER: ./submit_message.sh --author="${formData.name}" --subject="${formData.subject}"`);
-    addTerminalLog('SYSTEM: Encrypting message payloads...');
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      addTerminalLog('SYSTEM: Transferring bits to remote server...');
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      addTerminalLog('SYSTEM: [OK] Message sent successfully. Handshake complete.');
+      // Form belum terhubung ke layanan pengiriman; jeda ini hanya simulasi.
+      await new Promise((resolve) => setTimeout(resolve, 2300));
       setStatus('success');
       setFormData({
         name: '',
@@ -166,7 +150,6 @@ export default function HomeView({ featuredProjects }: HomeViewProps) {
         agreement: false,
       });
     } catch (err) {
-      addTerminalLog('SYSTEM: [FAIL] Handshake interrupted. Packet loss detected.');
       setStatus('error');
       setErrorMessage('TRANSMISSION_ERROR: Connection timed out.');
     }
@@ -293,7 +276,7 @@ export default function HomeView({ featuredProjects }: HomeViewProps) {
         {/* Header */}
         <div className="border-l-4 border-primary-container pl-6 py-2">
           <h2 className="font-mono text-3xl md:text-4xl lg:text-5xl text-on-surface tracking-tight">
-            Get in touch <span className="text-primary-container opacity-80 animate-pulse">_</span>
+            Get in touch
           </h2>
         </div>
 
@@ -377,7 +360,7 @@ export default function HomeView({ featuredProjects }: HomeViewProps) {
             </motion.div>
           </div>
 
-          {/* Terminal Form */}
+          {/* Form kirim pesan */}
           <div className="lg:col-span-7">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -386,33 +369,15 @@ export default function HomeView({ featuredProjects }: HomeViewProps) {
               transition={{ duration: 0.4, delay: 0.1 }}
               className="glass-panel border border-outline-variant/30 overflow-hidden flex flex-col h-full"
             >
-              <div className="bg-surface-container-high px-4 py-3 flex items-center justify-between border-b border-outline-variant/30">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-full bg-red-500/80 inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-yellow-500/80 inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-green-500/80 inline-block" />
-                </div>
-                <span className="font-mono text-xs text-on-surface-variant font-semibold">
-                  contact@aufan: ~/send_message
-                </span>
-                <Terminal className="w-4 h-4 text-on-surface-variant/40" />
-              </div>
-
-              <div className="bg-black/80 px-6 py-4 font-mono text-xs text-on-surface-variant/90 border-b border-outline-variant/20 max-h-[160px] overflow-y-auto space-y-1.5 scrollbar-thin">
-                {terminalLogs.map((log, idx) => (
-                  <div
-                    key={idx}
-                    className={
-                      log.includes('ERROR')
-                        ? 'text-red-400'
-                        : log.includes('[OK]')
-                          ? 'text-primary-container'
-                          : ''
-                    }
-                  >
-                    {log}
-                  </div>
-                ))}
+              {/* Kepala kartu mengikuti gaya kartu CONTACT_INFO di sebelahnya. */}
+              <div className="px-6 md:px-8 pt-6 md:pt-8">
+                <h3 className="font-mono text-xl text-white mb-3 flex items-center gap-2">
+                  <Send className="w-5 h-5 text-primary-container" />
+                  SEND_MESSAGE
+                </h3>
+                <p className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed">
+                  Isi formulir di bawah ini, saya akan membalas melalui email secepatnya.
+                </p>
               </div>
 
               <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-5 flex-grow">

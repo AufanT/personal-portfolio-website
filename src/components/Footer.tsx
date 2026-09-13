@@ -5,9 +5,6 @@ export default function Footer() {
     <footer aria-label="Site footer" className="w-full border-t border-outline-variant/30 bg-surface-container-lowest/80 backdrop-blur-md py-8">
       <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex flex-col items-center md:items-start gap-1">
-          <p className="font-mono text-xs text-on-surface-variant">
-            &gt; STATUS: ONLINE | CORE_SYSTEM_ACTIVE
-          </p>
           <p className="font-mono text-sm text-outline">
             &copy; {currentYear} Aufan. All rights reserved.
           </p>

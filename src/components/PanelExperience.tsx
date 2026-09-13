@@ -36,7 +36,7 @@ export default function PanelExperience() {
             EXPERIENCE
           </span>
           <h2 className="font-mono text-2xl md:text-4xl lg:text-5xl text-on-surface mt-2 leading-tight tracking-tight">
-            Experience Log <span className="text-primary-container animate-pulse">_</span>
+            Experience Log
           </h2>
         </div>
 

@@ -27,7 +27,7 @@ export default function PanelSkills() {
             SKILLS
           </span>
           <h2 className="font-mono text-2xl md:text-4xl lg:text-5xl text-on-surface mt-2 leading-tight tracking-tight">
-            System Capabilities <span className="text-primary-container animate-pulse">_</span>
+            System Capabilities
           </h2>
         </div>
 

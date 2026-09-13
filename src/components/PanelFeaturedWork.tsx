@@ -29,7 +29,7 @@ export default function PanelFeaturedWork({ projects }: PanelFeaturedWorkProps) 
               PROJECTS
             </span>
             <h2 className="font-mono text-2xl md:text-4xl lg:text-5xl text-on-surface mt-2 leading-tight tracking-tight">
-              Featured Work <span className="text-primary-container animate-pulse">_</span>
+              Featured Work
             </h2>
           </div>
           <Link
@@ -51,7 +51,9 @@ export default function PanelFeaturedWork({ projects }: PanelFeaturedWorkProps) 
               {/* Thumbnail */}
               <div className="relative w-full h-40 sm:h-44 overflow-hidden shrink-0">
                 <div
-                  className="absolute inset-0 w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                  // bg-top: yang terlihat bagian atas gambar (umumnya header/hero
+                  // screenshot website), bukan potongan tengahnya.
+                  className="absolute inset-0 w-full h-full bg-cover bg-top transition-transform duration-500 origin-top group-hover:scale-105"
                   style={{
                     backgroundImage: `url(${project.image_url || '/images/onprogress.png'})`,
                   }}
