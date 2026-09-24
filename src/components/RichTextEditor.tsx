@@ -27,7 +27,10 @@ interface RichTextEditorProps {
 }
 
 /** Tombol yang tetap tampil di mode inline; sisanya disembunyikan. */
-const INLINE_TOOLBAR_KEYS = new Set(['undo', 'redo', 'bold', 'italic', 'underline', 'link', 'unlink']);
+const INLINE_TOOLBAR_KEYS = new Set([
+  'undo', 'redo', 'bold', 'italic', 'underline', 'link', 'unlink',
+  'left', 'center', 'right', 'justify',
+]);
 
 /**
  * Editor teks ala Docs/Word untuk field laporan praktikum.
@@ -72,6 +75,8 @@ export default function RichTextEditor({
             horizontalRule: false,
             link: linkConfig,
           }),
+          // Perataan teks (kiri/tengah/kanan/justify) untuk paragraf.
+          TextAlign.configure({ types: ['paragraph'] }),
           Placeholder.configure({ placeholder }),
         ]
       : [
