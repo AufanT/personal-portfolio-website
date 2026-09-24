@@ -6,6 +6,7 @@ import AppImage from '@/components/AppImage';
 import { Calendar, ArrowRight, GraduationCap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ScrambleText from '@/components/ScrambleText';
+import { toPlainText } from '@/lib/rich-text';
 
 interface Blog {
   id: string;
@@ -116,7 +117,7 @@ export default function BlogList({ initialBlogs }: BlogListProps) {
                     {blog.title}
                   </h3>
                   <p className="font-sans text-sm text-on-surface-variant mb-4 line-clamp-2 leading-relaxed text-left">
-                    {blog.description || 'No description provided.'}
+                    {toPlainText(blog.description) || 'No description provided.'}
                   </p>
 
                   {/* Read Button at bottom */}

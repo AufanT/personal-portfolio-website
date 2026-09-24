@@ -1,5 +1,6 @@
 import type { BlogInput } from '@/lib/blogs';
 import type { ProjectInput } from '@/lib/projects';
+import { isRichTextEmpty, normaliseRichText } from '@/lib/rich-text';
 
 /**
  * Validasi payload dari halaman admin.
@@ -70,7 +71,9 @@ export function parseBlogInput(body: any): Parsed<BlogInput> {
       title: title.value,
       subject: subject.value ?? 'Praktikum',
       course: course.value,
-      description: description.value,
+      // Deskripsi kini HTML dari editor inline. Editor kosong mengirim "<p></p>"
+      // yang bukan string kosong, jadi dinormalkan ke null di sini.
+      description: isRichTextEmpty(description.value) ? null : normaliseRichText(description.value),
       content,
       github_url: githubUrl.value,
       cover_url: coverUrl.value,

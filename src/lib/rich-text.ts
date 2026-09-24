@@ -58,6 +58,28 @@ export function isRichTextEmpty(value: string | null | undefined): boolean {
 }
 
 /**
+ * HTML (atau teks lama) → teks polos satu baris. Dipakai di tempat yang tidak
+ * boleh memuat tag: meta description & OpenGraph untuk SEO, serta preview ringkas
+ * di kartu blog dan tabel dashboard. Aman di server maupun browser (regex murni).
+ */
+export function toPlainText(value: string | null | undefined): string {
+  if (!value) return '';
+  return value
+    // batas blok/baris jadi spasi agar kata tidak menempel.
+    .replace(/<\/(p|div|h[1-6]|li|blockquote|pre)>/gi, ' ')
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;|&#160;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
  * Buang paragraf kosong di akhir. Extension TrailingNode (bawaan StarterKit v3)
  * selalu menambahkan <p></p> setelah daftar/kutipan/judul terakhir supaya
  * kursor bisa keluar dari blok itu. Berguna saat mengetik, tapi kalau ikut

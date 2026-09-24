@@ -18,7 +18,16 @@ interface RichTextEditorProps {
   onChange: (html: string) => void;
   placeholder?: string;
   minHeight?: string;
+  /**
+   * 'full' (default) — semua toolbar (judul, list, align, dll).
+   * 'inline' — hanya format sebaris (tebal/miring/garis bawah/tautan) dan node
+   * blok dimatikan. Dipakai field pendek seperti deskripsi artikel.
+   */
+  variant?: 'full' | 'inline';
 }
+
+/** Tombol yang tetap tampil di mode inline; sisanya disembunyikan. */
+const INLINE_TOOLBAR_KEYS = new Set(['undo', 'redo', 'bold', 'italic', 'underline', 'link', 'unlink']);
 
 /**
  * Editor teks ala Docs/Word untuk field laporan praktikum.
@@ -33,30 +42,49 @@ export default function RichTextEditor({
   onChange,
   placeholder = 'Tulis di sini...',
   minHeight = '140px',
+  variant = 'full',
 }: RichTextEditorProps) {
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
+
+  const isInline = variant === 'inline';
+
+  const linkConfig = {
+    openOnClick: false,
+    autolink: true,
+    defaultProtocol: 'https',
+    HTMLAttributes: { target: '_blank', rel: 'noopener noreferrer' },
+  } as const;
 
   const editor = useEditor({
     // Wajib false di Next.js: editor hanya dibuat di browser, kalau tidak
     // markup server dan client berbeda dan React melempar hydration error.
     immediatelyRender: false,
-    extensions: [
-      StarterKit.configure({
-        heading: { levels: [3, 4] },
-        // Kode panjang punya blok CODE sendiri dengan syntax highlighting.
-        codeBlock: false,
-        link: {
-          openOnClick: false,
-          autolink: true,
-          defaultProtocol: 'https',
-          HTMLAttributes: { target: '_blank', rel: 'noopener noreferrer' },
-        },
-      }),
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      Highlight,
-      Placeholder.configure({ placeholder }),
-    ],
+    extensions: isInline
+      ? [
+          // Mode inline: node blok dimatikan, jadi hanya paragraf + format sebaris.
+          StarterKit.configure({
+            heading: false,
+            codeBlock: false,
+            bulletList: false,
+            orderedList: false,
+            blockquote: false,
+            horizontalRule: false,
+            link: linkConfig,
+          }),
+          Placeholder.configure({ placeholder }),
+        ]
+      : [
+          StarterKit.configure({
+            heading: { levels: [3, 4] },
+            // Kode panjang punya blok CODE sendiri dengan syntax highlighting.
+            codeBlock: false,
+            link: linkConfig,
+          }),
+          TextAlign.configure({ types: ['heading', 'paragraph'] }),
+          Highlight,
+          Placeholder.configure({ placeholder }),
+        ],
     content: toRichHtml(value),
     editorProps: {
       attributes: {
@@ -93,6 +121,7 @@ export default function RichTextEditor({
     <div className="rounded border border-outline-variant/40 bg-black/40 focus-within:border-primary-container/60 transition-colors">
       <Toolbar
         editor={editor}
+        variant={variant}
         onLinkClick={() => {
           if (!editor) return;
           setLinkUrl(editor.getAttributes('link').href ?? '');
@@ -126,7 +155,7 @@ export default function RichTextEditor({
   );
 }
 
-function Toolbar({ editor, onLinkClick }: { editor: Editor | null; onLinkClick: () => void }) {
+function Toolbar({ editor, onLinkClick, variant = 'full' }: { editor: Editor | null; onLinkClick: () => void; variant?: 'full' | 'inline' }) {
   // Tiptap v3 tidak me-render ulang komponen di setiap transaksi; status
   // tombol aktif diambil lewat useEditorState agar tetap sinkron dengan kursor.
   const state = useEditorState({
@@ -199,9 +228,15 @@ function Toolbar({ editor, onLinkClick }: { editor: Editor | null; onLinkClick: 
     ],
   ];
 
+  // Mode inline hanya menampilkan tombol format sebaris; grup lain disembunyikan.
+  const visibleGroups =
+    variant === 'inline'
+      ? groups.map((group) => group.filter((b) => INLINE_TOOLBAR_KEYS.has(b.key))).filter((group) => group.length > 0)
+      : groups;
+
   return (
     <div className="flex flex-wrap items-center gap-0.5 px-1.5 py-1 border-b border-outline-variant/30 bg-surface-container-low/60 rounded-t">
-      {groups.map((group, gi) => (
+      {visibleGroups.map((group, gi) => (
         <div key={gi} className="flex items-center gap-0.5">
           {gi > 0 && <span className="w-px h-5 bg-outline-variant/40 mx-1" aria-hidden="true" />}
           {group.map(({ key, title, icon: Icon, active, disabled, run }) => (

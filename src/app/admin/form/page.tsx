@@ -835,7 +835,7 @@ function AdminFormContent() {
 
     const payload = {
       title: title.trim(),
-      description: description.trim() || null,
+      description: isRichTextEmpty(description) ? null : normaliseRichText(description),
       subject: subject.trim() || 'Praktikum',
       course: course.trim() || null,
       github_url: githubUrl.trim() || null,
@@ -941,13 +941,14 @@ function AdminFormContent() {
             </div>
 
             <div>
-              <label htmlFor="description" className="font-mono text-xs text-on-surface-variant font-bold mb-1.5 block">--description</label>
-              <div className="relative">
-                <span className="absolute left-3 top-3 font-mono text-sm text-primary-container">&gt;</span>
-                <textarea id="description" placeholder="Deskripsi singkat atau ringkasan artikel..."
-                  value={description} onChange={(e) => setDescription(e.target.value)}
-                  className="command-input pl-8 min-h-[80px]" />
-              </div>
+              <label className="font-mono text-xs text-on-surface-variant font-bold mb-1.5 block">--description</label>
+              <RichTextEditor
+                variant="inline"
+                value={description}
+                onChange={setDescription}
+                placeholder="Deskripsi singkat atau ringkasan artikel..."
+                minHeight="64px"
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

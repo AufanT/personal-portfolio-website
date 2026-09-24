@@ -14,6 +14,7 @@ import {
   Terminal,
 } from 'lucide-react';
 import { api, ApiError } from '@/lib/api';
+import { toPlainText } from '@/lib/rich-text';
 import { useToast, ToastComponent } from '@/components/Toast';
 import { motion } from 'framer-motion';
 
@@ -188,7 +189,7 @@ export default function AdminDashboardPage() {
                           {blog.title}
                         </div>
                         <div className="text-xs line-clamp-1 max-w-md">
-                          {blog.description || 'No description provided.'}
+                          {toPlainText(blog.description) || 'No description provided.'}
                         </div>
                       </td>
                       <td className="py-4 px-6 font-mono text-xs">

@@ -26,7 +26,7 @@ import ReportImage from '@/components/ReportImage';
 import ReportMobileNav from '@/components/ReportMobileNav';
 import AppImage from '@/components/AppImage';
 import RichText from '@/components/RichText';
-import { isRichTextEmpty } from '@/lib/rich-text';
+import { isRichTextEmpty, toPlainText } from '@/lib/rich-text';
 import { numberSections, type ReportSectionKey } from '@/lib/report-sections';
 
 export const revalidate = 60;
@@ -157,10 +157,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: blog.title,
-    description: blog.description || 'Tech blog post detailing cyber-informatics research.',
+    description: toPlainText(blog.description) || 'Tech blog post detailing cyber-informatics research.',
     openGraph: {
       title: `${blog.title} | Aufan Taufiqurrahman`,
-      description: blog.description ?? undefined,
+      description: toPlainText(blog.description) || undefined,
       images: blog.cover_url ? [blog.cover_url] : [],
     },
   };
@@ -427,11 +427,12 @@ export default async function BlogDetailPage({ params }: Props) {
               </header>
 
               {/* Description lead — aksen garis kiri, bukan kotak terisi */}
-              {blog.description && (
+              {!isRichTextEmpty(blog.description) && (
                 <div className="border-l-4 border-l-primary-container pl-5">
-                  <p className="font-sans text-base md:text-lg text-on-surface leading-relaxed font-medium break-words max-w-[72ch]">
-                    {blog.description}
-                  </p>
+                  <RichText
+                    value={blog.description}
+                    className="font-sans text-base md:text-lg text-on-surface leading-relaxed font-medium break-words max-w-[72ch]"
+                  />
                 </div>
               )}
 
@@ -805,11 +806,12 @@ export default async function BlogDetailPage({ params }: Props) {
             </div>
 
             {/* Description intro */}
-            {blog.description && (
+            {!isRichTextEmpty(blog.description) && (
               <div className="glass-panel p-6 mb-12 border-l-4 border-l-primary-container">
-                <p className="font-sans text-base md:text-lg text-on-surface leading-relaxed font-medium break-words">
-                  {blog.description}
-                </p>
+                <RichText
+                  value={blog.description}
+                  className="font-sans text-base md:text-lg text-on-surface leading-relaxed font-medium break-words"
+                />
               </div>
             )}
 
