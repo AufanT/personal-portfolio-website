@@ -29,6 +29,7 @@ export default function ImageLightbox({ children }: { children: React.ReactNode 
   const [index, setIndex] = useState<number | null>(null);
   const [actualSize, setActualSize] = useState(false);
   const [dimensions, setDimensions] = useState<{ w: number; h: number } | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -50,6 +51,7 @@ export default function ImageLightbox({ children }: { children: React.ReactNode 
     triggerRef.current = trigger;
     setActualSize(false);
     setDimensions(null);
+    setImageLoaded(false);
     setIndex(Math.max(0, triggers.indexOf(trigger)));
   };
 
@@ -65,6 +67,7 @@ export default function ImageLightbox({ children }: { children: React.ReactNode 
       setIndex((i) => (i === null ? i : (i + step + images.length) % images.length));
       setActualSize(false);
       setDimensions(null);
+      setImageLoaded(false);
     },
     [images.length]
   );
@@ -144,18 +147,29 @@ export default function ImageLightbox({ children }: { children: React.ReactNode 
           data-lightbox-backdrop="true"
           className={`relative flex-grow min-h-0 ${actualSize ? 'overflow-auto' : 'flex items-center justify-center overflow-hidden'} p-4 md:p-8`}
         >
+          {/* Gambar versi penuh bisa beberapa MB; skeleton menahan tempatnya
+              supaya layar tidak kosong menghitam saat menunggu. */}
+          {!imageLoaded && (
+            <span
+              aria-hidden="true"
+              className="skeleton absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(90vw,900px)] aspect-[16/10] rounded-lg"
+            />
+          )}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             key={current.src}
             src={current.src}
             alt={current.alt}
-            onLoad={(e) => setDimensions({ w: e.currentTarget.naturalWidth, h: e.currentTarget.naturalHeight })}
+            onLoad={(e) => {
+              setDimensions({ w: e.currentTarget.naturalWidth, h: e.currentTarget.naturalHeight });
+              setImageLoaded(true);
+            }}
             onClick={() => setActualSize((v) => !v)}
-            className={
+            className={`${imageLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200 ${
               actualSize
                 ? 'max-w-none mx-auto cursor-zoom-out'
                 : 'max-w-full max-h-full object-contain cursor-zoom-in select-none'
-            }
+            }`}
           />
         </div>
 

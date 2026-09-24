@@ -11,6 +11,7 @@
     "db:setup": "node scripts/setup-db.mjs",
     "db:sql": "node scripts/make-migration-sql.mjs",
     "db:import": "node scripts/import-blogs.mjs",
+    "db:image-sizes": "node scripts/backfill-image-sizes.mjs",
     "db:export": "node scripts/export-data.mjs",
     "admin:create": "node scripts/create-admin.mjs",
     "secret": "node scripts/generate-secret.mjs"

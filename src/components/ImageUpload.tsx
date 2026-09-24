@@ -7,7 +7,8 @@ import { Loader2, Upload, X, ImageIcon } from 'lucide-react';
 
 interface ImageUploadProps {
   value: string;
-  onChange: (url: string) => void;
+  /** meta berisi dimensi asli dari Cloudinary; pemanggil boleh mengabaikannya. */
+  onChange: (url: string, meta?: { width?: number; height?: number }) => void;
   onRemove?: () => void;
   label?: string;
   className?: string;
@@ -29,8 +30,8 @@ export default function ImageUpload({
       showToast('Gagal memuat SDK Cloudinary. Muat ulang halaman.', 'error');
       return;
     }
-    openWidget((url) => {
-      onChange(url);
+    openWidget((image) => {
+      onChange(image.url, { width: image.width, height: image.height });
       showToast('Gambar berhasil diunggah', 'success');
     });
   };

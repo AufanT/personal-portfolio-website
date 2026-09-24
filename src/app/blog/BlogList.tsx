@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import AppImage from '@/components/AppImage';
 import { Calendar, ArrowRight, GraduationCap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ScrambleText from '@/components/ScrambleText';
@@ -77,18 +77,12 @@ export default function BlogList({ initialBlogs }: BlogListProps) {
               <Link href={`/blog/${blog.id}`} className="absolute inset-0 z-10" />
               {/* Image Header wrapper */}
               <div className="w-full h-48 relative overflow-hidden bg-surface-container-highest/50 border-b border-outline-variant/20">
-                <Image
+                <AppImage
                   alt={blog.title}
-                  src={blog.cover_url || '/images/onprogress.png'}
+                  src={blog.cover_url}
                   fill
                   className="object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out"
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  onError={(e) => {
-                    const target = e.currentTarget as HTMLImageElement;
-                    if (target.src !== '/images/onprogress.png') {
-                      target.src = '/images/onprogress.png';
-                    }
-                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-60 pointer-events-none"></div>
               </div>

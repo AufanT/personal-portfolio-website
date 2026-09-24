@@ -40,9 +40,12 @@ export interface ContentBlock {
   language?: string;
   /** Hanya blok kode: judul jendela kode, misalnya "routes/web.php". */
   filename?: string;
+  /** Hanya blok gambar: dimensi asli dari Cloudinary, dipakai skeleton di halaman publik. */
+  width?: number;
+  height?: number;
 }
 
-type BlockPatch = Partial<Pick<ContentBlock, 'content' | 'language' | 'filename'>>;
+type BlockPatch = Partial<Pick<ContentBlock, 'content' | 'language' | 'filename' | 'width' | 'height'>>;
 
 interface SubstepItem {
   title: string;
@@ -84,6 +87,7 @@ function blocksFromLegacy(data: any): ContentBlock[] {
       type: b.type,
       content: b.content ?? '',
       ...(b.type === 'code' ? { language: b.language ?? 'auto', filename: b.filename ?? '' } : {}),
+      ...(b.type === 'image' && b.width && b.height ? { width: b.width, height: b.height } : {}),
     }));
   }
   // Old separate arrays: texts → codes → images
@@ -392,13 +396,15 @@ function BlockRow({
               type="url"
               placeholder="URL gambar (https://...)"
               value={block.content}
-              onChange={(e) => onChangeContent(e.target.value)}
+              // URL yang diketik manual tidak diketahui dimensinya; dimensi lama
+              // dibuang agar skeleton tidak memakai ukuran gambar sebelumnya.
+              onChange={(e) => onChange({ content: e.target.value, width: undefined, height: undefined })}
               className="command-input py-1.5 text-xs w-full"
             />
             <ImageUpload
               value={block.content}
-              onChange={onChangeContent}
-              onRemove={() => onChangeContent('')}
+              onChange={(url, meta) => onChange({ content: url, width: meta?.width, height: meta?.height })}
+              onRemove={() => onChange({ content: '', width: undefined, height: undefined })}
             />
             {block.content && (
               // eslint-disable-next-line @next/next/no-img-element
@@ -767,7 +773,11 @@ function AdminFormContent() {
           filename: (b.filename ?? '').trim(),
         };
       }
-      return { type: b.type, content: b.content.trim() };
+      return {
+        type: b.type,
+        content: b.content.trim(),
+        ...(b.type === 'image' && b.width && b.height ? { width: b.width, height: b.height } : {}),
+      };
     };
     // Editor rich text yang kosong menghasilkan "<p></p>", bukan string kosong.
     const isBlockFilled = (b: ContentBlock) =>

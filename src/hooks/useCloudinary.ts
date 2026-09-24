@@ -50,9 +50,20 @@ const widgetConfig = {
 
 export type UploadStatus = 'idle' | 'loading' | 'ready' | 'error';
 
+/**
+ * Cloudinary mengembalikan dimensi asli setiap upload. Dimensi itu disimpan
+ * bersama URL supaya skeleton gambar laporan bisa langsung seukuran gambarnya
+ * dan halaman tidak melompat saat gambar tiba.
+ */
+export interface UploadedImage {
+  url: string;
+  width?: number;
+  height?: number;
+}
+
 export function useCloudinary() {
   const [status, setStatus] = useState<UploadStatus>('idle');
-  const cbRef = useRef<((url: string) => void) | null>(null);
+  const cbRef = useRef<((image: UploadedImage) => void) | null>(null);
 
   useEffect(() => {
     setStatus('loading');
@@ -62,7 +73,7 @@ export function useCloudinary() {
   }, []);
 
   const openWidget = useCallback(
-    (onSuccess: (url: string) => void) => {
+    (onSuccess: (image: UploadedImage) => void) => {
       if (status !== 'ready') return;
       cbRef.current = onSuccess;
 
@@ -70,7 +81,11 @@ export function useCloudinary() {
         widgetConfig,
         (error: any, result: any) => {
           if (!error && result?.event === 'success') {
-            cbRef.current?.(result.info.secure_url);
+            cbRef.current?.({
+              url: result.info.secure_url,
+              width: typeof result.info.width === 'number' ? result.info.width : undefined,
+              height: typeof result.info.height === 'number' ? result.info.height : undefined,
+            });
           }
         },
       );

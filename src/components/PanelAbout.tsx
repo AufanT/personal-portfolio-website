@@ -41,15 +41,27 @@ function SkillCard({ Icon, title, desc }: { Icon: ComponentType<{ className?: st
 
 export default function PanelAbout() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const avatarRef = useRef<HTMLImageElement>(null);
   const [isClient, setIsClient] = useState(false);
 
   // Glitch states
   const [activeIndex, setActiveIndex] = useState(0);
   const [glitchOffset, setGlitchOffset] = useState({ x: 0, y: 0, skew: 0 });
   const [isGlitching, setIsGlitching] = useState(false);
+  // Hanya pemuatan pertama yang menampilkan skeleton; pergantian gambar oleh
+  // efek glitch tidak boleh memunculkannya lagi.
+  const [avatarLoaded, setAvatarLoaded] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
+  }, []);
+
+  // Avatar adalah berkas lokal yang sering selesai dimuat sebelum React
+  // memasang onLoad-nya. Tanpa pemeriksaan ini, sinyal "selesai" terlewat dan
+  // skeleton menggantung selamanya di atas gambar yang sebenarnya sudah ada.
+  useEffect(() => {
+    const img = avatarRef.current;
+    if (img?.complete && img.naturalWidth > 0) setAvatarLoaded(true);
   }, []);
 
   // Periodic Glitch Loop (mount once, cycle automatically)
@@ -180,10 +192,17 @@ export default function PanelAbout() {
                 </>
               )}
 
+              {!avatarLoaded && (
+                <span aria-hidden="true" className="skeleton absolute inset-0 rounded-xl" />
+              )}
+
               {/* Main Avatar Image */}
               <img
+                ref={avatarRef}
                 src={GLITCH_AVATARS[activeIndex].url}
                 alt="Avatar"
+                onLoad={() => setAvatarLoaded(true)}
+                onError={() => setAvatarLoaded(true)}
                 className={`w-full h-full object-contain transition-all ${
                   isGlitching 
                     ? 'filter brightness-125 contrast-125' 

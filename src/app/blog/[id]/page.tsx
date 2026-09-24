@@ -23,6 +23,7 @@ import BlogTOC from '@/components/BlogTOC';
 import CodeWindow from '@/components/CodeWindow';
 import ImageLightbox from '@/components/ImageLightbox';
 import ReportImage from '@/components/ReportImage';
+import AppImage from '@/components/AppImage';
 import RichText from '@/components/RichText';
 import { isRichTextEmpty } from '@/lib/rich-text';
 import { numberSections, type ReportSectionKey } from '@/lib/report-sections';
@@ -36,6 +37,9 @@ interface ContentBlock {
   language?: string;
   /** Hanya blok kode: judul jendela, misalnya "routes/web.php". */
   filename?: string;
+  /** Hanya blok gambar: dimensi asli, agar skeleton pas dan layout tidak melompat. */
+  width?: number;
+  height?: number;
 }
 
 interface Subtitle {
@@ -354,14 +358,27 @@ export default async function BlogDetailPage({ params }: Props) {
               </div>
 
               {/* Hero Header Area */}
-              <header
-                className="relative rounded-2xl overflow-hidden border border-outline-variant/30 bg-cover bg-center min-h-[250px] flex flex-col justify-end p-6 md:p-8"
-                style={{
-                  backgroundImage: blog.cover_url
-                    ? `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.85)), url('${blog.cover_url}')`
-                    : `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9)), url('/images/onprogress.png')`,
-                }}
-              >
+              <header className="relative rounded-2xl overflow-hidden border border-outline-variant/30 min-h-[250px] flex flex-col justify-end p-6 md:p-8">
+                {/* Cover dulu digambar sebagai background-image, yang tidak punya
+                    sinyal selesai dimuat. Sekarang gambar sungguhan (ikut
+                    dioptimalkan Next.js) dengan gradasi gelap sebagai lapisan
+                    terpisah, supaya tampilannya tetap sama. */}
+                <AppImage
+                  src={blog.cover_url}
+                  alt=""
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 75vw"
+                  className="object-cover"
+                />
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: blog.cover_url
+                      ? 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.85))'
+                      : 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9))',
+                  }}
+                />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-transparent pointer-events-none" />
                 <div className="relative z-10">
                   <div className="flex flex-wrap gap-2 items-center text-on-surface-variant font-mono text-xs uppercase tracking-wider mb-4">
@@ -494,7 +511,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                   );
                                   if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                   if (block.type === 'image') return (
-                                    <ReportImage key={bIdx} src={block.content} alt={`${step.title} visual reference ${bIdx + 1}`} />
+                                    <ReportImage key={bIdx} width={block.width} height={block.height} src={block.content} alt={`${step.title} visual reference ${bIdx + 1}`} />
                                   );
                                   return null;
                                 })}
@@ -534,7 +551,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                           );
                                           if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                           if (block.type === 'image') return (
-                                            <ReportImage key={bIdx} src={block.content} alt={`${sub.title} view ${bIdx + 1}`} />
+                                            <ReportImage key={bIdx} width={block.width} height={block.height} src={block.content} alt={`${sub.title} view ${bIdx + 1}`} />
                                           );
                                           return null;
                                         })}
@@ -597,7 +614,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                   );
                                   if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                   if (block.type === 'image') return (
-                                    <ReportImage key={bIdx} src={block.content} alt={`${task.title} view ${bIdx + 1}`} />
+                                    <ReportImage key={bIdx} width={block.width} height={block.height} src={block.content} alt={`${task.title} view ${bIdx + 1}`} />
                                   );
                                   return null;
                                 })}
@@ -636,7 +653,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                           );
                                           if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                           if (block.type === 'image') return (
-                                            <ReportImage key={bIdx} src={block.content} alt={`${sub.title} view ${bIdx + 1}`} />
+                                            <ReportImage key={bIdx} width={block.width} height={block.height} src={block.content} alt={`${sub.title} view ${bIdx + 1}`} />
                                           );
                                           return null;
                                         })}
@@ -733,14 +750,23 @@ export default async function BlogDetailPage({ params }: Props) {
             </Link>
 
             {/* Hero Header Area */}
-            <div
-              className="relative rounded-xl overflow-hidden mb-12 border border-outline-variant/30 bg-cover bg-center min-h-[300px] flex flex-col justify-end p-8 md:p-12"
-              style={{
-                backgroundImage: blog.cover_url
-                  ? `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.85)), url('${blog.cover_url}')`
-                  : `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9)), url('/images/onprogress.png')`,
-              }}
-            >
+            <div className="relative rounded-xl overflow-hidden mb-12 border border-outline-variant/30 min-h-[300px] flex flex-col justify-end p-8 md:p-12">
+              <AppImage
+                src={blog.cover_url}
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 900px"
+                className="object-cover"
+              />
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: blog.cover_url
+                    ? 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.85))'
+                    : 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9))',
+                }}
+              />
               <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent pointer-events-none" />
 
               <div className="relative z-10 max-w-2xl">

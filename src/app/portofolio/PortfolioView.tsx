@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
+import AppImage from '@/components/AppImage';
 import { ExternalLink, Github, X, ArrowRight } from 'lucide-react';
 import RippleSection from '@/components/RippleSection';
 import ScrambleText from '@/components/ScrambleText';
@@ -164,7 +164,7 @@ export default function PortfolioView({ initialProjects }: PortfolioViewProps) {
                     <div className={`relative bg-surface-container-lowest border-outline-variant/20 overflow-hidden ${
                       isFeatured ? 'w-full md:w-1/2 min-h-[220px] md:border-r' : 'w-full h-48 border-b'
                     }`}>
-                      <Image
+                      <AppImage
                         src={project.image_url}
                         alt={project.title}
                         fill
@@ -236,7 +236,7 @@ export default function PortfolioView({ initialProjects }: PortfolioViewProps) {
               {/* Image Header */}
               {selectedProject.image_url && (
                 <div className="relative w-full h-56 md:h-64 bg-surface-container-lowest border-b border-outline-variant/20">
-                  <Image
+                  <AppImage
                     src={selectedProject.image_url}
                     alt={selectedProject.title}
                     fill

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowRight, Github, ExternalLink, Layers } from 'lucide-react';
 import ScrambleText from '@/components/ScrambleText';
+import AppImage from '@/components/AppImage';
 
 interface Project {
   id: string;
@@ -50,13 +51,14 @@ export default function PanelFeaturedWork({ projects }: PanelFeaturedWorkProps) 
             >
               {/* Thumbnail */}
               <div className="relative w-full h-40 sm:h-44 overflow-hidden shrink-0">
-                <div
-                  // bg-top: yang terlihat bagian atas gambar (umumnya header/hero
-                  // screenshot website), bukan potongan tengahnya.
-                  className="absolute inset-0 w-full h-full bg-cover bg-top transition-transform duration-500 origin-top group-hover:scale-105"
-                  style={{
-                    backgroundImage: `url(${project.image_url || '/images/onprogress.png'})`,
-                  }}
+                {/* object-top: yang terlihat bagian atas gambar (umumnya header/hero
+                    screenshot website), bukan potongan tengahnya. */}
+                <AppImage
+                  src={project.image_url}
+                  alt={project.title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover object-top transition-transform duration-500 origin-top group-hover:scale-105"
                 />
                 {/* Dark overlay */}
                 <div className="absolute inset-0 bg-black/30 group-hover:bg-black/15 transition-all duration-300" />
