@@ -431,7 +431,7 @@ export default async function BlogDetailPage({ params }: Props) {
                 <div className="border-l-4 border-l-primary-container pl-5">
                   <RichText
                     value={blog.description}
-                    className="font-sans text-base md:text-lg text-on-surface leading-relaxed font-medium break-words max-w-[72ch]"
+                    className="font-sans text-base md:text-lg text-on-surface leading-relaxed break-words max-w-[72ch]"
                   />
                 </div>
               )}
@@ -810,7 +810,7 @@ export default async function BlogDetailPage({ params }: Props) {
               <div className="glass-panel p-6 mb-12 border-l-4 border-l-primary-container">
                 <RichText
                   value={blog.description}
-                  className="font-sans text-base md:text-lg text-on-surface leading-relaxed font-medium break-words"
+                  className="font-sans text-base md:text-lg text-on-surface leading-relaxed break-words"
                 />
               </div>
             )}
