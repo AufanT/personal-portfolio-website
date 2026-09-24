@@ -32,10 +32,16 @@ export default function ReportImage({
 }) {
   if (!src || !src.trim()) return null;
 
+  // Gambar lebar (screenshot) dilebarkan sampai tepi layar di mobile agar
+  // terbaca; gambar kecil dibiarkan seukuran aslinya supaya tidak tampil
+  // sebagai gambar mungil di tengah kotak selebar layar. Gambar tanpa dimensi
+  // tersimpan dianggap lebar, karena hampir semuanya screenshot.
+  const bleedOnMobile = !width || width >= 600;
+
   return (
     <button
       type="button"
-      className="report-image group"
+      className={`report-image group${bleedOnMobile ? ' mobile-bleed' : ''}`}
       data-lightbox-src={src}
       data-lightbox-alt={alt}
       aria-label={`Perbesar gambar: ${alt}`}

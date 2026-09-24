@@ -25,7 +25,7 @@ export default function CodeWindow({
   const title = filename?.trim();
 
   return (
-    <figure className="code-window">
+    <figure className="code-window mobile-bleed">
       <div className="code-window-bar">
         <div className="code-window-dots" aria-hidden="true">
           <span className="bg-[#ff5f56]" />

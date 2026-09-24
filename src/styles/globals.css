@@ -467,3 +467,33 @@
   /* Tetap ada kotak penanda, tapi tanpa kilau yang bergerak. */
   .skeleton { animation: none; }
 }
+
+/* =====================================================================
+ * Laporan di layar kecil
+ * ===================================================================== */
+@media (max-width: 1023px) {
+  /* Teks laporan lebih lega untuk dibaca sambil menggulir di HP. */
+  .rich-text {
+    line-height: 1.75;
+  }
+
+  /*
+   * Blok kode dan screenshot melebar sampai tepi layar (disisakan 8px),
+   * menembus padding section. Di lebar 390px, blok kode naik dari 302px
+   * ke 374px — hampir seperempat lebih lebar.
+   *
+   * Rumus margin negatif ini mengandalkan semua pembungkusnya simetris di
+   * mobile; itu sebabnya indentasi garis waktu langkah dimatikan di layar
+   * kecil (lihat kelas pl-0 lg:pl-8 di halaman laporan).
+   */
+  .mobile-bleed {
+    width: auto;
+    max-width: none;
+    margin-inline: calc(50% - 50vw + 8px);
+  }
+
+  /* Gambar yang lebih sempit dari kotaknya tetap di tengah, bukan menempel kiri. */
+  .report-image.mobile-bleed .report-image-img {
+    margin-inline: auto;
+  }
+}
