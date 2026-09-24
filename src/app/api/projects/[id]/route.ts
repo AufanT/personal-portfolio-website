@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { deleteProject, getProjectById, updateProject } from '@/lib/projects';
 import { parseProjectInput } from '@/lib/validation';
+import { readAdminJson } from '@/lib/request-body';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,7 +37,7 @@ export async function PUT(request: Request, { params }: Params) {
 
   let body: any;
   try {
-    body = await request.json();
+    body = await readAdminJson(request);
   } catch {
     return NextResponse.json({ error: 'Body request tidak valid.' }, { status: 400 });
   }
