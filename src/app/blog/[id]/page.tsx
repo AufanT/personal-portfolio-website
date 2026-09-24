@@ -209,6 +209,22 @@ function renderCodeSnippet(
   return <CodeWindow key={index} code={code} language={language} filename={filename} />;
 }
 
+/**
+ * Judul section laporan (I. Dasar Teori, II. …). Satu tempat supaya semua
+ * section seragam dan jelas lebih besar dari judul langkah/tugas (h3),
+ * membentuk hierarki I → 1 → 1.1 sekilas.
+ */
+function SectionHeading({ numeral, children }: { numeral: string; children: React.ReactNode }) {
+  return (
+    <h2 className="font-mono text-xl md:text-2xl text-primary-container flex items-center gap-3 border-b border-outline-variant pb-3">
+      <span className="flex items-center justify-center w-8 h-8 rounded bg-surface border border-primary-container/30 font-mono text-sm font-bold shrink-0">
+        {numeral}
+      </span>
+      <span>{children}</span>
+    </h2>
+  );
+}
+
 export default async function BlogDetailPage({ params }: Props) {
   const blog = await getBlog(params.id);
 
@@ -410,10 +426,10 @@ export default async function BlogDetailPage({ params }: Props) {
                 </div>
               </header>
 
-              {/* Description callout */}
+              {/* Description lead — aksen garis kiri, bukan kotak terisi */}
               {blog.description && (
-                <div className="glass-panel p-6 border-l-4 border-l-primary-container">
-                  <p className="font-sans text-base text-on-surface leading-relaxed font-medium break-words">
+                <div className="border-l-4 border-l-primary-container pl-5">
+                  <p className="font-sans text-base md:text-lg text-on-surface leading-relaxed font-medium break-words max-w-[72ch]">
                     {blog.description}
                   </p>
                 </div>
@@ -421,17 +437,10 @@ export default async function BlogDetailPage({ params }: Props) {
 
               {/* Tujuan Praktikum */}
               {structuredContent.tujuan.some((item) => item?.trim()) && (
-                <section
-                  id="tujuan"
-                  className="bg-surface-container border border-outline-variant rounded-2xl p-4 md:p-8 relative overflow-hidden group hover:border-primary-container/30 transition-colors corner-glow"
-                >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/5 rounded-bl-full blur-2xl group-hover:bg-primary-container/10 transition-colors pointer-events-none" />
-                  <h2 className="font-mono text-lg md:text-lg text-primary-container mb-6 flex items-center gap-3">
-                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">{numeral('tujuan')}</span>
-                    Tujuan Praktikum
-                  </h2>
-                  <p className="mb-4 text-on-surface-variant font-mono text-xs uppercase tracking-wider">Setelah menyelesaikan praktikum ini, mahasiswa diharapkan mampu:</p>
-                  <ul className="space-y-3 text-on-surface">
+                <section id="tujuan" className="flex flex-col gap-6 scroll-mt-28">
+                  <SectionHeading numeral={numeral('tujuan')}>Tujuan Praktikum</SectionHeading>
+                  <p className="text-on-surface-variant font-mono text-xs uppercase tracking-wider">Setelah menyelesaikan praktikum ini, mahasiswa diharapkan mampu:</p>
+                  <ul className="space-y-3 text-on-surface max-w-[72ch]">
                     {structuredContent.tujuan.map((item, idx) => (
                       <li key={idx} className="flex items-start gap-3">
                         <span className="text-primary-container font-mono text-sm mt-0.5 shrink-0">✓</span>
@@ -444,25 +453,19 @@ export default async function BlogDetailPage({ params }: Props) {
 
               {/* Dasar Teori */}
               {!isRichTextEmpty(structuredContent.dasar_teori) && (
-                <section id="dasar-teori" className="flex flex-col gap-6">
-                  <h2 className="font-mono text-lg md:text-lg text-primary-container flex items-center gap-3 border-b border-outline-variant pb-2">
-                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">{numeral('dasar_teori')}</span>
-                    Dasar Teori
-                  </h2>
+                <section id="dasar-teori" className="flex flex-col gap-6 scroll-mt-28">
+                  <SectionHeading numeral={numeral('dasar_teori')}>Dasar Teori</SectionHeading>
                   <RichText
                     value={structuredContent.dasar_teori}
-                    className="font-sans text-base text-on-surface-variant leading-relaxed break-words"
+                    className="font-sans text-base text-on-surface-variant leading-relaxed break-words max-w-[72ch]"
                   />
                 </section>
               )}
 
               {/* Alat dan Bahan */}
               {structuredContent.alat_bahan && structuredContent.alat_bahan.length > 0 && (
-                <section id="alat-bahan" className="flex flex-col gap-6">
-                  <h2 className="font-mono text-lg md:text-lg text-primary-container flex items-center gap-3 border-b border-outline-variant pb-2">
-                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">{numeral('alat_bahan')}</span>
-                    Alat dan Bahan
-                  </h2>
+                <section id="alat-bahan" className="flex flex-col gap-6 scroll-mt-28">
+                  <SectionHeading numeral={numeral('alat_bahan')}>Alat dan Bahan</SectionHeading>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {structuredContent.alat_bahan.map((item, idx) => (
                       <div
@@ -479,11 +482,8 @@ export default async function BlogDetailPage({ params }: Props) {
 
               {/* Langkah Kerja */}
               {structuredContent.langkah_kerja && structuredContent.langkah_kerja.length > 0 && (
-                <section id="langkah-kerja" className="flex flex-col gap-10">
-                  <h2 className="font-mono text-lg md:text-lg text-primary-container flex items-center gap-3 border-b border-outline-variant pb-2">
-                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">{numeral('langkah_kerja')}</span>
-                    Langkah Kerja Praktikum
-                  </h2>
+                <section id="langkah-kerja" className="flex flex-col gap-10 scroll-mt-28">
+                  <SectionHeading numeral={numeral('langkah_kerja')}>Langkah Kerja Praktikum</SectionHeading>
                   <div className="space-y-0 lg:pl-2">
                     {structuredContent.langkah_kerja.map((step, idx) => {
                       const isLast = idx === (structuredContent?.langkah_kerja?.length || 0) - 1;
@@ -512,7 +512,7 @@ export default async function BlogDetailPage({ params }: Props) {
                               <div className="space-y-3 mb-2">
                                 {step.blocks.filter((b: ContentBlock) => (b.type === 'text' ? !isRichTextEmpty(b.content) : b.content?.trim())).map((block: ContentBlock, bIdx: number) => {
                                   if (block.type === 'text') return (
-                                    <RichText key={bIdx} value={block.content} className="font-sans text-base text-on-surface-variant leading-relaxed break-words" />
+                                    <RichText key={bIdx} value={block.content} className="font-sans text-base text-on-surface-variant leading-relaxed break-words max-w-[72ch]" />
                                   );
                                   if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                   if (block.type === 'image') return (
@@ -524,7 +524,7 @@ export default async function BlogDetailPage({ params }: Props) {
                             ) : (
                               <>
                                 {step.text && (
-                                  <RichText value={step.text} className="font-sans text-base text-on-surface-variant leading-relaxed mb-4 break-words" />
+                                  <RichText value={step.text} className="font-sans text-base text-on-surface-variant leading-relaxed mb-4 break-words max-w-[72ch]" />
                                 )}
                                 {step.codes && step.codes.length > 0
                                   ? step.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))
@@ -552,7 +552,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                       <div className="space-y-3">
                                         {sub.blocks.filter((b: ContentBlock) => (b.type === 'text' ? !isRichTextEmpty(b.content) : b.content?.trim())).map((block: ContentBlock, bIdx: number) => {
                                           if (block.type === 'text') return (
-                                            <RichText key={bIdx} value={block.content} className="font-sans text-[15px] md:text-sm text-on-surface-variant leading-relaxed break-words" />
+                                            <RichText key={bIdx} value={block.content} className="font-sans text-[15px] md:text-sm text-on-surface-variant leading-relaxed break-words max-w-[72ch]" />
                                           );
                                           if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                           if (block.type === 'image') return (
@@ -564,7 +564,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                     ) : (
                                       <>
                                         {sub.text && (
-                                          <RichText value={sub.text} className="font-sans text-[15px] md:text-sm text-on-surface-variant leading-relaxed break-words" />
+                                          <RichText value={sub.text} className="font-sans text-[15px] md:text-sm text-on-surface-variant leading-relaxed break-words max-w-[72ch]" />
                                         )}
                                         {sub.images && sub.images.length > 0 && (
                                           <div className="flex flex-col items-start gap-4 mt-2">
@@ -590,19 +590,23 @@ export default async function BlogDetailPage({ params }: Props) {
 
               {/* Latihan dan Tugas */}
               {structuredContent.latihan_tugas && structuredContent.latihan_tugas.length > 0 && (
-                <section id="latihan-tugas" className="flex flex-col gap-6">
-                  <h2 className="font-mono text-lg md:text-lg text-primary-container flex items-center gap-3 border-b border-outline-variant pb-2">
-                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">{numeral('latihan_tugas')}</span>
-                    Latihan dan Tugas
-                  </h2>
-                  <div className="space-y-6">
+                <section id="latihan-tugas" className="flex flex-col gap-10 scroll-mt-28">
+                  <SectionHeading numeral={numeral('latihan_tugas')}>Latihan dan Tugas</SectionHeading>
+                  {/* Pola sama dengan Langkah Kerja: garis aksen kiri sebagai spine,
+                      bukan card. Tanpa overflow-hidden, blok kode/gambar bebas
+                      melebar ke tepi layar di mobile tanpa terpotong. */}
+                  <div className="space-y-0 lg:pl-2">
                     {structuredContent.latihan_tugas.map((task, idx) => (
                       <div
                         key={idx}
-                        className="bg-surface-container-low border border-outline-variant/35 hover:border-primary-container/20 transition-all duration-300 rounded-2xl p-4 md:p-8 relative overflow-hidden group"
+                        className={`relative pb-8 lg:pb-10 pl-0 lg:pl-8 border-l-0 lg:border-l ${
+                          idx === (structuredContent?.latihan_tugas?.length ?? 0) - 1
+                            ? 'border-transparent'
+                            : 'border-outline-variant'
+                        }`}
                       >
-                        <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0 w-8 h-8 rounded bg-primary-container text-black font-mono font-bold flex items-center justify-center text-sm shadow-neon">
+                        <div className="flex flex-col gap-2 lg:block">
+                          <div className="static mb-1 lg:mb-0 lg:absolute lg:-left-4 lg:top-0 w-8 h-8 rounded-full bg-surface-container-high border-2 border-primary-container flex items-center justify-center font-mono text-xs text-primary-container font-bold timeline-node-active">
                             {idx + 1}
                           </div>
                           <div className="flex-grow">
@@ -615,7 +619,7 @@ export default async function BlogDetailPage({ params }: Props) {
                               <div className="space-y-3 mb-2">
                                 {task.blocks.filter((b: ContentBlock) => (b.type === 'text' ? !isRichTextEmpty(b.content) : b.content?.trim())).map((block: ContentBlock, bIdx: number) => {
                                   if (block.type === 'text') return (
-                                    <RichText key={bIdx} value={block.content} className="font-sans text-base text-on-surface-variant leading-relaxed break-words" />
+                                    <RichText key={bIdx} value={block.content} className="font-sans text-base text-on-surface-variant leading-relaxed break-words max-w-[72ch]" />
                                   );
                                   if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                   if (block.type === 'image') return (
@@ -627,7 +631,7 @@ export default async function BlogDetailPage({ params }: Props) {
                             ) : (
                               <>
                                 {task.text && (
-                                  <RichText value={task.text} className="font-sans text-base text-on-surface-variant leading-relaxed mb-4 break-words" />
+                                  <RichText value={task.text} className="font-sans text-base text-on-surface-variant leading-relaxed mb-4 break-words max-w-[72ch]" />
                                 )}
                                 {task.codes && task.codes.length > 0
                                   ? task.codes.map((code, cIdx) => renderCodeSnippet(code, cIdx))
@@ -654,7 +658,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                       <div className="space-y-3">
                                         {sub.blocks.filter((b: ContentBlock) => (b.type === 'text' ? !isRichTextEmpty(b.content) : b.content?.trim())).map((block: ContentBlock, bIdx: number) => {
                                           if (block.type === 'text') return (
-                                            <RichText key={bIdx} value={block.content} className="font-sans text-[15px] md:text-sm text-on-surface-variant leading-relaxed break-words" />
+                                            <RichText key={bIdx} value={block.content} className="font-sans text-[15px] md:text-sm text-on-surface-variant leading-relaxed break-words max-w-[72ch]" />
                                           );
                                           if (block.type === 'code') return renderCodeSnippet(block.content, bIdx, block.language, block.filename);
                                           if (block.type === 'image') return (
@@ -666,7 +670,7 @@ export default async function BlogDetailPage({ params }: Props) {
                                     ) : (
                                       <>
                                         {sub.text && (
-                                          <RichText value={sub.text} className="font-sans text-[15px] md:text-sm text-on-surface-variant leading-relaxed break-words" />
+                                          <RichText value={sub.text} className="font-sans text-[15px] md:text-sm text-on-surface-variant leading-relaxed break-words max-w-[72ch]" />
                                         )}
                                         {sub.images && sub.images.length > 0 && (
                                           <div className="flex flex-col items-start gap-4 mt-2">
@@ -692,14 +696,11 @@ export default async function BlogDetailPage({ params }: Props) {
 
               {/* Kesimpulan */}
               {!isRichTextEmpty(structuredContent.kesimpulan) && (
-                <section id="kesimpulan" className="flex flex-col gap-6">
-                  <h2 className="font-mono text-lg md:text-lg text-primary-container flex items-center gap-3 border-b border-outline-variant pb-2">
-                    <span className="flex items-center justify-center w-7 h-7 rounded bg-surface border border-primary-container/30 font-mono text-xs font-bold">{numeral('kesimpulan')}</span>
-                    Kesimpulan
-                  </h2>
+                <section id="kesimpulan" className="flex flex-col gap-6 scroll-mt-28">
+                  <SectionHeading numeral={numeral('kesimpulan')}>Kesimpulan</SectionHeading>
                   <RichText
                     value={structuredContent.kesimpulan}
-                    className="font-sans text-base text-on-surface-variant leading-relaxed break-words"
+                    className="font-sans text-base text-on-surface-variant leading-relaxed break-words max-w-[72ch]"
                   />
                 </section>
               )}
