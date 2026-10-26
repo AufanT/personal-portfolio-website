@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { findAdminByEmail, verifyPassword } from '@/lib/auth';
 import { execute } from '@/lib/db';
+import { readAdminJson } from '@/lib/request-body';
 import { SESSION_COOKIE, sessionCookieOptions, signSession } from '@/lib/session';
 
 export const dynamic = 'force-dynamic';
@@ -20,7 +21,9 @@ export async function POST(request: Request) {
   let password: unknown;
 
   try {
-    const body = await request.json();
+    // Body dari src/lib/api.ts terbungkus base64 ({ b64 }) sejak perbaikan WAF;
+    // readAdminJson membuka bungkus itu dan tetap menerima JSON polos.
+    const body = (await readAdminJson(request)) as { email?: unknown; password?: unknown } | null;
     email = body?.email;
     password = body?.password;
   } catch {
