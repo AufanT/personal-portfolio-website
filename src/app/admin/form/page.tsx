@@ -17,6 +17,7 @@ import {
   Code,
   Image as ImageIcon,
   GraduationCap,
+  Link2,
 } from 'lucide-react';
 import { api, ApiError } from '@/lib/api';
 import { useToast, ToastComponent } from '@/components/Toast';
@@ -26,6 +27,14 @@ import RichTextEditor from '@/components/RichTextEditor';
 import { CODE_LANGUAGES } from '@/lib/code-languages';
 import { isRichTextEmpty, normaliseRichText } from '@/lib/rich-text';
 import { numberSections, REPORT_SECTIONS } from '@/lib/report-sections';
+import {
+  isSafeHttpUrl,
+  MAX_LINK_LABEL,
+  MAX_LINK_URL,
+  MAX_REPORT_LINKS,
+  normaliseReportLinks,
+  type ReportLink,
+} from '@/lib/report-links';
 
 const REPORT_TABS = REPORT_SECTIONS.map((section) => ({ id: section.key, label: section.tab }));
 
@@ -71,6 +80,8 @@ interface StructuredContent {
   langkah_kerja: LangkahItem[];
   latihan_tugas: LangkahItem[];
   kesimpulan: string;
+  /** Tautan tambahan (APK, video, Drive, ...) di samping repo GitHub. */
+  links?: ReportLink[];
 }
 
 // ─── ID generation (stable within a session) ─────────────────────────────────
@@ -643,6 +654,7 @@ function AdminFormContent() {
   const [course, setCourse] = useState('');
   const [knownCourses, setKnownCourses] = useState<string[]>([]);
   const [githubUrl, setGithubUrl] = useState('');
+  const [links, setLinks] = useState<ReportLink[]>([]);
   const [coverUrl, setCoverUrl] = useState('');
   const [isPublished, setIsPublished] = useState(false);
 
@@ -716,6 +728,7 @@ function AdminFormContent() {
           setLangkahKerja((s.langkah_kerja ?? []).map(normaliseStep));
           setLatihanTugas((s.latihan_tugas ?? []).map(normaliseStep));
           setKesimpulan(s.kesimpulan ?? '');
+          setLinks(normaliseReportLinks(s.links));
         } else if (Array.isArray(contentObj)) {
           setLangkahKerja(contentObj.map(normaliseStep));
           setTujuan(['']); setDasarTeori('');
@@ -756,10 +769,24 @@ function AdminFormContent() {
   const handleAlatBahanChange = (i: number, field: keyof AlatBahanItem, v: string) =>
     setAlatBahan((p) => p.map((x, idx) => (idx === i ? { ...x, [field]: v } : x)));
 
+  // Tautan tambahan
+  const handleAddLink = () =>
+    setLinks((p) => (p.length >= MAX_REPORT_LINKS ? p : [...p, { label: '', url: '' }]));
+  const handleRemoveLink = (i: number) => setLinks((p) => p.filter((_, idx) => idx !== i));
+  const handleLinkChange = (i: number, field: keyof ReportLink, v: string) =>
+    setLinks((p) => p.map((x, idx) => (idx === i ? { ...x, [field]: v } : x)));
+
   // Save
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) { showToast('Judul artikel wajib diisi.', 'error'); return; }
+    // Baris tautan dengan URL tidak valid akan dibuang diam-diam oleh
+    // normaliseReportLinks, jadi lebih baik ditolak di sini dengan pesan jelas.
+    const badLink = links.find((l) => l.url.trim() && !isSafeHttpUrl(l.url.trim()));
+    if (badLink) {
+      showToast(`URL tautan harus diawali http:// atau https:// — "${badLink.url.trim()}"`, 'error');
+      return;
+    }
     setLoading(true);
 
     const cleanBlock = (b: ContentBlock) => {
@@ -831,6 +858,7 @@ function AdminFormContent() {
         .map(cleanStep)
         .filter((s) => s.title || s.blocks.length > 0) as any,
       kesimpulan: normaliseRichText(kesimpulan),
+      links: normaliseReportLinks(links),
     };
 
     const payload = {
@@ -984,6 +1012,42 @@ function AdminFormContent() {
                 <input type="url" id="githubUrl" placeholder="https://github.com/..."
                   value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} className="command-input pl-8" />
               </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
+                <span className="font-mono text-xs text-on-surface-variant font-bold flex items-center gap-1.5">
+                  <Link2 className="w-3.5 h-3.5 text-primary-container" />
+                  --links <span className="text-on-surface-variant/40 font-normal">(opsional)</span>
+                </span>
+                <button type="button" onClick={handleAddLink} disabled={links.length >= MAX_REPORT_LINKS}
+                  className="btn-neon-outline flex items-center gap-1.5 py-1 px-3 text-xs font-mono disabled:opacity-40 disabled:cursor-not-allowed">
+                  <Plus className="w-3.5 h-3.5" /> ADD_LINK
+                </button>
+              </div>
+              {links.length > 0 && (
+                <div className="space-y-3">
+                  {links.map((link, idx) => (
+                    <div key={idx} className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto] gap-2 items-center">
+                      <input type="text" placeholder="Label, mis. Download APK" maxLength={MAX_LINK_LABEL}
+                        aria-label={`Label tautan ${idx + 1}`}
+                        value={link.label} onChange={(e) => handleLinkChange(idx, 'label', e.target.value)}
+                        className="command-input py-1.5 text-xs" />
+                      <input type="url" placeholder="https://..." maxLength={MAX_LINK_URL}
+                        aria-label={`URL tautan ${idx + 1}`}
+                        value={link.url} onChange={(e) => handleLinkChange(idx, 'url', e.target.value)}
+                        className="command-input py-1.5 text-xs" />
+                      <button type="button" onClick={() => handleRemoveLink(idx)} aria-label={`Hapus tautan ${idx + 1}`}
+                        className="text-on-surface-variant hover:text-red-400 justify-self-end p-1">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p className="font-mono text-[10px] text-on-surface-variant/60 mt-1">
+                Tautan tambahan (APK, video demo, Google Drive, dll). Tampil sebagai tombol di samping REPOSITORY_GITHUB; ikon dipilih otomatis dari URL.
+              </p>
             </div>
 
             <div>

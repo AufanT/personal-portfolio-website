@@ -5,6 +5,9 @@ import { notFound } from 'next/navigation';
 import {
   Calendar,
   Github,
+  Youtube,
+  Download,
+  ExternalLink,
   ArrowLeft,
   ArrowRight,
   Terminal,
@@ -28,6 +31,14 @@ import AppImage from '@/components/AppImage';
 import RichText from '@/components/RichText';
 import { isRichTextEmpty, toPlainText } from '@/lib/rich-text';
 import { numberSections, type ReportSectionKey } from '@/lib/report-sections';
+import { normaliseReportLinks, reportLinkKind, type ReportLink, type ReportLinkKind } from '@/lib/report-links';
+
+const LINK_ICONS: Record<ReportLinkKind, typeof ExternalLink> = {
+  github: Github,
+  video: Youtube,
+  download: Download,
+  generic: ExternalLink,
+};
 
 export const revalidate = 60;
 
@@ -91,6 +102,7 @@ interface StructuredContent {
   langkah_kerja: StructuredStep[];
   latihan_tugas: StructuredStep[];
   kesimpulan: string;
+  links: ReportLink[];
 }
 
 interface Blog {
@@ -297,6 +309,7 @@ export default async function BlogDetailPage({ params }: Props) {
               }))
             : [],
           kesimpulan: contentObj.kesimpulan || '',
+          links: normaliseReportLinks(contentObj.links),
         };
         isStructured = true;
       } else if (Array.isArray(contentObj)) {
@@ -349,6 +362,7 @@ export default async function BlogDetailPage({ params }: Props) {
       })
     : [];
   const numeral = (key: ReportSectionKey) => sections.find((section) => section.key === key)?.numeral ?? '';
+  const extraLinks = structuredContent?.links ?? [];
 
   return (
     <div className="cyber-grid min-h-screen pt-28 pb-12 relative w-full">
@@ -412,16 +426,35 @@ export default async function BlogDetailPage({ params }: Props) {
                   <h1 className="font-mono text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 leading-tight tracking-tight drop-shadow-[0_0_10px_rgba(57,255,20,0.3)]">
                     {blog.title}
                   </h1>
-                  {blog.github_url && (
-                    <a
-                      href={blog.github_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="btn-neon-outline inline-flex items-center gap-2 py-1.5 px-4 text-xs font-mono bg-black/50"
-                    >
-                      <Github className="w-4 h-4" />
-                      REPOSITORY_GITHUB
-                    </a>
+                  {(blog.github_url || extraLinks.length > 0) && (
+                    <div className="flex flex-wrap gap-2">
+                      {blog.github_url && (
+                        <a
+                          href={blog.github_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="btn-neon-outline inline-flex items-center gap-2 py-1.5 px-4 text-xs font-mono bg-black/50"
+                        >
+                          <Github className="w-4 h-4" />
+                          REPOSITORY_GITHUB
+                        </a>
+                      )}
+                      {extraLinks.map((link, idx) => {
+                        const Icon = LINK_ICONS[reportLinkKind(link.url)];
+                        return (
+                          <a
+                            key={`${idx}-${link.url}`}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-neon-outline inline-flex items-center gap-2 py-1.5 px-4 text-xs font-mono bg-black/50 max-w-full"
+                          >
+                            <Icon className="w-4 h-4 shrink-0" />
+                            <span className="truncate">{link.label}</span>
+                          </a>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
               </header>
